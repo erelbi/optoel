@@ -1,0 +1,326 @@
+{% load static %}
+{% block basinc %}
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+<form class="form-inline">
+    <button type="submit" class="btn btn-primary mb-2" id="btn-ba-connect">Bağlan</button>
+  </form>
+  <hr>
+  <div class="row">
+    <form action="" class="form-row col-md-8" method="POST" id="basincAnahtariFormu">{% csrf_token %}
+      <span class="col-md-4">Serial No.</span>
+      <span class="col-md-2">Açma</span>
+      <span class="col-md-2">Kapatma</span>
+      <span class="col-md-1 pl-0">Kabul</span>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}<span class="col-md-2 pl-0">Şartlı Kabul</span>{% endif %}
+      <span class="col-md-1 pl-0">Red</span>
+      <hr>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="aa"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc1" name="basinc1" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc1"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc1-" name="basinc1" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc1-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc1--" name="basinc1" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc1--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="cb"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc2" name="basinc2" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc2"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc2-" name="basinc2" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc2-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc2--" name="basinc2" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc2--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="cc"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc3" name="basinc3" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc3"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc3-" name="basinc3" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc3-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc3--" name="basinc3" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc3--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="cd"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc4" name="basinc4" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc4"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc4-" name="basinc4" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc4-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc4--" name="basinc4" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc4--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="ce"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc5" name="basinc5" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc5"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc5-" name="basinc5" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc5-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc5--" name="basinc5" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc5--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="cf"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc6" name="basinc6" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc6"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc6-" name="basinc6" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc6-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc6--" name="basinc6" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc6--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="cg"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc7" name="basinc7" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc7"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc7-" name="basinc7" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc7-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc7--" name="basinc7" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc7--"></label></div>
+      <div class="form-group col-md-4"><input type="text" class="form-control textinput" id="ch"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-2"><input type="text" class="form-control" value="0"></div>
+      <div class="form-group col-md-1"><input type="radio" id="basinc8" name="basinc8" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="basinc8"></label></div>
+      {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+      <div class="form-group col-md-2"><input type="radio" id="basinc8-" name="basinc8" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="basinc8-"></label></div>
+      {% endif %}
+      <div class="form-group col-md-1"><input type="radio" id="basinc8--" name="basinc8" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="basinc8--"></label></div>
+    </form>
+    <div class="col-md-4 row" style="justify-content: space-between;" id="controlsBa">
+      <input type="text" class="form-control col-md-5" placeholder="Test basıncı" id="testPressure" value="35">
+      <button type="button" class="btn btn-success col-md-5" id="btn-ba-start">BAŞLAT</button>
+      <button type="button" class="btn btn-success col-md-5 mt-2" id="btn-ba-stop">BİTİR</button>
+      <button type="button" class="btn btn-danger col-md-5 mt-2" id="btn-ba-finish">ACİL BİTİR</button>
+      <canvas data-type="radial-gauge" id="basinc-gauge" class="mx-auto mt-4" 
+      data-min-value="0"
+      data-max-value="40"
+      data-minor-ticks="2"
+      data-stroke-ticks="true"
+      data-color-plate="#fff"
+      data-border-shadow-width="0"
+      data-borders="false"
+      data-needle-type="arrow"
+      data-needle-width="2"
+      data-needle-circle-size="7"
+      data-needle-circle-outer="true"
+      data-needle-circle-inner="false"
+      data-animation-duration="1500"
+      data-animation-rule="linear"
+      data-height="200"
+      data-width="200"
+    ></canvas>
+    <button type="button" class="btn btn-success col-md-8 btn-sm btn-block mx-auto" id="kalibreBa">KALİBRASYON</button>
+    </div>
+  </div>
+  <hr>
+  <div class="col-md-4 mx-auto"><button type="button" id="kaydetBasinc" class="btn btn-success btn-lg btn-block">KAYDET</button></div>
+
+<script>
+  let kalibreBaBtn = document.getElementById('kalibreBa');
+  let acilBitirBa = document.getElementById('btn-ba-finish');
+  let baglanBa = document.getElementById('btn-ba-connect');
+  let allButtons = document.querySelectorAll('#controlsBa button');
+  let baslatBaBtn = document.getElementById('btn-ba-start');
+  let bitirBaBtn = document.getElementById('btn-ba-stop');
+  for(let i = 0;i < allButtons.length; i++){
+    allButtons[i].disabled=true;
+  }
+  //acilBitirBa.disabled = false;
+  let radioBaBtns = document.querySelectorAll('#basincAnahtariFormu input[type="radio"]');
+  let inputs;
+  inputs = document.querySelectorAll('#basincAnahtariFormu input[type="text"]');
+
+  let acmaInputs = [];
+  let kapatmaInputs = [];
+  for(let i = 0;i<inputs.length;i++){
+    console.log(inputs[i]);
+    if(i%3 == 1){
+      acmaInputs.push(inputs[i]);
+    }
+    else if(i%3 == 2){
+      kapatmaInputs.push(inputs[i]);
+    }
+  }
+  for(var i = 0; i < radioBaBtns.length; i++){
+    radioBaBtns[i].addEventListener('click',function(e){
+      e.preventDefault();
+    })
+  }
+  for(var i = 0; i < acmaInputs.length; i++){
+    acmaInputs[i].setAttribute('READONLY','on');
+  }
+  for(var i = 0; i < kapatmaInputs.length; i++){
+    kapatmaInputs[i].setAttribute('READONLY','on');
+  }
+</script>
+<script>
+  let connect_ba = function (e) {
+      let el = e.target;
+      el.disabled = true;
+      el.innerHTML = `Bağlanıyor...`;
+     $.ajax(
+          {
+            type: "GET",
+            url: 'http://localhost:5000/ba_connect',
+            success: function (x){
+              kalibreBaBtn.disabled = false;
+              acilBitirBa.disabled = false;
+              el.innerHTML = 'Bağlandı';
+              toastr["success"]("Bağlandı!");
+            },
+          }
+         );
+  }
+</script>
+<script>
+    kalibreBaBtn.addEventListener('click',(e)=>{
+	kalibreBaBtn.disabled = true;
+	kalibreBaBtn.innerText = 'Kalibre ediliyor...';
+	new Promise(function(resolve,reject){
+		$.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/ba_calibre',
+			success: function(res){
+				console.log(res);
+				if(res == 'Calibrated'){
+					toastr["success"]("Kalibre edildi!");
+					for(let i = 0;i < allButtons.length; i++){
+                      allButtons[i].disabled=false;
+                    }
+                    acilBitirBa.disabled = false;
+                    document.getElementById('btn-ba-stop').disabled = true;
+					resolve(1);
+				}
+			}
+		}
+	);
+	}).
+	then(function(result){
+		for(let i = 0; i < butonlar.length;i++){
+			butonlar[i].disabled=false;
+		}
+		document.getElementById('btn-ba-stop').disabled = true;
+		kalibreBaBtn.disabled = true;
+		kalibreBaBtn.innerText = 'Kalibre edildi';
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  })
+</script>
+<script>
+  document.getElementById('btn-ba-start').addEventListener('click',function(e){
+    document.getElementById('btn-ba-start').disabled = true;
+	new Promise(function(resolve,reject){
+	    let desired = document.getElementById('testPressure').value;
+
+	    let veri = { "veri": desired };
+	    toastr["success"]("Test işlemi başladı!");
+		$.ajax(
+		{
+			type: "POST",
+			url: 'http://localhost:5000/ba_start',
+			data: veri,
+			success: function(res){
+				console.log(res);
+				if(res == 'done'){
+                    document.getElementById('btn-ba-stop').disabled = false;
+					resolve(1);
+				}
+			}
+		}
+	  );
+	}).
+	then(function(result){
+      $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/ba_get_switch_off_val',
+			success: function(res){
+				console.log(res);
+                toastr["success"]("Dolum şlemi tamamlandı!");
+				for(let i = 0;i<res.length;i++){
+                  kapatmaInputs[i].value = res[i];
+                  if(res[i] >20 && res[i] <30){
+                    radioBaBtns[2*i].checked = true;
+                  }else{
+                    radioBaBtns[2*i+1].checked = true;
+                  }
+				}
+			}
+		}
+	  );
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  });
+
+  document.getElementById('btn-ba-stop').addEventListener('click',function(){
+    new Promise(function(resolve,reject){
+    toastr["success"]("Boşaltma işlemi başladı!");
+    $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/ba_stop',
+			success: function(res){
+				if(res == 'done'){
+                  resolve(1);
+				}
+			}
+		});
+		document.getElementById('btn-ba-stop').disabled = true;
+	}).
+	then(function(result){
+      $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/ba_get_switch_on_val',
+			success: function(res){
+				console.log(res);
+				toastr["success"]("Boşaltma işlemi bitti!");
+				document.getElementById('btn-ba-start').disabled = false;
+                  for(let i = 0;i<res.length;i++){
+                    acmaInputs[i].value = res[i];
+                    if(res[i] >20 && res[i] <30){
+                      if(!radioBaBtns[2*i+1]){
+                        radioBaBtns[2*i].checked = true;
+                      }
+                    }else{
+                      radioBaBtns[2*i+1].checked = true;
+                    }
+                  }
+			}
+		}
+	  );
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  });
+
+  document.getElementById('btn-ba-finish').addEventListener('click',function(){
+  	acilBitirBa.disabled = true;
+      $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/ba_acil',
+			success: function(res){
+				console.log(res);
+				//baglanBa.disabled = false;
+				//baglanBa.innerHTML = 'Bağlan';
+				//kalibreBaBtn.disabled = true;
+				toastr["success"]("Acil bitirildi!");
+				baslatBaBtn.disabled = false;
+				acilBitirBa.disabled = false;
+				bitirBaBtn.disabled = true;
+			}
+		});/*
+      for(let i = 0;i < allButtons.length; i++){
+        allButtons[i].disabled=true;
+      }*/
+      //acilBitirBa.disabled = false;
+  });
+</script>
+<script>
+  document.getElementById('btn-ba-connect').addEventListener('click',connect_ba);
+</script>
+{% endblock %}

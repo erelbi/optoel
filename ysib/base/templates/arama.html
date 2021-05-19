@@ -1,0 +1,518 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<link href="{% static 'css/bootstrap-tables.css' %}" rel="stylesheet">
+<link href="{% static 'css/selectize.min.css' %}" rel="stylesheet">
+<style type="text/css">
+  .btn-group button{
+    background-color: #1ab394;
+    border-color: #1ab394;
+  }
+  .caret{
+    display: none;
+  }
+  .bs-print{
+    margin-top:2px;
+    height: 33px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="form-row">
+    <div class="form-group col-md-4">
+      <label for="kaliteArama">Giriş Kalite Kontrol / Stok</label>
+      <select id="kaliteArama">
+        <option selected disabled value="0">Seçin...</option>
+        <option value="manometre">Manometre</option>
+        <option value="basinc">Basınç Anahtarı</option>
+        <option value="altnipel">Alt Nipel</option>
+        <option value="ustnipel">Üst Nipel</option>
+        <option value="bakirmembran">Bakır Membran</option>
+        <option value="emniyet">Emniyet Ventili</option>
+      </select>
+    </div>
+    <div class="form-group col-md-2">
+      <label for="emirArama">İş Emri</label>
+      <select id="emirArama">
+        <option selected disabled>Seçin...</option>
+        <option value="tumu">Tümü</option>
+        {% for emir in emirs %}
+          <option value="{{ emir.is_emri }}">{{ emir.is_emri }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="uretimArama">Üretim Kontrol – İstasyon</label>
+      <select id="uretimArama">
+        <option selected disabled>Seçin...</option>
+        <option value="valfmontaj">Valf Montaj</option>
+        <option value="valftest">Valf Test Ünitesi</option>
+        <option value="valfgovde">Valf-Gövde Montaj Ünitesi</option>
+        <option value="fm200">FM200-Azot Dolum Ünitesi</option>
+        <option value="havuztest">Havuz Test Ünitesi</option>
+        <option value="finalmontaj">Final Montaj</option>
+      </select>
+    </div>
+    <div class="form-group col-md-2">
+      <a class="btn btn-primary disabled" style="margin-top: 27px;height: 37px;color: #fff;padding-top: 8px;" id="ara">Ara</a>
+    </div>
+</div>
+
+<div id="toolbar">
+</div>
+
+<table id="table"
+    data-toggle="table"
+    data-show-export="true"
+    data-show-columns="true"
+    data-sortable="true"
+    data-filter-control="true"
+    data-show-print="true"
+    data-toolbar="#toolbar">
+
+{% if aranan == "manometre" %}
+  <thead>
+    <tr>
+      <th data-field="tur" data-filter-control="select" data-sortable="true">Ürün Kodu</th>
+      <th data-field="testi_yapan" data-filter-control="select" data-sortable="true">Test Basıncı</th>
+      <th data-field="seri_no" data-filter-control="select">Okunan Değer</th>
+      <th data-field="acma" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="kapatma" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.seri_no }}</td>
+            <td>{{ test.testi_basinci }}</td>
+            <td>{{ test.okunan_deger }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td>{{ test.testi_yapan }}</td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "basinc" %}
+  <thead>
+    <tr>
+      <th data-field="tur" data-filter-control="select" data-sortable="true">Ürün Kodu</th>
+      <th data-field="testi_yapan" data-filter-control="select" data-sortable="true">Kapanma</th>
+      <th data-field="seri_no" data-filter-control="select">Açılma</th>
+      <th data-field="acma" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="kapatma" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.seri_no }}</td>
+            <td>{{ test.kapatma }}</td>
+            <td>{{ test.acma }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td>{{ test.testi_yapan }}</td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "altnipel" %}
+  <thead>
+    <tr>
+      <th data-field="baslangic" data-filter-control="select" data-sortable="true">Başlangıç Seri No</th>
+      <th data-field="bitis" data-filter-control="select" data-sortable="true">Bitiş Seri No</th>
+      <th data-field="adet" data-filter-control="select">Adet</th>
+      <th data-field="lotno" data-filter-control="select" data-sortable="true">Lot No</th>
+      <th data-field="lotdurum" data-filter-control="select" data-sortable="true">Lot No Verilme</th>
+      <th data-field="kabul_durumu" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="test_yapan" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="pdf" data-filter-control="select" data-sortable="true">PDF</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.baslangic_seri_no }}</td>
+            <td>{{ test.bitis_seri_no }}</td>
+            <td>{{ test.adet }}</td>
+            <td>{{ test.lot_no }}</td>
+            <td>{{ test.lotdurum }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td>{{ test.testi_yapan }}</td>
+            <td><a target="blank" href="{{ media_url }}{{ test.pdf_ismi }}">{{ test.pdf_ismi }}</a></td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "ustnipel" %}
+  <thead>
+    <tr>
+      <th data-field="baslangic" data-filter-control="select" data-sortable="true">Başlangıç Seri No</th>
+      <th data-field="bitis" data-filter-control="select" data-sortable="true">Bitiş Seri No</th>
+      <th data-field="adet" data-filter-control="select">Adet</th>
+      <th data-field="lotno" data-filter-control="select" data-sortable="true">Lot No</th>
+      <th data-field="lotdurum" data-filter-control="select" data-sortable="true">Lot No Verilme</th>
+      <th data-field="kabul_durumu" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="test_yapan" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="pdf" data-filter-control="select" data-sortable="true">PDF</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.baslangic_seri_no }}</td>
+            <td>{{ test.bitis_seri_no }}</td>
+            <td>{{ test.adet }}</td>
+            <td>{{ test.lot_no }}</td>
+            <td>{{ test.lotdurum }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td>{{ test.testi_yapan }}</td>
+            <td><a target="blank" href="{{ media_url }}{{ test.pdf_ismi }}">{{ test.pdf_ismi }}</a></td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "bakirmembran" %}
+  <thead>
+    <tr>
+      <th data-field="lotno" data-filter-control="select" data-sortable="true">Lot No</th>
+      <th data-field="lotdurum" data-filter-control="select" data-sortable="true">Lot No Verilme</th>
+      <th data-field="test_basinci" data-filter-control="select" data-sortable="true">Numune-Test Basıncı</th>
+      <th data-field="patlama_basinci" data-filter-control="select" data-sortable="true">Numune-Patlama Değeri</th>
+      <th data-field="kabul_durumu" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="pdf" data-filter-control="select" data-sortable="true">PDF</th>
+      <th data-field="test_yapan" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.lot_no }}</td>
+            <td>{{ test.lotdurum }}</td>
+            <td>{{ test.test_basinci }}</td>
+            <td>{{ test.patlama_basinci }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td><a target="blank" href="{{ media_url }}{{ test.pdf_ismi }}">{{ test.pdf_ismi }}</a></td>
+            <td>{{ test.testi_yapan }}</td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "emniyet" %}
+  <thead>
+    <tr>
+      <th data-field="adet" data-filter-control="select">Adet</th>
+      <th data-field="lotno" data-filter-control="select" data-sortable="true">Lot No</th>
+      <th data-field="lotdurum" data-filter-control="select" data-sortable="true">Lot No Verilme</th>
+      <th data-field="patlama_basinci" data-filter-control="select" data-sortable="true">Patlama Değeri</th>
+      <th data-field="kabul" data-filter-control="select" data-sortable="true">Kabul Durumu</th>
+      <th data-field="test_yapan" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="pdf" data-filter-control="select" data-sortable="true">PDF</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in testler %}
+          <tr>
+            <td>{{ test.adet }}</td>
+            <td>{{ test.lot_no }}</td>
+            <td>{{ test.lotdurum }}</td>
+            <td>{{ test.patlama_basinci }}</td>
+            <td>{{ test.kabul_durumu }}</td>
+            <td>{{ test.testi_yapan }}</td>
+            <td><a target="blank" href="{{ media_url }}{{ test.pdf_ismi }}">{{ test.pdf_ismi }}</a></td>
+            <td>{{ test.test_tarihi }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "valfmontaj" %}
+  <thead>
+    <tr>
+      <th data-field="gecerli_is_emri" data-filter-control="select" data-sortable="true">İş Emri No</th>
+      <th data-field="valf_seri_no" data-filter-control="select" data-sortable="true">Valf Seri No</th>
+      <th data-field="alt_nipel_no" data-filter-control="select">Alt Nipel No</th>
+      <th data-field="bakir_membran_no" data-filter-control="select" data-sortable="true">Bakır Membran Lot No</th>
+      <th data-field="ust_nipel_no" data-filter-control="select" data-sortable="true">Üst Nipel No</th>
+      <th data-field="manometre_no" data-filter-control="select" data-sortable="true">Test Manometre No</th>
+      <th data-field="basincanahtari_no" data-filter-control="select" data-sortable="true">Basınç Anah. No</th>
+      <th data-field="personel" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="date" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uretim in uretims %}
+          <tr>
+            <td>{{ uretim.is_emri }}</td>
+            <td>{{ uretim.vsn }}</td>
+            <td>{{ uretim.alt_nipel_no }}</td>
+            <td>{{ uretim.bakir_membran_no }}</td>
+            <td>{{ uretim.ust_nipel_no }}</td>
+            <td>{{ uretim.manometre_no }}</td>
+            <td>{{ uretim.basincanahtari_no }}</td>
+            <td>{{ uretim.personel }}</td>
+            <td>{{ uretim.date }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+
+{% if aranan == "valftest" %}
+  <thead>
+    <tr>
+      <th data-field="is_emri" data-filter-control="select" data-sortable="true">İş Emri No</th>
+      <th data-field="valf_seri_no" data-filter-control="select" data-sortable="true">Valf Seri No</th>
+      <th data-field="acma" data-filter-control="select">Açma</th>
+      <th data-field="kapatma" data-filter-control="select" data-sortable="true">Kapatma</th>
+      <th data-field="uygunluk" data-filter-control="select" data-sortable="true">Uygunluk</th>
+      <th data-field="sebep" data-filter-control="select" data-sortable="true">Sebep</th>
+      <th data-field="personel" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="date" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uretim in uretims %}
+          <tr>
+            <td>{{ uretim.is_emri }}</td>
+            <td>{{ uretim.vsn }}</td>
+            <td>{{ uretim.acma }}</td>
+            <td>{{ uretim.kapatma }}</td>
+            <td>{{ uretim.uygunluk }}</td>
+            <td>{{ uretim.sebep }}</td>
+            <td>{{ uretim.personel }}</td>
+            <td>{{ uretim.date }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+
+{% if aranan == "valfgovde" %}
+  <thead>
+    <tr>
+      <th data-field="is_emri" data-filter-control="select" data-sortable="true">İş Emri No</th>
+      <th data-field="tork_degeri" data-filter-control="select" data-sortable="true">Tork Değeri</th>
+      <th data-field="uygunluk" data-filter-control="select">Uygunluk</th>
+      <th data-field="sebep" data-filter-control="select" data-sortable="true">Sebep</th>
+      <th data-field="vsn" data-filter-control="select" data-sortable="true">Valf Seri No</th>
+      <th data-field="tsn" data-filter-control="select" data-sortable="true">Tüp Seri No</th>
+      <th data-field="personel" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="date" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uretim in uretims %}
+          <tr>
+            <td>{{ uretim.is_emri }}</td>
+            <td>{{ uretim.tork_degeri }}</td>
+            <td>{{ uretim.uygunluk }}</td>
+            <td>{{ uretim.sebep }}</td>
+            <td>{{ uretim.vsn }}</td>
+            <td>{{ uretim.tsn }}</td>
+            <td>{{ uretim.personel }}</td>
+            <td>{{ uretim.date }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+
+{% if aranan == "fm200" %}
+  <thead>
+    <tr>
+      <th data-field="is_emri" data-filter-control="select" data-sortable="true">İş Emri No</th>
+      <th data-field="vsn" data-filter-control="select" data-sortable="true">Valf Seri No</th>
+      <th data-field="bos_agirlik" data-filter-control="select">Boş Ağırlık</th>
+      <th data-field="rekorlu_agirlik" data-filter-control="select" data-sortable="true">Rekorlu Ağırlık</th>
+      <th data-field="fm200" data-filter-control="select" data-sortable="true">FM200 Dolum Miktarı</th>
+      <th data-field="azot" data-filter-control="select" data-sortable="true">Azot Dolum Miktarı</th>
+      <th data-field="personel" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="date" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uretim in uretims %}
+          <tr>
+            <td>{{ uretim.is_emri }}</td>
+            <td>{{ uretim.vsn }}</td>
+            <td>{{ uretim.bos_agirlik }}</td>
+            <td>{{ uretim.rekorlu_agirlik }}</td>
+            <td>{{ uretim.fm200 }}</td>
+            <td>{{ uretim.azot }}</td>
+            <td>{{ uretim.personel }}</td>
+            <td>{{ uretim.date }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "havuztest" %}
+  <thead>
+    <tr>
+      <th data-field="is_emri" data-filter-control="select" data-sortable="true">İş Emri No</th>
+      <th data-field="tork_degeri" data-filter-control="select" data-sortable="true">Tork Değeri</th>
+      <th data-field="uygunluk" data-filter-control="select">Uygunluk</th>
+      <th data-field="sebep" data-filter-control="select" data-sortable="true">Sebep</th>
+      <th data-field="vsn" data-filter-control="select" data-sortable="true">Valf Seri No</th>
+      <th data-field="personel" data-filter-control="select" data-sortable="true">Personel</th>
+      <th data-field="date" data-filter-control="select" data-sortable="true">Tarih</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for uretim in uretims %}
+          <tr>
+            <td>{{ uretim.is_emri }}</td>
+            <td>{{ uretim.tork_degeri }}</td>
+            <td>{{ uretim.uygunluk }}</td>
+            <td>{{ uretim.sebep }}</td>
+            <td>{{ uretim.vsn }}</td>
+            <td>{{ uretim.personel }}</td>
+            <td>{{ uretim.date }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+{% if aranan == "isemri" %}
+  <thead>
+    <tr>
+      <th data-field="is_emri" data-filter-control="select" data-sortable="true">No</th>
+      <th data-field="valf_seri_no" data-filter-control="select" data-sortable="true">Adet</th>
+      <th data-field="alt_nipel_no" data-filter-control="select">MD Ürün Kodu</th>
+      <th data-field="müsteri_no" data-filter-control="select">Müşteri Sipariş No</th>
+      <th data-field="bakir_membran_no" data-filter-control="select" data-sortable="true">Tüp Gövde Türü</th>
+      <th data-field="ust_nipel_no" data-filter-control="select" data-sortable="true">Valf Türü</th>
+      <th data-field="manometre_no" data-filter-control="select" data-sortable="true">Renk</th>
+      <th data-field="basinc_anahtar_no" data-filter-control="select" data-sortable="true">FM200 Miktarı(gr)</th>
+      <th data-field="ventil_seri" data-filter-control="select" data-sortable="true">Sodyum Bikarbonat Miktarı(gr)</th>
+      <th data-field="testi_yapan" data-filter-control="select" data-sortable="true">Emniyet Ventil Türü</th>
+      <th data-field="musteri" data-filter-control="select" data-sortable="true">Müşteri</th>
+      <th data-field="bolum" data-filter-control="select" data-sortable="true">Bölüm</th>
+      <th data-field="emri_veren" data-filter-control="select" data-sortable="true">İş Emri Açan Yönetici</th>
+      <th data-field="test_tarihi" data-filter-control="select" data-sortable="true">Tarih</th>
+      <th data-field="durum" data-filter-control="select" data-sortable="true">Durum</th>
+      <th data-field="ağırlık_min" data-filter-control="select" data-sortable="true">Ağırlık Alt Limit</th>
+      <th data-field="ağırlık_max" data-filter-control="select" data-sortable="true">Ağırlık Üst Limit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for emir in emirler %}
+          <tr>
+            <td>{{ emir.is_emri }}</td>
+            <td>{{ emir.tup_sayisi }}</td>
+            <td>{{ emir.urun_kodu }}</td>
+            <td>{{ emir.siparis }}</td>
+            <td>{{ emir.tup_govde_turu }}</td>
+            <td>{{ emir.valf_turu }}</td>
+            <td>{{ emir.renk }}</td>
+            <td>{{ emir.fm200_miktari }}</td>
+            <td>{{ emir.sodyum_bikarbonat_miktari }}</td>
+            <td>{{ emir.emniyet_ventil_turu }}</td>
+            <td>{{ emir.musteri }}</td>
+            <td>{{ emir.bolum }}</td>
+            <td>{{ emir.emri_veren }}</td>
+            <td>{{ emir.emir_zamani }}</td>
+            <td>{{ emir.durum }}</td>
+            <td>{{ emir.ağırlık_alt_limit }}</td>
+            <td>{{ emir.ağırlık_üst_limit }}</td>
+          </tr>
+    {% endfor %}
+  </tbody>
+{% endif %}
+
+</table>
+
+{% endblock %}
+{% block script %}
+
+
+<script src="{% static 'js/tableExport.min.js' %}"></script>
+<script src="{% static 'js/jspdf.min.js' %}"></script>
+<script src="{% static 'js/jspdf.plugin.autotable.js' %}"></script>
+<script src="{% static 'js/bootstrap-tables.js' %}"></script>
+<script src="{% static 'js/bootstrap-table-export.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-table-filter-control.min.js' %}"></script>
+<script>
+  function turkceTarih(ayrac=" "){
+      let tarih=new Date();
+      let gun=tarih.getDay();
+      let ay=tarih.getMonth();
+      let yil=tarih.getFullYear();
+      let gunler= ['Pazar', 'Pazartesi', 'Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+      let aylar= ['Ocak', 'Şubat', 'Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+      return (tarih.getDate()+ayrac+aylar[ay]+ayrac+yil+ayrac+gunler[gun]).toString();
+  }
+</script>
+<script src="{% static 'js/bootstrap-table-print.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-table-locale-all.min.js' %}"></script>
+<script>
+  var $table = $('#table')
+  $(function() {
+      $table.bootstrapTable('destroy').bootstrapTable({
+        exportOptions: {"fileName":  "masterdefence_"+turkceTarih("_")},
+        locale:"tr-TR",
+        exportDataType: $(this).val(),
+        exportTypes: ['json', 'csv', 'txt', 'sql', 'excel'],
+      })
+    })
+</script>
+<script>
+  $( "#kaliteArama" ).change(function() {
+    let uri = $( "#kaliteArama option:selected" ).val();
+      document.getElementById('ara').classList.remove('disabled')
+      document.getElementById('ara').setAttribute("href","/arama?q=" + uri);
+  });
+  $( "#emirArama" ).change(function() {
+    let uri = $( "#emirArama option:selected" ).val();
+      document.getElementById('ara').classList.remove('disabled')
+      document.getElementById('ara').setAttribute("href","/arama?emir=" + uri);
+  });
+    $( "#uretimArama" ).change(function() {
+    let uri = $( "#uretimArama option:selected" ).val();
+      document.getElementById('ara').classList.remove('disabled')
+      document.getElementById('ara').setAttribute("href","/arama?uretim=" + uri);
+  });
+</script>
+<script src="{% static 'js/selectize.min.js' %}"></script>
+<script>
+  $(function() {
+    var emirArama = $('#emirArama').selectize({
+      onChange: function(){
+        console.log(kaliteArama);
+        console.log(uretimArama);
+      }
+    });
+    var kaliteArama = $('#kaliteArama').selectize({
+      onChange: function(){
+        console.log(emirArama);
+        console.log(uretimArama);
+      }
+    });
+    var uretimArama = $('#uretimArama').selectize({
+      onChange: function(){
+        console.log(emirArama);
+        console.log(kaliteArama[0]);
+        kaliteArama[0]
+      }
+    });
+    $('select').selectize({
+    });
+  });
+</script>
+{% endblock %}

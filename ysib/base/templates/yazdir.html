@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+{% endblock %}
+{% block content %}
+<div class="row col-md-10 mx-auto">
+	<div class="col-md-4">
+		<div class="form-group">
+		    <label for="qrkod">İş emri QR Kod</label>
+		    <input type="text" class="form-control" id="qrkod" aria-describedby="qrKod">
+		    <small id="qrCode" class="form-text text-muted">QR kodunu bu alana okutun.</small>
+		  </div>
+			<div class="form-group">
+			    <label for="valfqr">Valf No QR Kod</label>
+			    <input type="text" class="form-control" id="valfqr" aria-describedby="qrKod">
+			    <small id="qrCode" class="form-text text-muted">QR kodunu bu alana okutun.</small>
+			</div>
+	</div>
+	<div class="col-md-1 text-center">veya</div>
+	<div class="col-md-5">
+		<form class="was-validated">
+			<label for="durum">İş Durumunu Seçin</label>
+			<div class="form-group">
+			  	<select class="custom-select" id="durum" required>
+			  		<option value="" disabled selected>Seçin</option>
+			  		<option value="Başlanmamış">Başlanmamış</option>
+			  		<option value="Aktif">Aktif</option>
+			  		<option value="Bitmiş">Bitmiş</option>
+			  	</select>
+			  	<div class="invalid-feedback">
+			        Lütfen önce iş emri durumunu seçin.
+			    </div>
+			  </div>
+
+			<select class="custom-select mt-12" id="isler" style="margin-top: 30px;" disabled>
+		  		<option value="" disabled selected>Seçin</option>
+		  	</select>
+		    <a target="blank" class="btn btn-primary disabled" style="width:100%;margin-top: 30px;"  id="yazdir">Yazdır</a>
+		</form>
+	</div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+	document.getElementById('isler').addEventListener('click',function(e){
+		el = e.currentTarget || this;
+		if(el.hasAttribute('disabled')){
+			console.log('disabled')
+		}
+	})
+
+	$( "#isler" ).change(function() {
+		if($("#durum option:selected").value !== ""){
+			document.getElementById('yazdir').classList.remove('disabled');
+		}else{
+			document.getElementById('yazdir').classList.add('disabled');
+		}
+
+	});
+
+	$( "#durum" ).change(function() {
+		durum = $("#durum option:selected").text();
+		veri = {
+			"durum": durum
+		}
+	  	$.ajax(
+                {
+                  type: "POST",
+                  url: '/yazdir',
+                  data : veri,
+                  success: function (data){
+                  	document.getElementById('isler').innerHTML = '<option value="" disabled selected>Seçin</option>';
+                  	if(!data.length == 0){
+                  		document.getElementById('isler').removeAttribute('disabled');
+                  	}
+                  	else{
+                  		document.getElementById('isler').innerHTML = `<option>${$("#durum option:selected").text()} hiç iş emri yok</option>`;
+                  		document.getElementById('isler').setAttribute('disabled','');
+                  		document.getElementById('yazdir').classList.add('disabled');
+                  	}
+                    for (var i = data.length - 1; i >= 0; i--) {
+                    	document.getElementById('isler').insertAdjacentHTML('afterbegin',`<option>${data[i]}</option>`);
+                    }
+                  },
+                  error(err){
+                    Swal.fire({
+                      title: 'Başarısız!',
+                      text: `Hata : ${err.body}`,
+                      icon: 'error',
+                      confirmButtonText: 'Tamam'
+                    })
+                  }
+                }
+             );
+	});
+	$( "#isler" ).change(function() {
+		let uri = $( "#isler option:selected" ).text();
+	  	document.getElementById('yazdir').setAttribute("href","/pdf?qr=" + uri);
+	});
+
+	document.querySelector('#qrkod').onkeyup = function(e) {
+		let uri = e.target.value;
+        console.log(e.target.value)
+	  	document.getElementById('yazdir').setAttribute("href","/pdf?qr=" + uri);
+        if (e.keyCode === 13) {
+            document.querySelector('#yazdir').click();
+        }
+    };
+
+		document.querySelector('#valfqr').onkeyup = function(e) {
+				let uri = e.target.value;
+	      	console.log(e.target.value)
+		  	document.getElementById('yazdir').setAttribute("href","/pdf?valfqr=" + uri);
+	        if (e.keyCode === 13) {
+	            document.querySelector('#yazdir').click();
+	        }
+	    };
+
+</script>
+
+{% endblock %}

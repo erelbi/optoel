@@ -1,0 +1,299 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MasterDefence</title>
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script type="text/javascript">
+      var map = {79: false, 80: false, 84: false};
+      $(document).keydown(function(e) {
+          if (e.keyCode in map) {
+              map[e.keyCode] = true;
+              if (map[79] && map[80] && map[84]) {
+                  alert('cahatay');
+                  map = {79: false, 80: false, 84: false};
+              }
+          }
+      }).keyup(function(e) {
+          if (e.keyCode in map) {
+              map[e.keyCode] = false;
+          }
+      });
+      $(document).keydown(function(e) {
+        if(e.keyCode == 112 || e.keyCode == 17){
+          e.preventDefault();
+        }
+      })
+      var ctrlw = {17: false,87: false};
+      $(document).keydown(function(e) {
+        if (e.keyCode in ctrlw) {
+              ctrlw[e.keyCode] = true;
+              if (ctrlw[17] && ctrlw[87]) {
+                  e.preventDefault();
+                  ctrlw = {17: false, 87: false};
+              }
+          }      
+        })
+    </script>
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.ico' %}">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sweetalert2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/toastr.min.css' %}" rel="stylesheet">
+    <script src="{% static 'js/websocketbridge.js' %}"></script>
+    <style>
+      .dropdown-messages li{
+        cursor: pointer;
+        padding: 6px 5px;
+        border-bottom: 1px solid rgba(0,0,0,.2);
+      }
+      .dropdown-messages li:last-child{
+        border-bottom:0px;
+      }
+      .dropdown-messages li:hover{
+        background-color: rgba(47,64,80,.9);
+        color:#fff;
+      }
+      #sayi{
+        opacity: 0;
+      }
+    </style>
+
+    {% block style %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    {% include "external/sidebar.html" %}
+    <div id="page-wrapper" class="gray-bg">
+        <div class="row border-bottom">
+            <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+                <div class="navbar-header">
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary position-fixed" style="z-index: 11;" href="#"><i class="fa fa-bars"></i> </a>
+
+                </div>
+                <ul class="nav navbar-top-links navbar-right">
+                     {% if user.is_authenticated %}
+                     <li class="mr-6" style="margin-right: 20px">{{ request.user.birim }} - {{ request.user.grup }}</li>
+                     <li>
+                        <i class="fa fa-user-circle-o" style="font-size: 18px"></i><span class="m-r-sm text-muted text-capitalize ml-1">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                    </li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                            <i class="fa fa-bell"></i>  <span class="label label-danger" id="sayi"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-messages" style="max-height: 280px;overflow-y: scroll;" id="bildirim">
+                          <!--Bildirimler-->
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/logout">
+                            <i class="fa fa-sign-out"></i> Sistem Çıkış
+                        </a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <span class="m-r-sm text-muted welcome-message">Kayıtsız kullanıcı</span>
+                    </li>
+                    <li>
+                        <a href="/logout">
+                            <i class="fa fa-sign-in"></i> Sistem Giriş
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+            </nav>
+        </div>
+        <div class="wrapper wrapper-content animated fadeInRight">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class= "m-t-lg">
+
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div>
+                <strong>Copyright</strong> MasterDefence &copy; 2020
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="simple-keyboard"></div>
+<!-- Mainly scripts -->
+
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/plugins/metisMenu/jquery.metisMenu.js' %}"></script>
+<script src="{% static 'js/plugins/slimscroll/jquery.slimscroll.min.js' %}"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="{% static 'js/inspinia.js' %}"></script>
+<script src="{% static 'js/sweetalert2.min.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script type="text/javascript">
+
+</script>
+{% block script %}
+{% endblock %}
+
+<script>
+    var birim = "{{ request.user.birim }}";
+    var grup = "{{ request.user.grup }}";
+                              document.addEventListener('DOMContentLoaded', function() {
+                                  const webSocketBridge = new channels.WebSocketBridge();
+
+                                  webSocketBridge.connect('/notifications/');
+                                  webSocketBridge.listen(function(action, stream) {
+                                    toastr.options = {
+                                      "closeButton": true,
+                                      "debug": false,
+                                      "newestOnTop": false,
+                                      "progressBar": false,
+                                      "positionClass": "toast-top-right",
+                                      "preventDuplicates": false,
+                                      "onclick": null,
+                                      "showDuration": "300",
+                                      "hideDuration": "300",
+                                      "timeOut": "999999",
+                                      "extendedTimeOut": "999999",
+                                      "showEasing": "swing",
+                                      "hideEasing": "linear",
+                                      "showMethod": "fadeIn",
+                                      "hideMethod": "fadeOut"
+                                    }
+                                    console.log(birim,grup)
+                                    if(action.event == "is emri") {
+                                      if (birim == "Üretim" || birim == "Planlama") {
+                                        toastr["success"](`${action.kisi} isimli personel tarafından ${action.emir} isimli yeni bir iş emri eklendi.`)
+                                      }
+                                    }
+                                    else if(action.event == "baslangic"){
+                                      if(birim == "Planlama" && grup != "Teknisyen" || birim == "Üretim" && grup != "Teknisyen"){
+                                        toastr["success"](`İş emrine başlandı.`)
+                                      }
+                                    }
+                                    else if(action.event == "bitis"){
+                                      if(birim == "Planlama" && grup!= "Teknisyen" || birim == "Üretim" && grup != "Teknisyen"){
+                                        toastr["success"](`İş emri bitti.`)
+                                      }
+                                    }
+                                    else if(action.event == "oncelik"){
+                                      console.log(birim,grup)
+                                        if (birim == "Üretim" || birim == "Planlama") {
+                                          toastr["success"](`Öncelik sırası değişti.`)
+                                        }
+                                    }
+
+                                  })
+                                  document.ws = webSocketBridge;
+                                })
+                                </script>
+<script>
+      fetch("/bildirim")
+      .then(function(x){
+        return x.json()
+      })
+      .then(function(x){
+        //bildirim varsa
+        bildirimsayisi = 0;
+        x.forEach(function(v,i){
+          var a = new Date();
+          if(a.getMinutes() < 10){
+            var dakika = "0" + a.getMinutes();
+          }else{
+            var dakika = a.getMinutes().toString();
+          }
+          if(a.getHours() < 10){
+            var saat = "0" + a.getHours();
+          }else{
+            var saat = a.getHours().toString();
+          }
+          let simdi = saat + dakika;
+           let zaman = v['zaman'].replace(/\D/g,'').slice(8,12);
+          zaman = Math.abs(parseInt(simdi)-(+zaman + 300)) + " dakika önce"
+          if(v['tur'] == "is emri" && "{{request.user.grup}}" == "Yönetici"){
+            document.getElementById('bildirim').insertAdjacentHTML('afterbegin',`<li>
+                            <div class="dropdown-messages-box">
+                                <a class="dropdown-item float-left">
+                                    <h3><i class="fa fa-exclamation-triangle text-danger"></i></h3>
+                                </a>
+                                <div class="media-body">
+                                    <strong class="text-capitalize">${v['emri_veren']}</strong> kişisi tarafından <strong>${v['is_emri']}</strong> isminde bir iş emri eklendi. <br>
+                                    <small class="text-muted">${zaman}</small>
+                                </div>
+                            </div>
+                        </li> `);
+            bildirimsayisi++;
+          }else if(v['tur'] == "oncelik" && "{{request.user.birim}}" == "Planlama"){
+            document.getElementById('bildirim').insertAdjacentHTML('afterbegin',`<li>
+                            <div class="dropdown-messages-box">
+                                <a class="dropdown-item float-left">
+                                    <h3><i class="fa fa-exclamation-triangle text-danger"></i></h3>
+                                </a>
+                                <div class="media-body">
+                                    İş emri önceliği sıralaması değişti.Lütfen kontrol ediniz.  <br>
+                                    <small class="text-muted">${zaman}</small>
+                                </div>
+                            </div>
+                        </li>`);
+            bildirimsayisi++;
+          }else if(v['tur'] == "baslangic" && "{{request.user.birim}}" == "Planlama"){
+            document.getElementById('bildirim').insertAdjacentHTML('afterbegin',`<li>
+                            <div class="dropdown-messages-box">
+                                <a class="dropdown-item float-left">
+                                    <h3><i class="fa fa-exclamation-triangle text-danger"></i></h3>
+                                </a>
+                                <div class="media-body">
+                                    <strong class="text-capitalize">${v['kisi']}</strong> isimli personel tarafından bir iş emrine başlandı.  <br>
+                                    <small class="text-muted">${zaman}</small>
+                                </div>
+                            </div>
+                        </li> `);
+            bildirimsayisi++;
+          }else if(v['tur'] == "bitis" && "{{request.user.birim}}" == "Planlama"){
+            document.getElementById('bildirim').insertAdjacentHTML('afterbegin',`<li>
+                            <div class="dropdown-messages-box">
+                                <a class="dropdown-item float-left">
+                                    <h3><i class="fa fa-exclamation-triangle text-danger"></i></h3>
+                                </a>
+                                <div class="media-body">
+                                    <strong class="text-capitalize">${v['kisi']}</strong> isimli personel tarafından bir iş emri bitirildi. <br>
+                                    <small class="text-muted">${zaman}</small>
+                                </div>
+                            </div>
+                        </li> `);
+            bildirimsayisi++;
+          }
+          if (bildirimsayisi > 0) {
+            document.getElementById('sayi').textContent = bildirimsayisi;
+            document.getElementById('sayi').style.opacity = "1";
+          }else{
+            document.getElementById('bildirim').innerHTML = `<li><p class="text-center">Gösterilecek bildirim yok</p></li>`
+          }
+
+        })
+      })
+    </script>
+
+</body>
+
+</html>

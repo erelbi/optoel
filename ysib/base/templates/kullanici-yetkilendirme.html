@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="{% static 'css/bootstrap-tables.css' %}" rel="stylesheet">
+<style type="text/css">
+  .btn-group button{
+    background-color: #1ab394;
+    border-color: #1ab394;
+  }
+  .caret{
+  display: none;
+}
+</style>
+{% if mac == 'Linux' %}
+<style>
+  .caret{
+    display: none !important;
+  }
+  .simple-keyboard {
+    /*max-width: 850px;*/
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+    width: 100%;
+    opacity: 0;
+    transition: margin-top 0s ease-in-out 0.3s, opacity 0.3s ease-in-out;
+    z-index:9999;
+    height: 230px;
+    display: none;
+}
+.show-keyboard {
+  display : block;
+  opacity: 1;
+  margin-top: 0;
+}
+.hg-button span {
+  pointer-events: none;
+}
+</style>
+<link href="{% static 'css/skeyboard.css' %}" rel="stylesheet">
+{% endif %}
+{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    Kullanıcı Ekleme
+  </div>
+  <div class="card-body">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+<form action="" method="POST">
+  {% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">{{ form.username|as_crispy_field }}</div>
+    <div class="form-group col-md-6 mb-0">{{ form.first_name|as_crispy_field }}</div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-4 mb-0">{{ form.last_name|as_crispy_field }}</div>
+    <div class="form-group col-md-4 mb-0">{{ form.birim|as_crispy_field }}</div>
+    <div class="form-group col-md-4 mb-0">{{ form.grup|as_crispy_field }}</div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6 mb-0">{{ form.password1|as_crispy_field }}</div>
+    <div class="form-group col-md-6 mb-0">{{ form.password2|as_crispy_field }}</div>
+  </div>
+  <button type="submit" class="btn btn-success">Kaydet</button>
+</form>
+</div>
+</div>
+
+
+<div class="card mt-4">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    Kullanıcılar Tablosu
+  </div>
+  <div class="card-body">
+    <table id="kullaniciTablosu"
+      data-show-export="true"
+      data-click-to-select="true"
+      data-show-columns="true"
+      data-toggle="table"
+      data-search="true"
+      data-filter-control="true"
+      data-toolbar="#toolbar">
+    <thead>
+      <tr>
+         <th data-field="isim" data-filter-control="select" data-sortable="true">İsim</th>
+         <th data-field="soyisim" data-filter-control="select" data-sortable="true">Soyisim</th>
+         <th data-field="kullanici" data-filter-control="select" data-sortable="true">Kullanıcı adı</th>
+         <th data-field="tarih" data-filter-control="select" data-sortable="true">Kayıt Tarihi</th>
+         <th data-field="grup" data-filter-control="select" data-sortable="true">Yetki Grubu</th>
+         <th data-field="birim" data-filter-control="select" data-sortable="true">Birim</th>
+         <th data-field="operasyonlar" data-events="operateEvents" data-formatter="operasyonFormatter">Operasyonlar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for kullanici in kullanicilar %}
+        <tr>
+          <td>{{ kullanici.first_name }}</td>
+          <td>{{ kullanici.last_name }}</td>
+          <td>{{ kullanici.username }}</td>
+          <td>{{ kullanici.date_joined }}</td>
+          <td>{{ kullanici.grup }}</td>
+          <td>{{ kullanici.birim }}</td>
+          <td>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+</div>
+</div>
+
+<div class="modal fade kullanici-duzenle" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">Kullanıcı Düzenle</div>
+      <div class="modal-body">
+        <form action="" id="duzenleForm" method="POST" class="form-row">
+          <div class="form-group col-md-6">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="first_name">İsim</label>
+              <input type="text" class="form-control" id="first_name">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="last_name">Soyisim</label>
+              <input type="text" class="form-control" id="last_name">
+            </div>
+            <div class="form-group col-md-6">
+              <label for="grup">Yetki Grubu</label>
+              <select id="grup" class="form-control">
+                <option id="planlama" value="Yönetici" selected>Yönetici</option>
+                <option id="kalite-kontrol" value="Mühendis">Mühendis</option>
+                <option id="uretim" value="Teknisyen">Teknisyen</option>
+              </select>
+            </div>
+
+           <div class="form-group col-md-6">
+              <label for="birim">Birim</label>
+              <select id="birim" class="form-control">
+                <option id="IT" value="IT" selected>IT</option>
+                <option id="Kalite kontrol" value="Kalite kontrol">Kalite Kontrol</option>
+                <option id="Üretim" value="Üretim">Üretim</option>
+                <option id="Planlamaa" value="Planlama">Planlama</option>
+              </select>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="kapat" data-dismiss="modal">Kapat</button>
+        <button type="button" class="btn btn-primary" id="kullaniciDuzenle">Kullanıcı Bilgilerini Güncelle</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade password-reset" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">Kullanıcı Parola Reset</div>
+      <div class="modal-body">
+        <form action="" id="resetForm" method="POST" class="form-row">
+              <div class="form-group col-md-6">
+                <label for="username">Password</label>
+                <input type="password" class="form-control" id="password1">
+              </div>
+              <div class="form-group col-md-6">
+                <label for="username">Confirm Password</label>
+                <input type="password" class="form-control" id="password2">
+              </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="kapat2" data-dismiss="modal">Kapat</button>
+        <button type="button" class="btn btn-primary" id="parolaReset">Kullanıcı Parolası Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block script %}
+<script>
+  document.getElementById('hint_id_password1').remove();
+  document.getElementById('hint_id_password2').remove();
+  for (let i = 0; i < document.getElementsByClassName('textinput').length; i++) {
+    const element = document.getElementsByClassName('textinput')[i];
+    element.setAttribute("autofocus","off")
+  }
+</script>
+
+<script src="{% static 'js/bootstrap-tables.js' %}"></script>
+<script>
+
+  var $table = $('#kullaniciTablosu')
+  var $button = $('#kullaniciBtn')
+
+  $(function() {
+    $button.click(function () {
+      $table.bootstrapTable()
+    })
+  })
+
+</script>
+{% if mac == 'Linux' %}
+<script src="{% static 'js/skeyboard.js' %}"></script>
+<script>
+let Keyboard = window.SimpleKeyboard.default;
+let selectedInput;
+
+let keyboard = new Keyboard({
+  onChange: input => onChange(input),
+  onKeyPress: button => onKeyPress(button)
+});
+
+document.querySelectorAll(".textinput").forEach(input => {
+  input.addEventListener("focus", onInputFocus);
+  // Optional: Use if you want to track input changes
+  // made without simple-keyboard
+  input.addEventListener("input", onInputChange);
+});
+
+
+var els = document.querySelectorAll(".textinput");
+for (let i = 0; i < els.length; i++) {
+  const element = els[i];
+  element.addEventListener("focus", event => {
+    //keyboard.keyboardDOM.style.top = window.scrollY + screen.availHeight - 330 + "px";
+    keyboard.keyboardDOM.classList.add("show-keyboard");
+  });
+}
+
+document.addEventListener("click", event => {
+  if (
+    // Target is not keyboard element
+    event.target !== keyboard.keyboardDOM &&
+    // Target is not the input
+    !event.target.classList.contains('textinput') &&
+    // Target is not a keyboard button
+    !event.target.classList.contains("hg-button")
+  ) {
+    hideKeyboard();
+  }
+});
+
+function onInputFocus(event) {
+  selectedInput = `#${event.target.id}`;
+
+  keyboard.setOptions({
+    inputName: event.target.id
+  });
+}
+
+function onInputChange(event) {
+  keyboard.setInput(event.target.value, event.target.id);
+}
+
+function onChange(input) {
+  console.log("Input changed", input);
+  document.querySelector(selectedInput || ".textinput").value = input;
+}
+
+function onKeyPress(button) {
+  console.log("Button pressed", button);
+
+  /**
+   * Shift functionality
+   */
+  if (button === "{lock}" || button === "{shift}") handleShiftButton();
+}
+
+function handleShiftButton() {
+  let currentLayout = keyboard.options.layoutName;
+  let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+  keyboard.setOptions({
+    layoutName: shiftToggle
+  });
+}
+
+function showKeyboard() {
+  keyboard.keyboardDOM.classList.add("show-keyboard");
+}
+
+function hideKeyboard() {
+  keyboard.keyboardDOM.classList.remove("show-keyboard");
+}
+
+</script>
+{% endif %}
+
+<script>
+
+  function operasyonFormatter(){
+    return [
+      '<button class="duzenle btn text-center btn-primary ml-4 btn-sm" data-toggle="modal" data-target=".kullanici-duzenle" href="javascript:void(0)" title="Düzenle">',
+      '<i class="fa fa-edit"></i>',
+      '</button>  ',
+      '<button class="sil btn btn-danger text-center ml-2 btn-sm" title="Sil">',
+      '<i class="fa fa-trash"></i>',
+      '</button>',
+      '<button class="reset btn btn-danger text-center ml-2 btn-sm" title="Parola Reset" data-toggle="modal" data-target=".password-reset" href="javascript:void(0)" >',
+      '<i class="fa fa-key"></i>',
+      '</button>'
+    ].join('')
+  }
+
+</script>
+
+<script>
+window.operateEvents = {
+    'click .reset': function(e, value, row, index) {
+        let username = e.currentTarget.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML;
+
+        eskisi2 = username;
+
+        $('#parolaReset').on('click', (e) => {
+            document.getElementById("kapat2").click();
+            Swal.showLoading();
+            e.preventDefault();
+            let veri = {
+                "username": eskisi2,
+                "ps1": document.getElementById('password1').value,
+                "ps2": document.getElementById('password2').value
+            }
+            $.ajax({
+                type: "POST",
+                url: 'passwordreset',
+                data: veri,
+                success: function(r) {
+
+                    Swal.fire(
+                        'Güncellendi!',
+                        `${eskisi2} isimli kullanıcı parolası başarılya güncellendi.`,
+                        'success'
+                    );
+                },
+                error(err) {
+                    document.getElementById("kapat").click();
+                    Swal.fire(
+                        'Hata!',
+                        `${err}`,
+                        'error'
+                    )
+                }
+            });
+        })
+
+    },
+
+    'click .sil': function(e, value, row, index) {
+        e.preventDefault();
+        let username = e.currentTarget.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.innerText;
+
+        let veri = {
+            "username": username
+        }
+        Swal.fire({
+            title: "Emin misiniz?",
+            text: `${username} isimli kullanıcıyı siliyorsunuz`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            cancelButtonText: "İptal",
+            confirmButtonText: 'Evet, sil!'
+        }).then((result) => {
+            Swal.showLoading();
+            if (result.value) {
+                $.ajax({
+                    type: "POST",
+                    url: 'kullanicisil',
+                    data: veri,
+                    success: function(r) {
+                        Swal.fire(
+                            'Silindi!',
+                            'Kullanıcı başarılya silindi.',
+                            'success'
+                        )
+                    },
+                    error(err) {
+                        Swal.fire(
+                            'Hata!',
+                            `${err}`,
+                            'error'
+                        )
+                    }
+                });
+            }
+        })
+    },
+
+    'click .duzenle': function(e, value, row, index) {
+        let username = e.currentTarget.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML;
+        let veri = {
+            "username": username
+        }
+        eskisi = username;
+        $.ajax({
+            type: "POST",
+            url: 'kullanicijson',
+            data: veri,
+            success: function(json) {
+                for (key in json[0]) {
+                    if (document.getElementById(key).tagName == "INPUT") {
+                        document.getElementById(key).value = json[0][key];
+                    } else {
+                        document.getElementById(key).options[json[0][key]].selected = true;
+                    }
+                }
+            },
+            error(err) {
+                console.log;
+                (err);
+            }
+        });
+    }
+
+}
+</script>
+<script>
+$('#kullaniciDuzenle').on('click', () => {
+    Swal.showLoading();
+    let bilgi = {};
+    bilgi.first_name = document.getElementById('first_name').value;
+    bilgi.last_name = document.getElementById('last_name').value;
+    bilgi.username = document.getElementById('username').value;
+    bilgi.grup = $("#grup option:selected").val() || "kalite-kontrol";
+    bilgi.birim = $("#birim option:selected").val() || "kalite-kontrol";
+    bilgi.eskisi = eskisi;
+    let b = JSON.stringify(bilgi);
+    veri = {
+        "bilgi": b,
+    }
+    $.ajax({
+        type: "POST",
+        url: 'kullaniciduzelt',
+        data: veri,
+        success: function(r) {
+            document.getElementById("kapat").click();
+            Swal.fire(
+                'Güncellendi!',
+                'Kullanıcı bilgileri başarılya güncellendi.',
+                'success'
+            );
+        },
+        error(err) {
+            Swal.fire(
+                'Hata!',
+                `${err}`,
+                'error'
+            )
+        }
+    });
+})
+</script>
+{% endblock %}

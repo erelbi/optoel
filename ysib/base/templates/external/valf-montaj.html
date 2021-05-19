@@ -1,0 +1,334 @@
+{% load static %}
+{% block manometre %}
+<hr>
+
+<div class="row">
+  <form class="col-md-6" id="ValfMontajForm">
+    <div class="form-group col-md-3">
+      <label for="durum">İş Emri Şeçin</label>
+        <select id="acikemirlerselect_vm" required>
+          <option value="" disabled selected>Seçin</option>
+          {% for emir in acikemirleri %}
+            <option value="{{ emir.is_emri }}">{{ emir.is_emri }} </option>
+          {% endfor %}
+        </select>
+      </div>
+
+
+    <div class="form-inline">
+      <div class="form-group mb-2 col-md-12 col-lg-4" style="align-items:baseline;">
+        <span>Alt Nipel Lot No:</span>
+      </div>
+      <div class="mx-sm-3 mb-2">
+        <input type="text" class="form-control" id="altnipelno" onkeyup="kontrolEt('altnipel',this.value,this)">
+        <p class="invalid-feedback">
+          <strong>Bu seri no ile eşleşen bir alt nipel yok!</strong>
+        </p>
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group mb-2 col-md-12 col-lg-4" style="align-items:baseline;">
+        <span>Bakır Membran Lot No:</span>
+      </div>
+      <div class="mx-sm-3 mb-2">
+        <input type="text" class="form-control" id="bakirmembranno" onkeyup="kontrolEt('bakirmembran',this.value,this)">
+        <p class="invalid-feedback">
+          <strong>Bu no ile eşleşen bir bakır membran yok!</strong>
+        </p>
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group mb-2 col-md-12 col-lg-4" style="align-items:baseline;">
+        <span>Üst Nipel Lot No:</span>
+      </div>
+      <div class="mx-sm-3 mb-2">
+        <input type="text" class="form-control" id="ustnipelno" onkeyup="kontrolEt('ustnipel',this.value,this)">
+        <p class="invalid-feedback">
+          <strong>Bu seri no ile eşleşen bir üst nipel yok!</strong>
+        </p>
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group mb-2 col-md-12 col-lg-4" style="align-items:baseline;">
+        <span>Manometre Seri No:</span>
+      </div>
+      <div class="mx-sm-3 mb-2">
+        <input type="text" class="form-control" id="manometreno" onkeyup="kontrolEt('manometre',this.value,this)">
+        <p class="invalid-feedback">
+          <strong>Bu no ile eşleşen bir manometre yok!</strong>
+        </p>
+      </div>
+    </div>
+    <div class="form-inline">
+      <div class="form-group mb-2 col-md-12 col-lg-4" style="align-items:baseline;">
+        <span>Basınç Anahtarı Seri No:</span>
+      </div>
+      <div class="mx-sm-3 mb-2">
+        <input type="text" class="form-control" id="basincanahtarino" onkeyup="kontrolEt('basinc',this.value,this)">
+        <p class="invalid-feedback">
+          <strong>Bu no ile eşleşen bir basınç anahtarı yok!</strong>
+        </p>
+      </div>
+    </div>
+</form>
+<div class="col-md-6">
+  
+
+<div id="qrcode" style="display:none;"></div>
+</div>
+</div>
+<hr>
+<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kurlenmeSubmit2">KAYDET</button></div>
+
+<script id="cookie">
+  //https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
+  function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+function eraseCookie(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';
+}
+</script>
+
+ 
+
+
+<script>
+  window.addEventListener('hashchange',function(){
+    if(location.hash == '#kurlenme'){
+       if(location.hash == "#kurlenme" && (getCookie("gecerliisemri") == null || !getCookie("gecerliisemri"))){
+    var acikisemirlericek = new Promise(function(resolve,reject){
+
+      $.ajax(
+          {
+            type: "GET",
+            url: '/acikisemirleri',
+            success: function (x){
+              acikisemirleri = x;
+              resolve(acikisemirleri);
+            },
+            error(err){
+              console.log;(err);
+            }
+          }
+        );
+    })
+
+    acikisemirlericek.then(function(res){
+      Swal.fire({
+        title: 'İş emri',
+        input: 'select',
+        inputOptions: acikisemirleri,
+        inputPlaceholder: 'İş emri seç',
+        allowOutsideClick: false
+      })
+      .then(function(res){
+        return acikisemirleri[res.value];
+      })
+
+      .then(function(res){
+      console.log('local',res)
+        setCookie("gecerliisemri",res,360);
+      })
+      .then(function(res){
+        //document.getElementById('gecerliisemri').value =  getCookie("gecerliisemri");
+      })
+    })
+}
+
+    }
+  })
+</script>
+<script type="text/javascript">
+  let kontrol = "";
+  document.getElementById('kurlenmeSubmit2').disabled = true;
+
+  function isFull(){
+     let ins = document.querySelectorAll('#ValfMontajForm input[type="text"]');
+     for (var i = 0; i < ins.length; i++) {
+       if(!ins[i].value){
+        return false;
+       }
+     }
+     return true;
+  }
+  function kontrolEt(tur,veri,el){
+            let data = {
+              "tur" : tur,
+              "veri" : veri
+            }
+            $.ajax(
+                {
+                  type: "POST",
+                  url: '/kontrolEt',
+                  data : data,
+                  success: function (x){
+                    console.log(x,el);
+                    if(x == 'NO'){
+                      el.parentElement.lastElementChild.style.display = "block";
+                      kontrol = "";
+                    }else{
+
+                      kontrol = "OK";
+                      el.parentElement.lastElementChild.style.display = "none";
+                      if(isFull() && kontrol=="OK"){
+                        document.getElementById('kurlenmeSubmit2').disabled = false;
+                      }
+                    }
+                  },
+                  error(err){
+                    console.log(err);
+                  }
+                }
+              );
+  }
+</script>
+<script src="{% static 'js/qr.js' %}"></script>
+<script>
+
+</script>
+
+
+<script>
+
+  document.getElementById('kurlenmeSubmit2').addEventListener('click',(e)=>{
+  
+    e.preventDefault();
+   
+ 
+    let gecerliisemri = document.getElementById("acikemirlerselect_vm").value;
+
+    let altnipelno = document.getElementById('altnipelno').value;
+    let bakirmembranno = document.getElementById('bakirmembranno').value;
+    let ustnipelno = document.getElementById('ustnipelno').value;
+    let manometreno = document.getElementById('manometreno').value;
+    let basincanahtarino = document.getElementById('basincanahtarino').value;
+    
+    let veri = Array(6);
+    veri[0] = gecerliisemri;
+    veri[1] = altnipelno;
+    veri[2] = bakirmembranno;
+    veri[3] = ustnipelno;
+    veri[4] = manometreno
+    veri[5] = basincanahtarino;
+    veri = JSON.stringify(veri);
+    console.log(veri)
+   
+    let data = {
+      tur : 'kurlenme',
+      veri : veri
+    }
+
+   let  vsn = '-----';
+     $.ajax({
+          type: "POST",
+          url: '/uretimkontrol',
+          data : data,
+          success: function (x){
+            vsn=x
+            
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+           },
+          error(err){
+            console.log;(err);
+          }
+        }
+
+      );
+ 
+            
+
+
+
+    var qrcode = new QRCode("qrcode",{
+      width:"80",
+      height:"80",
+    });
+    qrcode.clear();
+    qr = qrcode.makeCode(vsn,gecerliisemri);
+    let pdf = window.open("");
+    setTimeout(()=>{
+      pdf.document.write(`<html><head><title></title>
+      <style>*{font-family:Arial;font-size:10px;margin:0;}@media print {
+         @page {
+            size:auto;
+            margin: 1mm;
+            padding: 0;
+         },
+         html,body{
+            margin:0;
+            padding:0;
+         }
+    }</style>
+      </head><body style="border:1px solid #000;border-radius:10px;padding:6px;width:54mm;height:52mm;">
+      <ul style="list-style:none;margin:0;padding:0;margin-bottom:24px;">
+        <li><b>Valf No:</b>${vsn}</li>
+        <li><b>İş Emir No:</b>  ${ gecerliisemri}</li>
+      </ul>
+      <br><img src="${qrcode['_oDrawing']['_elImage']['src']}"><img style="margin-left:40px;" width="80" src=" data:image/png;base64,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">
+      </body></html>`);
+    },200)
+
+    setTimeout(()=>{
+      pdf.print();
+    },300)
+
+
+  })
+</script>
+
+<script>
+
+  // document.getElementById('ValfMontajForm').addEventListener('click',(e)=>{
+  //     VM_BackendConnectionTest();
+  // });
+  
+
+  function VM_BackendConnectionTest()
+  {
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/VM_BackendConnectionTest',
+          timeout: 3000,
+          success: function (x){
+              if(x == "Connected"){
+                toastr["success"]("Backend connection test successful.");
+              }
+          },
+          error: function(jqXHR, textStatus){
+              if(textStatus === 'timeout'){
+                  toastr["warning"]("Backend connection test timed out");
+              }
+              else if(textStatus === 'error'){
+                  toastr["warning"]("Backend connection test failure.");
+              }
+              
+              console.log(jqXHR);
+          }
+      });
+  }
+
+</script>
+
+{% endblock %}

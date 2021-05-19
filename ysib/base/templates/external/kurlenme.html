@@ -1,0 +1,324 @@
+{% load static %}
+{% block manometre %}
+<hr>
+
+
+<div class="row">
+  <form class="col-md-6" id="kurlenmeForm">
+
+    <div class="form-group col-md-3">
+      <label for="durum">İş Emri Şeçin</label>
+        <select id="acikemirlerselect_vmk"  onchange="acikemirlerselect_change_func()"  required >
+          <option value="" disabled selected>Seçin</option>
+          {% for emir in acikemirleri %}
+            <option value="{{ emir.is_emri }}">{{ emir.is_emri }} </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <p id="demo">No log</p>
+
+      <div class="card mt-4">
+        
+        <div class="card-header" style="color: #c7ae3c;background-color: #d7e9fa; font-size: 20px;">
+          İş emri valf tablosu
+        </div>
+
+        <div class="card-body">
+          <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Valf No</th>
+                <th scope="col">Parti No</th>
+              </tr>
+            </thead>
+            <tbody id="oncelikForm">
+              <!--
+                bu tablonun satırları aşağıdaki ajax call ile dolar.table id  ile bulunur bu tablo.
+              -->
+              
+            </tbody>
+          </table>
+        </div>
+        </div>
+        <div>
+          <button type="button" id="btn-bm-bitir" class="btn btn-success" style="height: 34px;margin-top: 20px;width: 100px;" onclick="baslat()">BAŞLAT</button>
+        
+        </div>
+</form>
+
+
+
+<div class="card mt-8">
+        
+  <div class="card-header" style="color: #c7ae3c;background-color: #d7e9fa; font-size: 20px;">
+    Valf Kürlenme Tablosu
+  </div>
+
+  <div class="card-body">
+    <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
+      <thead>
+        <tr>
+          <th scope="col">Parti No</th>
+          <th scope="col">Valf Seri Numaraları</th>
+          <th scope="col">Kalan Süre</th>
+        </tr>
+      </thead>
+      <tbody id="oncelikForm">
+        {% for kurlenme in kurlenmes %}
+        <tr >{{kurlenme.valf.parti_no}}        </tr>
+        <tr >{{kurlenme.valf.id}}        </tr>
+        <tr ><span class="badge badge-primary badge-pill">{{kurlenme.kurlenme_bitis|timeuntil:now}}</span></tr>
+ 
+        {% endfor %}
+        
+      </tbody>
+    </table>
+  </div>
+  </div> 
+
+ 
+ 
+</div>
+<hr>
+ 
+<script id="cookie">
+  //https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
+  function setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+function eraseCookie(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';
+}
+</script>
+
+
+ 
+
+
+<script>
+
+  function acikemirlerselect_change_func() {
+    console.log("acikemirlerselect_change_func")
+
+
+    var acikemirlerselectedValue = document.getElementById("acikemirlerselect_vmk").value;
+     
+    let valfler="-";
+    var is_emir_valfleri_geldi_mi = new Promise(function(resolve,reject){
+     
+    console.log("acikemirlerselectedValue",acikemirlerselectedValue)
+     let data = {
+             "is_emri_id" : acikemirlerselectedValue 
+           }
+      $.ajax(
+          {
+            type: "POST",
+            url: '/is_emri_valfleri',
+            data : data,
+            success: function (x){
+
+            valfler = x;
+            resolve(valfler);
+            console.log("vlferl",valfler)
+            
+            },
+            error(err){
+            console.log;(err);
+            }
+            }
+        );
+        console.log("vvvvv2",valfler)
+
+  
+
+  })
+  console.log("vvvvv3",valfler)
+
+
+  is_emir_valfleri_geldi_mi.then(function(res){
+
+
+    console.log("is_emir_valfleri_geldi_mi")
+
+    //önceki iş emrinin valf rowlarını temizle
+    $("#valflerTableId tbody tr").remove();
+    
+    console.log("vvvvv4",valfler)
+    //yeni seçilen  iş emrinin valf rowlarını olutşur
+
+    for (var i = 0; i < valfler.length; i++){
+        //We first declare the variables for each <td> we need          
+        var valf = valfler[i]
+        valf_id=valf['id']
+        parti_no=valf['parti_no']
+        check_box=' <input type="checkbox" checked disabled id="' + valf_id +' "  ">'
+
+        if (parti_no == null) { 
+          parti_no = "-";
+          check_box=' <input type="checkbox" id="' + valf_id +' "  ">'
+
+        }
+        
+
+        //We then append them to a string in html fashion
+
+        added_row =  
+        '<tr>'
+          + '<td>' + check_box+  '</td>'
+          + '<td>' + valf_id+  '</td>'
+        + '<td>' + parti_no+  '</td>'
+         + '</tr>'
+        //To finally append this long string to your table through it's ID:
+        $('#valflerTableId').append(added_row)
+        };
+ 
+    })
+
+
+}
+</script>
+ 
+
+<script>
+
+  function baslat()
+  {
+  
+    valflere_parti_no_ata()
+
+  
+
+
+
+  }
+
+
+  function valflere_parti_no_ata()
+  {
+    
+   var valfler=  $("#valflerTableId tbody tr input:checked") 
+   console.log("valfler",valfler)
+   let veri = Array(valfler.length);
+
+   for(i=0;i<valfler.length;i++)
+   {
+
+    veri[i]=valfler[i].id
+   }
+
+   console.log("veri",veri)
+   veri = JSON.stringify(veri);
+
+
+        
+  
+   var acikemirlerselectedValue = document.getElementById("acikemirlerselect_vmk").value;
+
+   let data = {
+             "valfler_id" : veri ,
+             "is_emri" : acikemirlerselectedValue 
+
+           }
+           console.log("acikemirlerselectedValue",acikemirlerselectedValue)
+      $.ajax(
+          {
+            type: "POST",
+            url: '/valf_parti_no_ata',
+            data : data,
+            success: function (x){
+            acikemirlerselect_change_func() 
+
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Parti oluşturuldu ve kürlenme başlatıldı(yaaniii sayılır:))!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+                  error(err){
+                    console.log(err);
+                  }
+            }
+        );
+        console.log("vvvvv2",valfler)
+  }
+  
+  
+  
+  </script>
+
+
+
+<script>
+  window.addEventListener('hashchange',function(){
+    if(location.hash == '#kurlenme'){
+       if(location.hash == "#kurlenme" && (getCookie("gecerliisemri2") == null || !getCookie("gecerliisemri2"))){
+    var acikisemirlericek2 = new Promise(function(resolve,reject){
+
+      $.ajax(
+          {
+            type: "GET",
+            url: '/acikisemirleri',
+            success: function (x){
+              acikisemirleri2 = x;
+              resolve(acikisemirleri2);
+            },
+            error(err){
+              console.log;(err);
+            }
+          }
+        );
+    })
+
+    acikisemirlericek2.then(function(res){
+      Swal.fire({
+        title: 'İş emri',
+        input: 'select',
+        inputOptions: acikisemirleri2,
+        inputPlaceholder: 'İş emri seç',
+        allowOutsideClick: false
+      })
+      .then(function(res){
+        return acikisemirleri2[res.value];
+      })
+
+      .then(function(res){
+      console.log('local',res)
+        setCookie("gecerliisemri2",res,360);
+      })
+      .then(function(res){
+        document.getElementById('gecerliisemri2').value =  getCookie("gecerliisemri2");
+      })
+    })
+}
+
+    }
+  })
+</script>
+ 
+<script src="{% static 'js/qr.js' %}"></script>
+<script>
+
+</script>
+
+
+ 
+{% endblock %}

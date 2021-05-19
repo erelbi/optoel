@@ -1,0 +1,147 @@
+{% load static %}
+{% block manometre %}
+<style>
+  .gerisayim{
+    list-style: none;
+    display: block;
+  }
+  .gerisayim li{
+    display: inline-block;
+    padding: 10px;
+    background: lightgray;
+    font-size: 24px;
+  }
+  .glyphicon-ok{
+    float: right;
+    color: green;
+  }
+  .glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+    float: right;
+  }
+  #adimlar li span {
+    float: right;
+
+  }
+  @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+  }
+
+  @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+  }
+</style>
+<div class="row">
+  <div class="row pl-4 col-md-10">
+    <button type="submit" class="btn btn-primary mb-2" style="height: 34px" id="">Başlat</button>
+  </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-7">
+        <form class="col-md-12">
+          <div class="form-inline">
+              <div class="form-group mb-2 col-lg-4 col-md-12">
+                <span>Etiket Seri Numarası :</span>
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="etiket_seri_no">
+              </div>
+            </div>
+
+            <div class="form-inline">
+              <div class="form-group mb-2 col-lg-4 col-md-12">
+                <span>Valf Seri Numarası :</span>
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="vsno">
+              </div>
+            </div>
+
+            <div class="form-inline">
+              <div class="form-group mb-2 col-lg-4 col-md-12">
+                <span>Fünye Seri Numarası :</span>
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="fsn">
+              </div>
+            </div>
+
+            <div class="form-inline">
+              <div class="form-group mb-2 col-lg-4 col-md-12">
+                <span>Fünye Seri Omaj :</span>
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="funye_seri_omaj">
+              </div>
+            </div>
+
+            <div class="form-inline">
+              <div class="form-group mb-2 col-lg-4 col-md-12">
+                <span>Basınç Anahtarı Omaj :</span>
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <input type="text" class="form-control" id="basinc_anahtari_omaj">
+              </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="col-md-5">
+        <h3 class="text-center" style="text-indent: -106px;">Ağırlık</h3>
+        <div class="indicator-cont" style="padding:0 10px;width:50%;margin:0 26px 0;"><span class="indicator" id="azotIndicator">00</span><span class="birim">kg</span></div>
+    </div>
+</div>
+<hr>
+<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetFinalMontaj">KAYDET</button></div>
+<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'js/sweetalert2.min.js' %}"></script>
+
+
+
+<script>
+    document.getElementById('kaydetFinalMontaj').addEventListener('click',function(e){
+    e.preventDefault();
+    Swal.showLoading();
+    let veri = Array(5);
+
+    veri[0] = document.getElementById("etiket_seri_no").value;
+    veri[1] = document.getElementById("vsno").value;
+    console.log('etiket_seri_no', veri[0])
+    console.log('vsno',veri[1])
+    veri[2] = document.getElementById("fsn").value;
+     console.log('fsn',veri[2])
+    veri[3] = document.getElementById("funye_seri_omaj").value;
+      console.log('funye_seri_omaj',veri[3])
+    veri[4] = document.getElementById("basinc_anahtari_omaj").value;
+       console.log('basinc_anahtari_omaj',veri[4])
+    veri = JSON.stringify(veri);
+
+    let data = {
+      tur : 'finalmontaj',
+      veri : veri
+    }
+    $.ajax({
+          type: "POST",
+          url: '/uretimkontrol',
+          data : data,
+          success: function (x){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Final montaj başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  });
+</script>
+
+{% endblock %}

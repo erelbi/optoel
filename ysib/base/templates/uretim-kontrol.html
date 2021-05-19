@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<style>
+
+.tab-wrapper {
+  width : 100%;
+}
+.tab-menu{
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.tab-menu li {
+  position:relative;
+  background-color: #fff;
+  color:#000;
+  display: inline-block;
+  cursor:pointer;
+  z-index:0;
+}
+.tab-menu li a{
+  padding: 10px;
+  display: block;
+}
+
+.tab-menu li:hover {
+  color:#000;
+}
+
+.tab-menu li.active {
+  color:#000;
+  opacity: 1;
+  border:1px solid rgba(0, 0, 0, .3);
+  border-bottom: 2px solid #1ab394;
+}
+
+.tab-menu li.active:hover {
+  color:#000;
+}
+
+.tab-content>div {
+  background-color: #fff;
+  box-sizing:border-box;
+  width: 100%;
+  padding: 10px;
+  min-height:200px;
+  border-width: 0px 1px 1px;
+  border-color: rgba(0, 0, 0, .3);
+  border-style: solid;
+  font-weight: 700;
+  font-size: 15px;
+}
+.wrapper-content{
+  padding-right: 0;
+  padding-left: 0;
+}
+</style>
+<style>
+  .simple-keyboard {
+    /*max-width: 850px;*/
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+    width: 100%;
+    opacity: 0;
+    transition: margin-top 0s ease-in-out 0.3s, opacity 0.3s ease-in-out;
+    z-index:9999;
+    height: 230px;
+    display: none;
+}
+.show-keyboard {
+  display : block;
+  opacity: 1;
+  margin-top: 0;
+}
+.hg-button span {
+  pointer-events: none;
+}
+</style>
+<link href="{% static 'css/skeyboard.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{{ip}}
+<div class="tab-wrapper">
+
+    <ul class="tab-menu">
+      {% if ip == '192.168.2.10' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <li class="active"><a href="#valf-montaj">Valf Montaj</a></li>
+      <li><a href="#kurlenme">Kürlenme</a></li>
+      {% endif %}
+      {% if ip == '192.168.2.11' or ip == '192.168.2.39'  or ip == '127.0.0.1' %}
+      <li><a href="#valf-test">Valf Test</a></li>
+      {% endif %}
+      {% if ip == '192.168.2.12' or ip == '192.168.2.39' or ip == '127.0.0.1'  %}
+      <li><a href="#valf-test">Valf Gövde</a></li>
+      {% endif %}
+      {% if ip == '192.168.2.13' or ip == '192.168.2.39' or ip == '127.0.0.1'  %}
+      <li><a href="#fm200">FM200 & Azot Dolum</a></li>
+      {% endif %}
+      {% if ip == '192.168.2.14' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <li><a href="#havuz-test">Havuz Test</a></li>
+      {% endif %}
+      {% if ip == '192.168.2.15' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <li><a href="#final-montaj">Final Montaj</a></li>
+      {% endif %}
+    </ul>
+
+    <div class="tab-content">
+      <!--giriş kalite kontrol-->
+      {% if ip == '192.168.2.10' or ip == '192.168.2.39' or ip == '127.0.0.1'  %}
+      <div>
+        {% include 'external/valf-montaj.html' %}
+      </div>
+      <div>
+        {% include 'external/kurlenme.html' %}
+      </div>
+      {% endif %}
+      {% if ip == '192.168.2.11' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <div>
+        {% include 'external/valf-test.html' %}
+      </div>
+      {% endif %}
+      {% if ip == '192.168.2.12' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <div>
+        {% include 'external/valf-govde.html' %}
+      </div>
+      {% endif %}
+      {% if ip == '192.168.2.13' or ip == '192.168.2.39'  or ip == '127.0.0.1' %}
+      <div>
+        {% include 'external/fm200AzotDolumu.html' %}
+      </div>
+      {% endif %}
+      {% if ip == '192.168.2.14' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
+      <div>
+        {% include 'external/havuzTest.html' %}
+      </div>
+      {% endif %}
+      {% if ip == '192.168.2.15' or ip == '192.168.2.39'  or ip == '127.0.0.1' %}
+      <div>
+        {% include 'external/finalMontaj.html' %}
+      </div>
+      {% endif %}
+    </div><!-- //tab-content -->
+
+  </div><!-- //tab-wrapper -->
+ 
+
+  
+
+  
+
+{% endblock %}
+{% block script %}
+
+<script src="{% static 'js/skeyboard.js' %}"></script>
+<script>
+
+let Keyboard = window.SimpleKeyboard.default;
+let selectedInput;
+
+let keyboard = new Keyboard({
+  onChange: input => onChange(input),
+  onKeyPress: button => onKeyPress(button)
+});
+
+document.querySelectorAll(".textinput").forEach(input => {
+  input.addEventListener("focus", onInputFocus);
+  // Optional: Use if you want to track input changes
+  // made without simple-keyboard
+  input.addEventListener("input", onInputChange);
+});
+
+
+var els = document.querySelectorAll(".textinput");
+for (let i = 0; i < els.length; i++) {
+  const element = els[i];
+  element.addEventListener("focus", event => {
+    //keyboard.keyboardDOM.style.top = window.scrollY + screen.availHeight - 330 + "px";
+    keyboard.keyboardDOM.classList.add("show-keyboard");
+  });
+}
+
+document.addEventListener("click", event => {
+  if (
+    // Target is not keyboard element
+    event.target !== keyboard.keyboardDOM &&
+    // Target is not the input
+    !event.target.classList.contains('textinput') &&
+    // Target is not a keyboard button
+    !event.target.classList.contains("hg-button")
+  ) {
+    hideKeyboard();
+  }
+});
+
+function onInputFocus(event) {
+  selectedInput = `#${event.target.id}`;
+
+  keyboard.setOptions({
+    inputName: event.target.id
+  });
+}
+
+function onInputChange(event) {
+  keyboard.setInput(event.target.value, event.target.id);
+}
+
+function onChange(input) {
+  console.log("Input changed", input);
+  document.querySelector(selectedInput || ".textinput").value = input;
+}
+
+function onKeyPress(button) {
+  console.log("Button pressed", button);
+
+  /**
+   * Shift functionality
+   */
+  if (button === "{lock}" || button === "{shift}") handleShiftButton();
+}
+
+function handleShiftButton() {
+  let currentLayout = keyboard.options.layoutName;
+  let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+  keyboard.setOptions({
+    layoutName: shiftToggle
+  });
+}
+
+function showKeyboard() {
+  keyboard.keyboardDOM.classList.add("show-keyboard");
+}
+
+function hideKeyboard() {
+  keyboard.keyboardDOM.classList.remove("show-keyboard");
+}
+
+</script>
+
+<script>
+$(document).ready(function() {
+
+  var $wrapper = $('.tab-wrapper'),
+      $allTabs = $wrapper.find('.tab-content > div'),
+      $tabMenu = $wrapper.find('.tab-menu li')
+
+  $allTabs.not(':first-of-type').hide();
+  $tabMenu.filter(':first-of-type').find(':first').width('100%')
+
+  $tabMenu.each(function(i) {
+    $(this).attr('data-tab', 'tab'+i);
+  });
+
+  $allTabs.each(function(i) {
+    $(this).attr('data-tab', 'tab'+i);
+  });
+
+  $tabMenu.on('click', function() {
+
+    var dataTab = $(this).data('tab'),
+        $getWrapper = $(this).closest($wrapper);
+
+    $getWrapper.find($tabMenu).removeClass('active');
+    $(this).addClass('active');
+
+    $getWrapper.find($allTabs).hide();
+    $getWrapper.find($allTabs).filter('[data-tab='+dataTab+']').show();
+  });
+
+});//end ready
+</script>
+
+
+
+<script src="{% static 'js/gauge.min.js' %}"></script>
+
+
+
+
+{% endblock %}

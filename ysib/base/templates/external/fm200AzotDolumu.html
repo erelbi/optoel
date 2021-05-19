@@ -1,0 +1,972 @@
+{% load static %}
+{% block fm200 %}
+<link href="{% static 'css/toastr.min.css' %}" rel="stylesheet">
+<style>
+  .gerisayim{
+    list-style: none;
+    display: block;
+  }
+  .gerisayim li{
+    display: inline-block;
+    padding: 10px;
+    background: lightgray;
+    font-size: 24px;
+  }
+  .glyphicon-ok{
+    float: right;
+    color: green;
+  }
+  .glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+    float: right;
+  }
+  #adimlar li span {
+    float: right;
+
+  }
+
+  @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+  }
+
+  @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+  }
+  .indicator-cont{
+    width: 50%;
+    /*margin:52px auto;*/
+    margin-top: 52px;
+    margin-bottom: 52px;
+    border-radius: 5px;
+    font-weight: 500;
+    border: 2px solid black;
+    /*background: ;*/
+    height: 40px;
+    line-height: 34px;
+    font-size: 18px;
+    color: #000;
+    padding: 0 6px;
+  }
+  .birim{
+    float: right;
+  }
+</style>
+<div class="row">
+  <div class="col-md-10">
+      <button type="submit" class="btn btn-primary mb-2" style="height: 34px" id="fm200_start_main">Başlat</button>
+      <button type="submit" class="btn btn-primary mb-2" style="height: 34px; margin-left: 50px" id="fm200Azot_baglan">Bağlan</button>
+  </div>
+        <div class="form-group mb-2 col-md-6">
+          <input type="text" class="form-control" id="fm200-valf-no" placeholder="Valf QR Kodu okutunuz.">
+        </div>
+  <div class="col-md-10">
+      <button type="submit" class="btn btn-primary mb-2" style="height: 34px" id="bosagirlikbtn">Boş Ağırlık&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
+      <span style="margin-right:20px;margin-left: 20px;">Ölçülen Değer : <b id="bosOlculenDeger">-</b> g</span>
+      <span id="bosAgirlikOnay">Onaylanmadı</span>
+      <span style="font-weight:100; margin-left: 20px;">(Boş Ağırlık <b id="olmasıGerekenBosAgirlik" style="font-weight: 700;">...</b> gr olmalıdır.) </span>
+  </div>
+  <div class="col-md-10">
+      <button type="submit" class="btn btn-primary mb-2" style="height: 34px" id="rekorluagirlikbtn">Rekorlu Ağırlık</button>
+      <span style="margin-right:20px;margin-left: 20px;">Ölçülen Değer : <b id="rekorluOlculenDeger">-</b> g</span>
+      <span id="rekorluAgirlikOnay">Onaylanmadı</span>
+      
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-3" style="padding-top: 24px;">
+        <button class="btn btn-success align-middle" style="padding:0;" id="fm200dolum">FM200 Dolum</button> 
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary" style="width: 70px;height: 70px;border-radius: 50%;padding:0px;" id="fm200_start">BAŞLAT</button>
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-danger" style="width: 70px;height: 70px;border-radius: 50%;font-size: 12px;padding:0;" id="fm200_acil_bitir">ACİL BİTİR</button>
+      </div>
+      <div class="col-md-4" style="padding-top: 24px;">
+        <h5 style="font-weight:700;font-size: 15px;">Ölçülen Değer : <span id="deger">-</span> g</h5>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3" style="padding-top: 60px;">
+        <button class="btn btn-success align-middle" style="padding:0;">Azot Dolum</button>
+      </div>
+      <div class="col-md-2" style="padding-top: 40px;">
+        <button class="btn btn-primary" style="width: 70px;height: 70px;border-radius: 50%;padding:0;" id="azot_start">BAŞLAT</button>
+      </div>
+      <div class="col-md-3" style="padding-top: 40px;">
+        <button class="btn btn-danger" style="width: 70px;height: 70px;border-radius: 50%;font-size: 12px;padding:0;" id="azot_acil_bitir">ACİL BİTİR</button>
+      </div>
+      <div class="col-md-4">
+        <input type="hidden" id="azotDolum" value="0">
+        <div class="indicator-cont"><span class="indicator" id="azotIndicator">00</span><span class="birim">bar</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="row">
+   <div class="col-md-12">
+    <div class="col-md-12">
+  <div class="row" style="padding-left: 10px;">
+    <h4  class="col-md-8" style="font-weight: 700;font-size: 15px;">Tüp Seri No</h4><h4 class="col-md-4" style="font-weight: 700;font-size: 15px;">Brüt Ağırlık : <b id="FM200Azot_BrütAgirlik">-</b> g</h4>
+  </div>
+  <ul class="list-group">
+       
+
+
+      {% for kurlenme in fm200kurlenmes %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">{{kurlenme.valf.id}}
+        <span class="badge badge-primary badge-pill">{{kurlenme.kurlenme_bitis|timeuntil:now}}</span>
+      </li>
+      {% endfor %}
+  </ul>
+</div>
+  </div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-md-5"><button type="button" class="btn btn-success btn-lg btn-block" id="fm200DolumEtiketi">DOLUM ETİKETİ AL</button></div>
+  <div class="col-md-3"><button type="button" class="btn btn-success btn-lg btn-block" id="fm200Submit">KAYDET</button></div>
+</div>
+<div id="qrcode" style="visibility: hidden;"></div>
+<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'js/sweetalert2.min.js' %}"></script>
+<script src="{% static 'js/qr.js' %}"></script>
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script type="text/javascript">
+  toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "999999",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
+</script>
+
+<script type="text/javascript">
+
+  let btn_FM200Azot_Baslat = document.getElementById('fm200_start_main');
+  let btn_FM200Azot_Baglan = document.getElementById('fm200Azot_baglan');
+
+  let btn_BosAgirlik = document.getElementById('bosagirlikbtn');
+  let txt_BosOlculenDeger = document.getElementById('bosOlculenDeger');
+  let btn_RekorluAgirlik = document.getElementById('rekorluagirlikbtn');
+  let txt_RekorluOlculenDeger = document.getElementById('rekorluOlculenDeger');
+
+  let txt_FM200Weight = document.getElementById("deger");
+  let txt_AzotPress = document.getElementById('azotIndicator');
+  let txt_FM200AzotBrütAgirlik = document.getElementById('FM200Azot_BrütAgirlik');
+
+  let btn_FM200_Start = document.getElementById('fm200_start');
+  let btn_FM200_AcilBitir = document.getElementById('fm200_acil_bitir');
+  let btn_Azot_Start = document.getElementById('azot_start');
+  let btn_Azot_AcilBitir = document.getElementById('azot_acil_bitir');
+
+  let btn_FM200Azot_DolumEtiketi = document.getElementById('fm200DolumEtiketi');
+  let btn_FM200Azot_Kaydet = document.getElementById('fm200Submit');
+
+  btn_FM200Azot_Baslat.disabled = true;
+  btn_BosAgirlik.disabled = true;
+  btn_RekorluAgirlik.disabled = true;
+  btn_FM200_Start.disabled = true;
+  btn_FM200_AcilBitir.disabled = true;
+  btn_Azot_Start.disabled = true;
+  btn_Azot_AcilBitir.disabled = true;
+  btn_FM200Azot_DolumEtiketi.disabled = true;
+  btn_FM200Azot_Kaydet.disabled = true;
+  btn_FM200Azot_Kaydet.disabled = false;//neval
+
+
+  var Timer_FM200AzotgetWeightPress;
+
+  var BosAgirlikClick = false;
+  var RekorluAgirlikClick = false;
+  var FM200WeightClick = false;
+
+  var BosAgirlik = 0;
+  var FM200DolumMiktari = 0;
+  var FM200ValfRenk = "";
+
+
+  //******************** FM200 & Azot Bağlan *********************
+  document.getElementById('fm200Azot_baglan').addEventListener('click', function(e){
+      let el = e.target;
+      el.disabled = true;
+      el.innerHTML = "Bağlanıyor...";
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200Azot_baglan',
+          timeout: 3000,
+          success: function(x){
+              if(x == 'success'){
+                  toastr["success"]("Tartı'ya bağlandı");
+                  el.innerHTML = "Bağlandı";
+                  btn_FM200Azot_Baslat.disabled = false;
+
+                  Timer_FM200AzotgetWeightPress = setInterval(Timer_FM200AzotgetWeightPressEventHandler, 500);
+              }
+              else if(x == 'fail'){
+                  toastr["error"]("Tartı'ya bağlanamadı!");
+                  el.disabled = false;
+                  el.innerHTML = "Bağlan";
+              }
+          },
+          error: function(jqXHR, textStatus){
+              if(textStatus === 'timeout'){
+                  toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              else if(textStatus === 'error'){
+                  toastr["warning"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              el.disabled = false;
+              el.innerHTML = 'Bağlan';
+              
+              console.log(jqXHR);
+          }
+      });
+  });
+
+
+
+  function Timer_FM200AzotgetWeightPressEventHandler(){
+    $.ajax({
+        type: "POST",
+        url: 'http://localhost:5000/fm200AzotgetWeightPress',
+        timeout: 5000,
+        success: function (x){
+            //console.log(x);
+            if(typeof x['Weight'] == "undefined"){
+                toastr["error"]("Bağlantı hatası!\nTartı'nın bağlı olduğundan emin olunuz!");
+                clearInterval(Timer_FM200AzotgetWeightPress);
+                clearInterval(Timer_FM200AzotTestStatus);
+                ButtonsDefaultState();
+            }
+            else{
+                if(x['weightUnit'] == 'g'){
+                    if(BosAgirlikClick == false){
+                        txt_BosOlculenDeger.innerText = x['Weight'];
+                    }
+
+                    if(RekorluAgirlikClick == false){
+                        txt_RekorluOlculenDeger.innerText = x['Weight'];
+                        txt_FM200Weight.innerText = x['Weight'];
+                    }
+                    else{
+                        txt_FM200Weight.innerText = x['FM200Weight'];
+                    }
+
+                    txt_FM200AzotBrütAgirlik.innerText = x['Weight'];
+                }
+                else if(x['weightUnit'] != ""){
+                    toastr["warning"]("Ağırlık birirmi değiştirildi!\nAğırlık birimi 'gram' olmalı");
+                }
+                else if(x['weightUnit'] == ""){
+                    //toastr["warning"]("Tartı açık değil! Lütefen Tartı'yı açınız");
+                    //var natify = "Tartı açık değil! Lütefen Tartı'yı açınız"; 
+                    //setInterval(function(){ toastrNotification('warning', natify); }, 10000);
+                    
+                    //toastrNotification('warning', natify);
+                }
+            }
+            
+
+            if(typeof x['Press'] == "undefined"){
+                toastr["error"]("Bağlantı hatası!\nBasınç sensörünün bağlı olduğundan emin olunuz!.");
+                clearInterval(Timer_FM200AzotgetWeightPress);
+                clearInterval(Timer_FM200AzotTestStatus);
+                ButtonsDefaultState();
+            }
+            else{
+                txt_AzotPress.innerText = x['Press'];
+            }
+
+            
+        },
+        error: function(jqXHR, textStatus){
+            if(textStatus === 'timeout'){
+                toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+            }
+            else if(textStatus === 'error'){
+                toastr["error"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+            }
+            
+            clearInterval(Timer_FM200AzotgetWeightPress);
+            clearInterval(Timer_FM200AzotTestStatus);
+            ButtonsDefaultState();
+
+            console.log(jqXHR);
+        }
+    });
+  }
+
+  function ButtonsDefaultState(){
+      btn_FM200Azot_Baglan.disabled = false;
+      btn_FM200Azot_Baglan.innerHTML = "Bağlan";
+      btn_FM200Azot_Baslat.disabled = true;
+      btn_BosAgirlik.disabled = true;
+      btn_RekorluAgirlik.disabled = true;
+      btn_FM200_Start.disabled = true;
+      btn_FM200_AcilBitir.disabled = true;
+      btn_Azot_Start.disabled = true;
+      btn_Azot_AcilBitir.disabled = true;
+      btn_FM200Azot_DolumEtiketi.disabled = true;
+      btn_FM200Azot_Kaydet.disabled = true;
+  }
+
+
+  function toastrNotification(type, notify){
+      if(type == 'success'){
+          toastr["success"](notify);
+      }
+      else if(type == 'warning'){
+          toastr["warning"](notify);
+      }
+      else if(type == 'error'){
+          toastr["error"](notify);
+      }  
+  }
+
+
+  var currentWeight = 0;
+
+  document.getElementById('fm200_start_main').addEventListener('click',function(e){
+    SetDefaultValues();
+    let valf_seri_no = document.getElementById("fm200-valf-no").value;
+
+    let data = {
+              "tur" : 'govde_kurlenme',
+              "veri" : valf_seri_no
+    }
+    $.ajax({
+          type: "POST",
+          url: '/kurlenmeKontrol',
+          data : data,
+          success: function (x){
+            console.log(x);
+            if(x == 'NO'){
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Kürlenme süresi dolmamış valf. Bekleyin!'
+              })
+              e.target.value = '';
+              reject(1);
+              return;
+            }else if(x == 'OK'){
+
+              new Promise(function(resolve,reject){
+
+                              $.ajax({
+                                  type: "POST",
+                                  url: '/getEmirNo',
+                                  data:data,
+                                  success: function (x){
+
+                                    let data = {"is_emri" : x}
+                                    resolve(data);
+                                  }
+                              });
+                              }).then(function(r){
+                                  $.ajax({
+                                      type: "POST",
+                                      url: '/tupTuru',
+                                      data:r,
+                                      success: function (x){
+
+                                        console.log('response',x)
+                                        var fields = x.split(';');
+                                        
+                                        currentWeight = fields[0];
+                                        document.getElementById('olmasıGerekenBosAgirlik').innerText = currentWeight;
+                                        
+                                        
+                                        BosAgirlik = currentWeight;
+                                        FM200DolumMiktari = fields[1];
+                                        FM200ValfRenk = fields[2];
+                                        console.log('BosAgirlik',BosAgirlik)
+                                        console.log('FM200DolumMiktari',FM200DolumMiktari)
+                                        console.log('FM200ValfRenk',FM200ValfRenk)
+
+                                        SetIdleAndFillingWeight();
+
+                                      },
+                                  });
+
+                                  /* e.target.disabled = true;*/ 
+                                  e.target.disabled = false;
+
+
+                              }).catch(function(err){
+                              console.log(err);
+
+                              })
+
+
+
+            } 
+          },
+            error(err){
+              console.log(err);
+              return;
+            }
+      });
+
+
+
+  });
+
+
+
+  function SetIdleAndFillingWeight(){
+      let data = {
+          "idleWeight" : BosAgirlik,
+          "fillingWeight" : FM200DolumMiktari
+      }
+      
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200_SetIdleAndFillingWeight',
+          timeOut: 3000,
+          data: data,
+          success: function(x){
+              if(x == 'success'){
+                btn_BosAgirlik.disabled = false;
+              }
+              else if(x == 'fail'){
+                  toastr["warning"]("Bir hata oluştu!");
+              }
+          },
+          error: function(jqXHR, textStatus){
+              if(textStatus === 'timeout'){
+                  toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              else if(textStatus === 'error'){
+                  toastr["error"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              
+              clearInterval(Timer_FM200AzotTestStatus);
+              console.log(jqXHR);
+          }
+      });
+  }
+
+
+
+
+  function SetDefaultValues(){
+      btn_BosAgirlik.disabled = true;
+      btn_RekorluAgirlik.disabled = true;
+      btn_FM200_Start.disabled = true;
+      btn_FM200_AcilBitir.disabled = true;
+      btn_Azot_Start.disabled = true;
+      btn_Azot_AcilBitir.disabled = true;
+      btn_FM200Azot_DolumEtiketi.disabled = true;
+      btn_FM200Azot_Kaydet.disabled = true;
+      document.getElementById('bosAgirlikOnay').innerHTML = 'Onaylanmadı';
+      document.getElementById('rekorluAgirlikOnay').innerHTML = 'Onaylanmadı'; 
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200Azot_DefaultValues',
+          timeout: 3000,
+          success: function(x){
+              if(x == 'success'){
+                  btn_BosAgirlik.disabled = false;
+                  BosAgirlikClick = false;
+                  RekorluAgirlikClick = false;
+              }
+              else if(x == 'fail'){
+                  toastr["warning"]("Bir hata oluştu!");
+              }
+          },
+          error: function(jqXHR, textStatus){
+              if(textStatus === 'timeout'){
+                  toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              else if(textStatus === 'error'){
+                  toastr["error"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+              }
+              
+              clearInterval(Timer_FM200AzotTestStatus);
+              console.log(jqXHR);
+          }
+      });
+  }
+  
+
+  //******************** FM200 & Azot Boş Ağırlık *********************
+  document.getElementById('bosagirlikbtn').addEventListener('click',function(e){
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POSt",
+          url: 'http://localhost:5000/fm200_bosAgirlikClick',
+          timeout: 3000,
+          success: function(x){
+              if(x['state'] == 'success'){
+                  txt_BosOlculenDeger.innerText = x['value']
+                  BosAgirlikClick = true;
+                  btn_RekorluAgirlik.disabled = false;
+                  toastr["success"]("Boş ağırlık onaylandı");
+
+                  document.getElementById('bosAgirlikOnay').innerHTML = 'Onaylandı';
+              }
+              else if(x['state'] == 'fail'){
+                  el.disabled = false;
+                  toastr["warning"]("Boş ağırlık istenilen aralıkta değil!");
+
+                  document.getElementById('bosAgirlikOnay').innerHTML = 'Onaylanmadı'; 
+              }
+              else if(x['state'] == 'disconnected'){
+                  toastr["warning"]("Tartı ile bağlantı koptu!");
+              }
+          },
+          error: function(x){
+              console.log(x);
+          }
+      });
+  });
+
+
+  //******************** FM200 & Azot Rekorlu Ağırlık *********************
+  document.getElementById('rekorluagirlikbtn').addEventListener('click',function(e){
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200_rekorluAgirlikClick',
+          timeout: 3000,
+          success: function(x){
+            if(x['state'] == 'success'){
+                  txt_RekorluOlculenDeger.innerText = x['value']
+                  RekorluAgirlikClick = true;
+                  toastr["success"]("Rekorlu ağırlık onaylandı");
+
+                  document.getElementById('rekorluAgirlikOnay').innerHTML = 'Onaylandı';
+                  btn_FM200_Start.disabled = false;
+                  btn_FM200_AcilBitir.disabled = false;
+              }
+              else if(x['state'] == 'fail'){
+                  el.disabled = false;
+                  toastr["error"]("Rekorlu ağırlık alınırken hata oluştu!");
+
+                  document.getElementById('rekorluAgirlikOnay').innerHTML = 'Onaylanmadı'; 
+              }
+              else if(x['state'] == 'disconnected'){
+                  toastr["warning"]("Tartı ile bağlantı koptu!");
+              }
+          },
+          error: function(x){
+              console.log(x);
+          }
+      });
+  });
+
+/*
+  document.getElementById('bosagirlikbtn').addEventListener('click',function(e){
+      e.target.disabled = true;
+      $.ajax({
+          type: "GET",
+          url: 'http://localhost:5000/fm_get_pressure',
+          success: function (x){
+          document.getElementById('bosOlculenDeger').innerText = x;
+              if(Math.abs(currentWeight - x) <= 5.5){
+                  document.getElementById('bosAgirlikOnay').innerHTML = 'Onaylandı'
+                  document.getElementById('fm200_start').disabled = false;
+                  document.getElementById('rekorluagirlikbtn').disabled = false;
+                  document.getElementById('fm200_acil_bitir').disabled = false;
+                  document.getElementById('azot_start').disabled = false;
+                  document.getElementById('azot_acil_bitir').disabled = false;
+              }else{
+                  document.getElementById('bosAgirlikOnay').innerHTML = 'Onaylanmadı'
+                  document.getElementById('fm200_start').disabled = true;
+                  document.getElementById('fm200_acil_bitir').disabled = true;
+                  document.getElementById('azot_start').disabled = true;
+                  document.getElementById('azot_acil_bitir').disabled = true;
+              }
+          }
+      });
+  });
+*/
+
+
+/*
+  document.getElementById('rekorluagirlikbtn').addEventListener('click',function(){
+      $.ajax({
+          type: "GET",
+          url: 'http://localhost:5000/fm_get_pressure',
+          success: function (x){
+              let rekorAgirlik = 3;
+              document.getElementById('rekorluOlculenDeger').innerText = x;
+              if(Math.abs(currentWeight+rekorAgirlik - x) <= 5.5){
+                  document.getElementById('rekorluAgirlikOnay').innerHTML = 'Onaylandı'
+                  document.getElementById('fm200_start').disabled = false;
+                  document.getElementById('fm200_acil_bitir').disabled = false;
+              }else{
+                  document.getElementById('rekorluAgirlikOnay').innerHTML = 'Onaylanmadı'
+                  document.getElementById('fm200_start').disabled = true;
+                  document.getElementById('fm200_acil_bitir').disabled = true;
+                  document.getElementById('azot_start').disabled = true;
+                  document.getElementById('azot_acil_bitir').disabled = true;
+              }
+          }
+      });
+  });
+*/
+
+</script>
+
+
+<script type="text/javascript">
+
+  var Timer_FM200AzotTestStatus;
+  var FM200state1 = true;
+  var AzotDoluyorState = true;
+  var AzotDolduState = true;
+
+  //******************** FM200 Dolum İşlemi *********************
+  document.getElementById('fm200_start').addEventListener('click',function(e){
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200_dolum_start',
+          timeout: 3000,
+          success: function (x){
+              toastr["info"]('FM200 dolumu başladı');
+              btn_FM200_AcilBitir.disabled = false;
+
+              FM200state1 = true;
+              AzotDoluyorState = true;
+              AzotDolduState = true;
+              Timer_FM200AzotTestStatus = setInterval(Timer_FM200AzotTestStatusEventHandler, 1000);
+          },
+          error: function(jqXHR, textStatus){
+              console.log(jqXHR);
+          }
+      });
+  });
+
+  document.getElementById('fm200_acil_bitir').addEventListener('click',function(e){
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200_acil_bitir',
+          timeout: 3000,
+          success: function (x){
+              if(x == 'success'){
+                  toastr["info"]('FM200 acil bititirildi!');
+              }
+          },
+          error: function(jqXHR, textStatus){
+              console.log(jqXHR);
+          }
+      });
+  })
+
+
+
+  //******************** Azot Dolum İşlemi *********************
+  document.getElementById('azot_start').addEventListener('click',function(e){
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/azot_dolum_start',
+          timeout: 3000,
+          success: function (x){
+              if(x == 'success'){
+                  //toastr["info"]('Azot dolumu başladı');
+              }
+          },
+          error: function(jqXHR, textStatus){
+              console.log(jqXHR);
+          }
+      });
+  })
+
+  document.getElementById('azot_acil_bitir').addEventListener('click',function(e){
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/azot_acil_bitir',
+          timeout: 3000,
+          success: function (x){
+              if(x == 'success'){
+                  toastr["info"]('Azot acil bititirildi!');
+              }
+          },
+          error: function(jqXHR, textStatus){
+              console.log(jqXHR);
+          }
+      });
+  });
+
+
+
+
+  //******************** FM200 & Azot Dolum İşlem Durumu *********************
+  function Timer_FM200AzotTestStatusEventHandler(){
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/fm200azot_teststatus',
+          timeout: 3000,
+          success: function(x){
+              //console.log(x);
+
+              if((x['FM200DolumState'] == 'doldu') && (FM200state1 == true)){
+                  toastr["info"]('FM200 dolumu tammalandı');
+                  FM200state1 = false;
+
+                  btn_FM200_Start.disabled = true;
+                  btn_FM200_AcilBitir.disabled = true;
+                  btn_Azot_Start.disabled = false;
+                  btn_Azot_AcilBitir.disabled = false;
+              }
+
+              if(x['AzotDolumState'] == 'doluyor' && AzotDoluyorState == true){
+                  toastr["info"]('Azot dolum işlemi başladı');
+                  AzotDoluyorState = false;
+              }
+              else if(x['AzotDolumState'] == 'doldu' && AzotDolduState == true){
+                  AzotDolduState = false;
+                  btn_FM200_Start.disabled = true;
+                  btn_FM200_AcilBitir.disabled = true;
+                  btn_Azot_Start.disabled = true;
+                  btn_Azot_AcilBitir.disabled = true;
+
+                  toastr["info"]('Dolum işlemi bitti.\nRokuru çıkarıp dolum etiketi alabilirsiniz');
+                  toastr["info"]('Azot dolumu tamamlandı');
+                  
+                  //toastr["info"]("Rokuru çıkarıp dolum etiketi alabilirsiniz");
+              }
+
+              if(x['testState'] == 'bitti'){
+                  toastr["success"]('Dolum etiketi alabilirsiniz');
+                  btn_FM200Azot_DolumEtiketi.disabled = false;
+                  btn_FM200Azot_Kaydet.disabled = false;
+
+                  clearInterval(Timer_FM200AzotTestStatus);
+              }
+          },
+          error: function(jqXHR, textStatus){
+              console.log(jqXHR);
+          }
+      });
+  }
+
+
+/*
+  document.getElementById('fm200_start').addEventListener('click',function(e){
+    let data = {"veri":document.getElementById('rekorluOlculenDeger').innerText};
+    toastr['success']("FM200 dolumu başladı!");
+    $.ajax({
+        type: "POST",
+        url: 'http://localhost:5000/fm200_dolum_start',
+        data:data,
+        success: function (x){
+            toastr["success"](x);
+            document.getElementById('azot_start').disabled = false;
+            document.getElementById('azot_acil_bitir').disabled = false;
+
+            },
+        }
+    );
+  });
+*/
+
+</script>
+
+
+<script type="text/javascript">
+/*
+  document.getElementById('fm200_acil_bitir').addEventListener('click',function(e){
+     $.ajax({
+        type: "POST",
+        url: 'http://localhost:5000/fm200_acil_bitir',
+        success: function (x){
+            toastr["error"]("Acil bitirildi!");
+        },
+      });
+  })
+*/
+</script>
+
+<script type="text/javascript">
+
+/*
+  document.getElementById('azot_start').addEventListener('click',function(e){
+      toastr['success']("Azot dolumu başladı!");
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/azot_dolum_start',
+          success: function (x){
+              toastr['success'](x);
+          },
+      });
+  })
+*/
+</script>
+
+<script type="text/javascript">
+/*
+  document.getElementById('azot_acil_bitir').addEventListener('click',function(e){
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/azot_acil_bitir',
+          success: function (x){
+              toastr["error"]("Acil bitirildi!");
+          },
+      });
+  });
+*/
+</script>
+
+
+
+
+<script>
+
+  document.getElementById('fm200DolumEtiketi').addEventListener('click',(e)=>{
+    e.preventDefault()
+
+    var qrcode = new QRCode("qrcode",{
+        width:"80",
+        height:"80",
+    });
+
+    qrcode.clear();
+    let qr = qrcode.makeCode(document.getElementById('fm200-valf-no').value);
+    let is_emri = 'a';
+    vsn = document.getElementById('fm200-valf-no').value;
+    
+    let data = {
+          "veri" : vsn
+    }
+    $.ajax({
+        type: "POST",
+        url: '/getEmirNo',
+        data:data,
+        success: function (x){
+            is_emri=x
+            let data = {"is_emri" : x}
+            resolve(data);
+        }
+    });
+
+    let pdf = window.open("");
+    setTimeout(()=>{
+
+    pdf.document.write(`<html><head><title></title>
+      <style>*{font-family:Arial;font-size:10px;margin:0;}@media print {
+         @page {
+            size:auto;
+            margin: 1mm;
+            padding: 0;
+         },
+         html,body{
+            margin:0;
+            padding:0;
+         }
+    }</style>
+      </head><body style="border:1px solid #000;border-radius:10px;padding:6px;width:54mm;height:52mm;">
+      <ul style="list-style:none;margin:0;padding:0;margin-bottom:24px;">
+        <li><b>Valf No:</b> ${document.getElementById('fm200-valf-no').value}</li>
+        <li><b>İş Emir No:</b>  ${is_emri}</li>
+        <li><b>Dolum Miktarı:</b> ${txt_FM200AzotBrütAgirlik.innerText} gram </li>
+        <li><b>Dolum Tarihi:</b>  ${new Date().toLocaleString()}</li>
+        <li><b>Tüp Gövde Yapısı:</b>  ${ FM200ValfRenk }</li>
+        <li><b>Bölme:</b> {{ request.user.birim }} / {{ request.user.grup }}</li>
+      </ul>
+      <br><img src="${qrcode['_oDrawing']['_elImage']['src']}" style=""><img style="margin-left:40px;" width="80" src=" data:image/png;base64,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">
+      </body></html>`);
+
+      },200)
+
+    setTimeout(()=>{
+      pdf.print();
+    },300)
+  });
+
+</script>
+
+<script type="text/javascript">
+
+  document.getElementById('fm200Submit').addEventListener('click',function(e){
+    SetDefaultValues();
+    
+    Swal.showLoading();
+    e.preventDefault();
+
+    let bosOlculenDeger = document.getElementById('bosOlculenDeger').innerText;
+    let rekorluOlculenDeger = document.getElementById('rekorluOlculenDeger').innerText;
+    let deger = document.getElementById('deger').innerText;
+    let azotDeger = document.getElementById('azotDolum').value;
+    let vsn = document.getElementById('fm200-valf-no').value;
+    let veri = Array(5);
+    veri[0] = bosOlculenDeger;
+    veri[1] = rekorluOlculenDeger;
+    veri[2] = deger;
+    veri[3] = azotDeger;
+    veri[4] = vsn;
+
+    //neval
+    veri[0] = 1;
+    veri[1] = 2;
+    veri[2] = 3;
+    veri[3] = 4;
+    veri[4] = vsn;
+
+
+    console.log('nusret1');
+    console.log(veri);
+    veri = JSON.stringify(veri);
+    let data = {
+      tur : 'fm200',
+      veri : veri
+    }
+    console.log('nusret2');
+    $.ajax({
+          type: "POST",
+          url: '/uretimkontrol',
+          data : data,
+          success: function (x){
+            console.log('nusret3');
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'FM200 dolumu başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+
+            //SetDefaultValues();
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  })
+
+</script>
+
+{% endblock %}
+

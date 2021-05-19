@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="{% static 'css/bootstrap-tables.css' %}" rel="stylesheet">
+<link href="{% static 'css/led.css' %}" rel="stylesheet">
+<style type="text/css">
+  .btn-group button{
+    background-color: #1ab394;
+    border-color: #1ab394;
+  }
+  .caret{
+    display: none;
+  }
+</style>
+{% if mac == 'Linux' %}
+<link href="{% static 'css/skeyboard.css' %}" rel="stylesheet">
+<style>
+
+.simple-keyboard {
+  /*max-width: 850px;*/
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+    width: 100%;
+    opacity: 0;
+    transition: margin-top 0s ease-in-out 0.3s, opacity 0.3s ease-in-out;
+    z-index:9999;
+    height: 230px;
+    display: none;
+}
+
+.show-keyboard {
+  display : block;
+  opacity: 1;
+  margin-top: 0;
+}
+
+.hg-button span {
+  pointer-events: none;
+}
+</style>
+{% endif %}
+{% endblock %}
+{% block content %}
+{% if grup == "Yönetici" and birim == "Planlama" or grup == "Yönetici" and birim == "IT" or grup == "Mühendis" and birim == "IT" %}
+<div class="card">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    İş emri oluşturma
+  </div>
+  <div class="card-body">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div class="form-row">
+        <div class="form-group col-md-4 mb-0">{{ form.is_emri|as_crispy_field }}</div>
+        <div class="form-group col-md-4 mb-0">{{ form.tup_sayisi|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4 mb-0">{{ form.urun_kodu|as_crispy_field }}</div>
+        <div class="form-group col-md-4 mb-0">{{ form.siparis|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">{{ form.başlangıç|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.bitiş|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.fm200_miktari|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.sodyum_bikarbonat_miktari|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">{{ form.tup_govde_turu|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.valf_turu|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.renk|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.emniyet_ventil_turu|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">{{ form.bolum|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.musteri|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0">{{ form.agirlik_min|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0">{{ form.agirlik_max|as_crispy_field }}</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6 mb-0" style="display: none;">{{ form.emri_veren|as_crispy_field }}</div>
+        <div class="form-group col-md-6 mb-0" style="display: none;">{{ form.emir_zamani|as_crispy_field }}</div>
+      </div>
+      <button type="submit" class="btn btn-success">Kaydet</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% if grup == "Yönetici" and birim == "Planlama" or grup == "Yönetici" and birim == "IT" or grup == "Mühendis" and birim == "IT" %}
+<div class="card mt-4">
+  <div class="card-header" style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    İş emri öncelik tablosu
+  </div>
+  <div class="card-body">
+    <table class="table table-hover" id="oncelikTable" data-sort-name="oncelik">
+      <thead>
+        <tr>
+          <th scope="col">İş Emri</th>
+          <th scope="col">Emri Veren</th>
+          <th scope="col">Emir Zamanı</th>
+          <th scope="col">Öncelik Sıralaması</th>
+        </tr>
+      </thead>
+      <tbody id="oncelikForm">
+        {% for emir in emirler %}
+          <tr>
+            <td  class="indexInput" style="display: none;"><input type="text"  name="{{ emir.is_emri }}" id="index" value="{{ emir.oncelik }}"></td>
+            <td>{{ emir.is_emri }}</td>
+            <td>{{ emir.emri_veren }}</td>
+            <td>{{ emir.emir_zamani }}</td>
+            <td class="index" style="text-indent: 25px;">{{ emir.oncelik }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <button class="btn-success btn invisible" id="oncelikGuncelle">Öncelik Güncelle</button>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card mt-4">
+  <div class="card-header" style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    İş emri tablosu
+  </div>
+  <div class="card-body">
+    <div id="toolbar">
+    </div>
+
+    <table id="table"
+         data-toggle="table"
+         data-filter-control="true"
+         data-click-to-select="true"
+         data-show-columns="true"
+         data-search="true"
+         data-toolbar="#toolbar">
+    <thead>
+      <tr>
+        <th data-field="isemri" data-filter-control="select" data-sortable="true">İş Emri</th>
+        <th data-field="tup_sayisi" data-filter-control="select" data-sortable="true">Tüp Sayısı</th>
+        <th data-field="baslangic" data-filter-control="select" data-sortable="true">Başlangıç</th>
+        <th data-field="bitis" data-filter-control="select" data-sortable="true">Bitiş</th>
+        <th data-field="amir" data-filter-control="select" data-sortable="true">Emri Veren</th>
+        <th data-field="zaman" data-filter-control="select" data-sortable="true">Oluşturulma Zamanı</th>
+        <th data-field="durum" data-formatter="durumFormatter">İş Emri Durumu</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for emir in emirler %}
+        <tr>
+          <td>{{ emir.is_emri }}</td>
+          <td>{{ emir.tup_sayisi }}</td>
+          <td>{{ emir.başlangıç }}</td>
+          <td>{{ emir.bitiş }}</td>
+          <td>{{ emir.emri_veren }}</td>
+          <td>{{ emir.emir_zamani }}</td>
+          <td>{{ emir.durum }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+    </div>
+  </div>
+
+
+{% endblock %}
+{% block script %}
+<script src="{% static 'js/bootstrap-tables.js' %}"></script>
+{% if mac == 'Linux' %}
+<script src="{% static 'js/skeyboard.js' %}"></script>
+<script>
+
+let Keyboard = window.SimpleKeyboard.default;
+let selectedInput;
+
+let keyboard = new Keyboard({
+  onChange: input => onChange(input),
+  onKeyPress: button => onKeyPress(button)
+});
+
+document.querySelectorAll(".textinput").forEach(input => {
+  input.addEventListener("focus", onInputFocus);
+  // Optional: Use if you want to track input changes
+  // made without simple-keyboard
+  input.addEventListener("input", onInputChange);
+});
+
+
+var els = document.querySelectorAll(".textinput");
+for (let i = 0; i < els.length; i++) {
+  const element = els[i];
+  element.addEventListener("focus", event => {
+    //keyboard.keyboardDOM.style.top = window.scrollY + screen.availHeight - 330 + "px";
+    keyboard.keyboardDOM.classList.add("show-keyboard");
+  });
+}
+
+document.addEventListener("click", event => {
+  if (
+    // Target is not keyboard element
+    event.target !== keyboard.keyboardDOM &&
+    // Target is not the input
+    !event.target.classList.contains('textinput') &&
+    // Target is not a keyboard button
+    !event.target.classList.contains("hg-button")
+  ) {
+    hideKeyboard();
+  }
+});
+
+function onInputFocus(event) {
+  selectedInput = `#${event.target.id}`;
+
+  keyboard.setOptions({
+    inputName: event.target.id
+  });
+}
+
+function onInputChange(event) {
+  keyboard.setInput(event.target.value, event.target.id);
+}
+
+function onChange(input) {
+  console.log("Input changed", input);
+  document.querySelector(selectedInput || ".textinput").value = input;
+}
+
+function onKeyPress(button) {
+  console.log("Button pressed", button);
+
+  /**
+   * Shift functionality
+   */
+  if (button === "{lock}" || button === "{shift}") handleShiftButton();
+}
+
+function handleShiftButton() {
+  let currentLayout = keyboard.options.layoutName;
+  let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+  keyboard.setOptions({
+    layoutName: shiftToggle
+  });
+}
+
+function showKeyboard() {
+  keyboard.keyboardDOM.classList.add("show-keyboard");
+}
+
+function hideKeyboard() {
+  keyboard.keyboardDOM.classList.remove("show-keyboard");
+}
+
+</script>
+{% endif %}
+
+<script src="{% static 'js/jquery-ui.js' %}"></script>
+<script>
+  var fixHelperModified = function(e, tr) {
+    var $originals = tr.children();
+    var $helper = tr.clone();
+    $helper.children().each(function(index) {
+      $(this).width($originals.eq(index).width())
+    });
+    return $helper;
+  },
+  updateIndex = function(e, ui) {
+
+    $('td.index', ui.item.parent()).each(function (i) {
+      $(this).html(i+1);
+    });
+
+    $('input[type=text]', ui.item.parent()).each(function (i) {
+      $(this).val(i + 1);
+    });
+};
+// öncelik tablosu default olarak öncelik sırasına göre gelmeli.
+function sirala(){
+  var rows = $('#oncelikTable tbody  tr').get();
+
+  rows.sort(function(a, b) {
+
+  var A = parseInt($(a).children('td').eq(4).text(),10);
+  var B = parseInt($(b).children('td').eq(4).text(),10);
+
+  if(A < B) {
+    return -1;
+  }
+
+  if(A > B) {
+    return 1;
+  }
+
+  return 0;
+
+  });
+
+  $.each(rows, function(index, row) {
+    $('#oncelikTable').children('tbody').append(row);
+  });
+}
+
+var oncelikBtn = document.getElementById('oncelikGuncelle');
+
+$("#oncelikForm").sortable({
+  helper: fixHelperModified,
+  stop: updateIndex
+}).disableSelection();
+
+sirala();
+
+$("#oncelikForm").sortable({
+  distance: 5,
+  delay: 100,
+  opacity: 0.6,
+  cursor: 'move',
+  update: function() {
+      var dic = {};
+      var inputs = document.querySelectorAll('#oncelikForm input');
+      new Promise(function(resolve,reject){
+        setTimeout(()=>{
+          for (var i = 0; i < inputs.length; i++) {
+            dic[inputs[i].name] = inputs[i].value;
+          }
+          resolve(dic);
+        },100)
+
+      })
+      .then(function(dic){
+          veri = JSON.stringify(dic);
+          console.log(veri)
+            let data = {
+              tur : 'oncelik',
+              veri : veri
+            }
+            oncelikBtn.classList.remove('invisible');
+            oncelikBtn.addEventListener('click',()=>{
+              Swal.showLoading();
+              $.ajax(
+                {
+                  type: "POST",
+                  url: '/isemri',
+                  data : data,
+                  success: function (x){
+                    console.log(x)
+                    Swal.fire({
+                      title: 'Başarılı!',
+                      text: 'Öncelik sıralaması başarılı bir şekilde güncellendi!',
+                      icon: 'success',
+                      confirmButtonText: 'Tamam'
+                    })
+                    oncelikBtn.classList.add('invisible')
+                  },
+                  error(err){
+                    Swal.fire({
+                      title: 'Başarısız!',
+                      text: `Hata : ${err.body}`,
+                      icon: 'error',
+                      confirmButtonText: 'Tamam'
+                    })
+                  }
+                }
+              );
+          })
+      })
+  }
+});
+
+</script>
+<script>
+
+function durumFormatter(value){
+  console.log(value)
+  if(value == "Başlanmamış"){
+    return `
+      <div class="led-box">
+        <div class="led-red float-left mr-2"></div><span class="float-left">Başlanmamış</span>
+      </div>
+    `
+  }else if(value == "Aktif"){
+    return `
+      <div class="led-box">
+        <div class="led-yellow float-left mr-2"></div><span class="float-left">${value}</span>
+      </div>
+    `
+  }else{
+    return `
+      <div class="led-box">
+        <div class="led-green float-left mr-2"></div><span class="float-left">${value}</span>
+      </div>
+    `
+  }
+}
+</script>
+{% endblock %}

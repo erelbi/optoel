@@ -1,0 +1,52 @@
+{% load static %}
+{% block ustnipel %}
+<form action="" id="ustNipelFormu" method="post" enctype="multipart/form-data">
+    <hr>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="baslangic">Başlangıç Seri No</label>
+            <input type="text" class="form-control" id="baslangic" name="baslangic_seri_no" required="required">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="bitis">Bitiş Seri No</label>
+            <input type="text" class="form-control" id="bitis" name="bitis_seri_no" required="required">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="input-group col-md-6">
+            <input type="text" class="form-control" aria-describedby="button-addon2" name="lot_no" required="required">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="button-addon2">Otomatik Lot No Ata</button>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="custom-file">
+                <input id="pdfUst" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+                <label for="pdfUst" class="custom-file-label">Pdf yükle...</label>
+            </div> 
+        </div>
+    </div>
+    <input style="visibility: hidden;" type="text" id="pdfIsmiUst" name="pdf_ismi">
+    <input style="visibility: hidden;" type="text" name="tur" value="ustnipel">
+    <div class="form-inline mt-3 mb-3 ml-1">
+        <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="defaultUnchecked1" name="kabulUst" checked value="Kabul">
+            <label class="custom-control-label" for="defaultUnchecked1">Kabul</label>
+          </div>
+          {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+          <div class="custom-control custom-radio ml-2">
+            <input type="radio" class="custom-control-input" id="defaultChecked1" name="kabulUst" value="Şartlı Kabul">
+            <label class="custom-control-label" for="defaultChecked1">Şartlı kabul</label>
+          </div>
+          {% endif %}
+          <div class="custom-control custom-radio ml-2">
+            <input type="radio" class="custom-control-input" name="kabulUst" id="red1" value="Red">
+            <label class="custom-control-label" for="red1">Ret</label>
+          </div>
+    </div>
+     <hr>
+<div class="col-md-4 mx-auto"><button type="submit" id="kaydetUstNipel" class="btn btn-success btn-lg btn-block">KAYDET</button></div>
+</form> 
+
+{% endblock %}

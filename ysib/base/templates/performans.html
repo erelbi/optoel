@@ -1,0 +1,234 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<link href="{% static 'css/selectize.min.css' %}" rel="stylesheet">
+<style>
+    .zaman li{
+      float: left;
+      margin-right: 12px;
+    }
+    .btn-outline-primary{
+      border-color: #1ab394;
+      color: #1ab394;
+    }
+    .btn-outline-primary:hover{
+      border-color: #1ab394;
+      background-color: #1ab394;
+      color: #fff;
+    }
+    .zaman input[type="radio"]{
+      display: none;
+    }
+    .zaman input[type="radio"]:checked + label{
+      background-color: #1ab394;
+      color: #fff;
+    }
+    .zaman li label{
+
+    }
+</style>
+{% endblock %}
+{% block content %}
+<form class="form-row">
+    <div class="form-group col-md-3">
+       <label for="durum">Personel Seçin</label>
+         <select id="users" required>
+           <option value="" disabled selected>Seçin</option>
+           {% for kullanici in kullanicilar %}
+             <option value="{{ kullanici.first_name }} {{ kullanici.last_name }}">{{ kullanici.first_name }} {{ kullanici.last_name }}</option>
+           {% endfor %}
+         </select>
+       </div>
+
+       <ul class="zaman" style="list-style: none;margin-top: 30px;">
+         <li>
+           <input id="son1gun" type="radio" name="zaman" value="1">
+           <label for="son1gun" class="btn btn-outline-primary">Son 1 Gün</label>
+         </li>
+         <li>
+           <input id="son1hafta" type="radio" name="zaman" value="7">
+           <label for="son1hafta" class="btn btn-outline-primary">Son 1 Hafta</label>
+         </li>
+         <li>
+           <input id="son2hafta" type="radio" name="zaman" value="14">
+           <label for="son2hafta" class="btn btn-outline-primary">Son 2 Hafta</label>
+         </li>
+         <li>
+           <input id="son1ay" type="radio" name="zaman" value="30">
+           <label for="son1ay" class="btn btn-outline-primary">Son 1 Ay</label>
+         </li>
+         <li>
+           <input id="son2ay" type="radio" name="zaman" value="60">
+           <label for="son2ay" class="btn btn-outline-primary">Son 2 Ay</label>
+         </li>
+         <li>
+           <input id="son3ay" type="radio" name="zaman" value="90">
+           <label for="son3ay" class="btn btn-outline-primary">Son 3 Ay</label>
+         </li>
+         <li>
+           <input id="son6ay" type="radio" name="zaman" value="180">
+           <label for="son6ay" class="btn btn-outline-primary">Son 6 Ay</label>
+         </li>
+         <li>
+           <input id="son12ay" type="radio" name="zaman" value="360">
+           <label for="son12ay" class="btn btn-outline-primary">Son 1 Yıl</label>
+         </li>
+       </ul>
+ </form>
+<div id="chart"></div>
+{% endblock %}
+{% block script %}
+<script src="{% static 'js/apexchart.js' %}"></script>
+<script type="text/javascript">
+
+        var options = {
+            series: [{
+            data: [0,0,0,0,0,0,0,0,0,0,0,0]
+            }],
+            chart: {
+              type: 'bar',
+              height: 450,
+              animations: {
+                enabled: true
+              }
+            },
+          plotOptions: {
+            bar: {
+              barHeight: '100%',
+              distributed: true,
+              horizontal: true,
+              dataLabels: {
+                position: 'bottom'
+              },
+            }
+          },
+          colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#2b908f', '#f9a3a4', '#90ee7e',
+            '#f48024', '#69d2e7'],
+          dataLabels: {
+            enabled: true,
+            textAnchor: 'start',
+            style: {
+              colors: ['#000']
+            },
+            formatter: function (val, opt) {
+              return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val
+            },
+            offsetX: 0,
+            dropShadow: {
+              enabled: true
+            }
+          },
+          stroke: {
+            width: 1,
+            colors: ['#fff']
+          },
+          xaxis: {
+            categories: ["Manometre","Basınç Anah.","Alt Nipel","Üst Nipel","Bakır Membran","Emniyet Ventili","Valf Montaj","Valf Test","Valf Gövde","FM200","Havuz Test","Final Montaj"],
+          },
+          yaxis: {
+            labels: {
+              show: false
+            }
+          },
+          title: {
+              text: 'Personel-Yapılan İş Grafiği',
+              align: 'center',
+              floating: true
+          },
+          subtitle: {
+              text: 'Personel : -',
+              align: 'center',
+          },
+          tooltip: {
+            theme: 'dark',
+            x: {
+              show: false
+            },
+            y: {
+              title: {
+                formatter: function () {
+                  return ''
+                }
+              }
+            }
+          }
+        };
+        var personelDurum = new ApexCharts(document.querySelector("#chart"), options);
+        personelDurum.render();
+</script>
+<script type="text/javascript">
+  String.prototype.capitalize = function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+  }
+</script>
+<script type="text/javascript">
+  $("#users").change(function(e){
+    console.log(e.target.value);
+    let personel = e.target.value
+    veri = {
+      data:"personel",
+      gun_sayisi: $("input[name='zaman']:checked").val(),
+      "personel":personel,
+    }
+    $.ajax({
+        type: "POST",
+        url: 'personeldurum',
+        data : veri,
+        success : function(x){
+          console.log(x);
+          personelDurum.updateSeries([{
+            name: "Adet",
+            data: x
+          }]);
+          personelDurum.updateOptions({
+            subtitle: {
+              text: 'Personel:'+personel.capitalize()
+            }
+          })
+        }
+      })
+  });
+</script>
+
+<script>
+
+  $( "input[name='zaman']" ).change(function() {
+    console.log('zamanannnn');
+    let personel = $("#users").val();
+    let gun_sayisi = $("input[name='zaman']:checked").val();
+    veri = {
+      data: "zaman",
+      personel: personel,
+      "gun_sayisi":gun_sayisi,
+    }
+    $.ajax({
+        type: "POST",
+        url: 'personeldurum',
+        data : veri,
+        success : function(x){
+          console.log(x);
+          personelDurum.updateSeries([{
+            name: "Adet",
+            data: x
+          }]);
+          personelDurum.updateOptions({
+            subtitle: {
+              text: 'Personel:'+personel.capitalize()
+            }
+          })
+        }
+      })
+  });
+
+</script>
+
+
+<script src="{% static 'js/selectize.min.js' %}"></script>
+<script>
+  $(function() {
+    $('#users').selectize({
+    });
+  });
+</script>
+{% endblock %}

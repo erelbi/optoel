@@ -1,0 +1,268 @@
+{% load static %}
+{% block manometre %}
+<form class="form-inline">
+  <button type="submit" class="btn btn-primary mb-2"  id="btn-mano-connect">Bağlan</button>
+</form>
+<hr>
+<div class="row">
+  <form action="" class="form-row col-md-8" method="POST" id="manometreFormu">{% csrf_token %}
+    <span class="col-md-4 pl-0">Manometre Ürün No.</span>
+    <span class="col-md-4 pl-0">Manometre üzerindeki değer</span>
+    <span class="col-md-1 pl-0">Kabul</span>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <span class="col-md-2 pl-0">Şartlı Kabul</span>
+    {% endif %}
+    <span class="col-md-1 pl-0">Red</span>
+    <hr>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="a" name="manometre1" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="a"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="a-" name="manometre1" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="a-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="a--" name="manometre1" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="a--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="b" name="manometre2" class="form-control custom-control-input"  value="Kabul"><label class="custom-control-label" for="b"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="b-" name="manometre2" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="b-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="b--" name="manometre2" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="b--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="c" name="manometre3" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="c"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="c-" name="manometre3" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="c-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="c--" name="manometre3" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="c--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="d" name="manometre4" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="d"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="d-" name="manometre4" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="d-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="d--" name="manometre4" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="d--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="e" name="manometre5" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="e"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="e-" name="manometre5" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="e-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="e--" name="manometre5" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="e--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="f" name="manometre6" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="f"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="f-" name="manometre6" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="f-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="f--" name="manometre6" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="f--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="g" name="manometre7" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="g"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="g-" name="manometre7" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="g-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="g--" name="manometre7" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="g--"></label></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-4"><input type="text" class="form-control textinput"></div>
+    <div class="form-group col-md-1"><input type="radio" id="h" name="manometre8" class="form-control custom-control-input" value="Kabul"><label class="custom-control-label" for="h"></label></div>
+    {% if request.user.grup == 'Yönetici' and request.user.birim == "Kalite kontrol" %}
+    <div class="form-group col-md-2"><input type="radio" id="h-" name="manometre8" class="form-control custom-control-input" value="Şartlı Kabul"><label class="custom-control-label" for="h-"></label></div>
+    {% endif %}
+    <div class="form-group col-md-1"><input type="radio" id="h--" name="manometre8" class="form-control custom-control-input" value="Red"><label class="custom-control-label" for="h--"></label></div>
+  </form>
+  
+  <div class="col-md-4 row" style="justify-content: space-between;"  id="controlsMano">
+    <input type="text" class="form-control col-md-5" placeholder="Test basıncı" id="testPressureMano" value="30">
+      <button type="button" class="btn btn-success col-md-5" id="btn-mano-start">BAŞLAT</button>
+      <button type="button" class="btn btn-success col-md-5 mt-2" id="btn-mano-stop">BİTİR</button>
+      <button type="button" class="btn btn-danger col-md-5 mt-2" id="btn-mano-finish">ACİL BİTİR</button>
+    <canvas class="mx-auto mt-4" data-type="radial-gauge" id="mano-gauge"
+      data-min-value="0"
+      data-max-value="40"
+      data-minor-ticks="2"
+      data-stroke-ticks="true"
+      data-color-plate="#fff"
+      data-border-shadow-width="0"
+      data-borders="false"
+      data-needle-type="arrow"
+      data-needle-width="2"
+      data-needle-circle-size="7"
+      data-needle-circle-outer="true"
+      data-needle-circle-inner="false"
+      data-animation-rule="linear"
+      data-width="200"
+      data-height="200"
+  ></canvas>
+    <button type="button" class="btn btn-success col-md-8 btn-sm btn-block mx-auto" id="kalibreMano">KALİBRASYON</button>
+  </div>
+</div>
+<hr>
+<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetManometre">KAYDET</button></div>
+<script>
+  let kalibreManoBtn = document.getElementById('kalibreMano');
+  let acilBitirMano = document.getElementById('btn-mano-finish');
+  let baglanMano = document.getElementById('btn-mano-connect');
+  let allButtonsMano = document.querySelectorAll('#controlsMano button');
+  let baslatManoBtn = document.getElementById('btn-mano-start');
+  let bitirManoBtn = document.getElementById('btn-mano-stop');
+  for(let i = 0;i < allButtonsMano.length; i++){
+    allButtonsMano[i].disabled=true;
+  }
+
+  let radioManoBtns = document.querySelectorAll('#manometreFormu input[type="radio"]');
+  let inputsMano;
+  inputsMano = document.querySelectorAll('#manometreFormu input[type="text"]');
+
+  let acmaInputsMano = [];
+  let kapatmaInputsMano = [];
+  for(let i = 0;i<inputsMano.length;i++){
+    console.log(inputsMano[i]);
+    if(i%3 == 1){
+      acmaInputsMano.push(inputsMano[i]);
+    }
+    else if(i%3 == 2){
+      kapatmaInputsMano.push(inputsMano[i]);
+    }
+  }
+</script>
+<script>
+  let connect_mano = function (e) {
+      let el = e.target;
+      el.disabled = true;
+      el.innerHTML = `Bağlanıyor...`;
+     $.ajax(
+          {
+            type: "GET",
+            url: 'http://localhost:5000/mano_connect',
+            success: function (x){
+              kalibreManoBtn.disabled = false;
+              kalibreManoBtn.innerHTML = 'KALİBRASYON';
+              acilBitirMano.disabled = false;
+              el.innerHTML = 'Bağlandı';
+              toastr["success"]("Bağlandı!");
+            },
+          }
+         );
+  }
+</script>
+<script>
+    kalibreManoBtn.addEventListener('click',(e)=>{
+	kalibreManoBtn.disabled = true;
+	kalibreManoBtn.innerText = 'Kalibre ediliyor...';
+	new Promise(function(resolve,reject){
+		$.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/mano_calibre',
+			success: function(res){
+				console.log(res);
+				if(res == 'Calibrated'){
+					toastr["success"]("Kalibre edildi!");
+					for(let i = 0;i < allButtonsMano.length; i++){
+                      allButtonsMano[i].disabled=false;
+                    }
+                    acilBitirMano.disabled = false;
+                    document.getElementById('btn-mano-stop').disabled = true;
+					resolve(1);
+				}
+			}
+		}
+	);
+	}).
+	then(function(result){
+		for(let i = 0; i < allButtonsMano.length;i++){
+			allButtonsMano[i].disabled=false;
+		}
+		document.getElementById('btn-mano-stop').disabled = true;
+		kalibreManoBtn.disabled = true;
+		kalibreManoBtn.innerText = 'Kalibre edildi';
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  })
+</script>
+<script>
+  document.getElementById('btn-mano-start').addEventListener('click',function(e){
+    document.getElementById('btn-mano-start').disabled = true;
+	new Promise(function(resolve,reject){
+	    let desired = document.getElementById('testPressureMano').value;
+	    let veri = { "veri": desired };
+	    toastr["success"]("Test işlemi başladı!");
+		$.ajax(
+		{
+			type: "POST",
+			url: 'http://localhost:5000/mano_start',
+			data: veri,
+			success: function(res){
+				console.log(res);
+				if(res == 'done'){
+				    document.getElementById('btn-mano-stop').disabled = false;
+					resolve(1);
+				}
+			}
+		}
+	  );
+	}).
+	then(function(result){
+      toastr["success"]("Dolum şlemi tamamlandı!");
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  });
+
+  document.getElementById('btn-mano-stop').addEventListener('click',function(){
+    new Promise(function(resolve,reject){
+    toastr["success"]("Boşaltma işlemi başladı!");
+    $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/mano_stop',
+			success: function(res){
+				if(res == 'done'){
+				  document.getElementById('btn-mano-start').disabled = false;
+                  resolve(1);
+				}
+			}
+		});
+		document.getElementById('btn-mano-stop').disabled = true;
+	}).
+	then(function(result){
+	  document.getElementById('btn-mano-start').disabled = false;
+     toastr["success"]("Boşaltma işlemi bitti!");
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+  });
+
+  document.getElementById('btn-mano-finish').addEventListener('click',function(){
+      $.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/mano_acil',
+			success: function(res){
+				console.log(res);
+				//baglanMano.disabled = false;
+				//baglanMano.innerHTML = 'Bağlan';
+				kalibreManoBtn.disabled = true;
+				toastr["success"]("Acil bitirildi!");
+				acilBitirMano.disabled = false;
+				baslatManoBtn.disabled = false;
+				bitirManoBtn.disabled = true;
+
+			}
+		});/*
+      for(let i = 0;i < allButtonsManoallButtonsMano.length; i++){
+        allButtonsMano[i].disabled=true;
+      }
+      acilBitirMano.disabled = false;*/
+  });
+</script>
+<script>
+  document.getElementById('btn-mano-connect').addEventListener('click',connect_mano);
+</script>
+
+{% endblock %}

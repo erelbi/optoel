@@ -1,0 +1,54 @@
+{% load static %}
+{% block sidebar %}
+<nav class="navbar-default navbar-static-side" style="position: fixed;" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav metismenu" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <a  href="/">
+                        <div class="logom" style="background-image: url({% static 'img/logo.png' %});"></div>
+                    </a>
+                </div>
+                <div class="logo-element" style="font-size: 24px;letter-spacing: -6px;font-family:'Courier New', Courier, monospace;">
+                    <span style="color: black;">M</span>
+                    <span style="color: #c7ae3c;">D</span>
+                </div>
+            </li>
+            {% if birim == "Planlama" and grup == "Yönetici" %}
+            <li {% if request.path == "/" %} class="active" {% endif %}>
+                <a href="/"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">Dasboard</span></a>
+            </li>
+            {% endif %}
+            {% if birim == "Planlama" and grup == "Yönetici" %}
+            <li {% if request.path == "/isemri" %} class="active"  {% endif %}>
+                <a href="/isemri"><i class="fa fa-th-large"></i> <span class="nav-label">İş Emri</span></a>
+            </li>
+            {% endif %}
+            {% if birim == "Üretim" and grup == "Mühendis" or  birim == "Üretim" and grup == "Teknisyen"  or birim == "Üretim" and grup == "Yönetici" or birim == "Kalite kontrol" and grup == "Yönetici" %}
+            <li {% if request.path == "/uretimkontrol" %} class="active"  {% endif %}>
+                <a href="/uretimkontrol"><i class="fa fa-check-square-o"></i> <span class="nav-label">Üretim Kontrol</span></a>
+            </li>
+            {% endif %}
+            {% if birim == "Kalite kontrol" and grup == "Yönetici" or birim == "Kalite kontrol" and grup == "Mühendis" or birim == "Kalite kontrol" and grup == "Teknisyen" %}
+            <li {% if request.path == "/giriskalite" %} class="active"  {% endif %}>
+                <a href="/giriskalite"><i class="fa fa-check-square-o"></i> <span class="nav-label">Kalite Kontrol</span></a>
+            </li>
+            {% endif %}
+            {% if birim == "IT" and grup == "Yönetici" %}
+            <li {% if request.path == "/yetkilendirme" %} class="active"  {% endif %}>
+                <a href="/yetkilendirme"><i class="fa fa-users"></i> <span class="nav-label">Kullanıcı Yetkilendirme</span></a>
+            </li>
+            {% endif %}
+            <li {% if request.path == "/arama" %} class="active"  {% endif %}>
+                <a href="/arama"><i class="fa fa-search"></i> <span class="nav-label">Arama</span></a>
+            </li>
+            {% if True %}
+            <li {% if request.path == "/yazdir" %} class="active"  {% endif %}>
+                <a href="/yazdir"><i class="fa fa-file-pdf-o"></i> <span class="nav-label">Yazdır</span> </a>
+            </li>
+            {% endif %}
+        </ul>
+
+    </div>
+</nav>
+{% endblock %}

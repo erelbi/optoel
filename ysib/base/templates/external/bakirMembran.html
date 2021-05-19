@@ -1,0 +1,512 @@
+{% load static %}
+{% block bakirmembran %}
+<form class="form-inline">
+  <button type="submit"  id="btn-bm-connect" class="btn btn-primary mb-2">Bağlan</button>
+	<p id="demo"></p>
+
+</form>
+<hr>
+<form id="bakirFormu" method="post" enctype="multipart/form-data">
+<div class="row" id="tumu">
+	<div class="col-md-6">
+		<div class="col-md-12 row" style="justify-content: space-between;">
+		      <input type="text" name="test_basinci" class="form-control col-md-5" id="desired_pressure" placeholder="Test basıncı" value="30">
+			  <!-- <button type="button" onclick="bm_auto_start()" id="btn-bm-start" class="btn btn-success col-md-5">BAŞLAT</button> -->
+			  <button type="button" onclick="BM_Start()" id="btn-bm-start" class="btn btn-success col-md-5">BAŞLAT</button>
+		</div>
+		<div class="col-md-12 row">
+			<canvas class="mx-auto mt-4 col-md-6" data-type="radial-gauge" id="bakir-gauge"
+		      data-min-value="0"
+		      data-max-value="40"
+		      data-minor-ticks="2"
+		      data-stroke-ticks="true"
+		      data-color-plate="#fff"
+		      data-border-shadow-width="0"
+		      data-borders="false"
+		      data-needle-type="arrow"
+		      data-needle-width="2"
+		      data-needle-circle-size="7"
+		      data-needle-circle-outer="true"
+		      data-needle-circle-inner="false"
+		      data-animation-rule="linear"
+		      data-width="200"
+		      data-height="200"
+		  ></canvas>
+			<div class="col-md-4 ml-2">
+				<button type="button" id="btn-bm-bitir" class="btn btn-success" style="height: 34px;margin-top: 20px;width: 100px;" onclick="BM_BitirClickEvent()">BİTTİR</button>
+				<button type="button" onclick="" id="btn-bm-ignite" class="btn btn-success" style="height: 34px;margin-top: 90px;width: 100px;">PATLAT</button>
+				<input type="text" name="patlama_basinci" class="form-control mt-2" style="pointer-events: none;" style="font-size:12px" placeholder="Patlama basıncı" id="patlamaBasincDegeri">
+				<button type="button" id="btn-bm-acil-bitir"  class="btn btn-danger" style="height: 34px;margin-top: 20px;width: 100px;" onclick="BM_AcilBitirClickEvent()">ACİL BİTİR</button>
+			</div>
+
+		</div>
+		<!--
+		<div class="col-md-6">
+			
+		</div>
+		-->
+		<input style="visibility: hidden;" type="text" id="pdfIsmiBak" name="pdf_ismi">
+		<input style="visibility: hidden;" type="text" name="tur" value="bakirmembran">
+		
+		<div class="col-md-12 row">
+			<!--
+			<div class="col-md-3 pl-0">
+				<h4>Boşalt Valfi</h4>
+		      <button type="button" class="btn btn-success ml-0" id="bosalt">Aç</button>
+			</div>
+			-->
+			<div class="col-md-3 pl-0" style="padding-top:px; margin-left: 150px;">
+				<button type="button" class="btn btn-success" id="kalibre" style="margin-left:-20px">KALİBRE ET</button>
+			</div>
+			<!--
+			<div class="col-md-3 pl-0" style="margin-right:90px;">
+				<h4>Doldur Valfi</h4>
+				<button type="button" id="btn-bm-fill" class="btn btn-success" id="doldur">Aç</button>
+			</div>
+			-->
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="col-md-12">
+			<div style="display: flex;">
+				<div class="custom-control custom-radio">
+					<input type="radio" class="custom-control-input" id="bakirmembranRB" name="test_tur" value="bakirmembran" checked>
+					<label class="custom-control-label" for="bakirmembranRB">Bakır Membran</label>
+				</div>
+				<div class="custom-control custom-radio ml-2">
+					<input type="radio" class="custom-control-input" id="emniyetRB" name="test_tur" value="emniyet">
+					<label class="custom-control-label" for="emniyetRB">Emniyet Ventili</label>
+				</div>
+			</div>	
+		</div>
+		        <div class="col-md-12" style="margin-top: 24px;">
+		            <div class="custom-file">
+		                <input id="pdfBak" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+		                <label for="pdfBak" class="custom-file-label">Pdf yükle...</label>
+		            </div> 
+		        </div>
+		    <div class="form-inline mt-3 mb-3 ml-1">
+		        <div class="custom-control custom-radio">
+		            <input type="radio" class="custom-control-input" id="defaultUnchecked4" name="kabulBak" value="Kabul">
+		            <label class="custom-control-label" for="defaultUnchecked4">Kabul</label>
+		          </div>
+		          <div class="custom-control custom-radio ml-2">
+		            <input type="radio" class="custom-control-input" id="defaultChecked3" name="kabulBak" value="Şartlı Kabul" checked>
+		            <label class="custom-control-label" for="defaultChecked3">Şartlı kabul</label>
+		          </div>
+		          <div class="custom-control custom-radio ml-2">
+		            <input type="radio" class="custom-control-input" name="kabulBak" id="red3" value="Red">
+		            <label class="custom-control-label" for="red3">Ret</label>
+		          </div>
+		    </div>
+	</div>
+</div>
+<hr>
+<div class="col-md-4 mx-auto"><button type="submit" id="kaydetBakir" class="btn btn-success btn-lg btn-block">KAYDET</button></div>
+</form>
+<script>
+
+	let kalibre = false;
+	let hepsi = false;
+	let desireInput = document.getElementById('desired_pressure');
+	let kalibreBtn = document.getElementById('kalibre');
+	let btn_BM_TestStart = document.getElementById('btn-bm-start');
+	let btn_BM_ignite = document.getElementById('btn-bm-ignite');
+	let btn_BM_Bitir = document.getElementById('btn-bm-bitir');
+	let btn_BM_AcilBitir = document.getElementById('btn-bm-acil-bitir')
+	let txt_BM_PatlamaBasincDegeri = document.getElementById('patlamaBasincDegeri');
+
+	let butonlar = document.querySelectorAll('#tumu button');
+	for(let i = 0; i < butonlar.length;i++){
+		butonlar[i].disabled = true;
+	}
+
+	var TestStatus = false;
+
+	function TabBakirMembranClickEvent()
+	{
+		if(TestStatus == true)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+	
+	function TabEmniyetVentiliClickEvent()
+	{
+		if(TestStatus == true)
+		{
+
+		}
+		else
+		{
+
+		}
+	}
+
+
+	
+	function allButtonsDisabled(){
+		/*
+		for(let i = 0; i < butonlar.length;i++){
+			butonlar[i].disabled = true;
+		}
+		*/
+	}
+
+	function BM_ButtonsSetState(state){
+		for(let i = 0; i < butonlar.length;i++){
+			butonlar[i].disabled = !state;
+		}
+	}
+
+	document.getElementById("btn-bm-connect").addEventListener("click",function(e) {
+		e.preventDefault();
+	})
+
+	document.getElementById('bosalt').addEventListener('click',(e)=>{
+		let el = e.target;
+	  	x = el.classList.toggle('btn-danger');
+	  	if(!x){
+	  		el.innerText = 'Aç';
+	  		el.setAttribute('data-tur','bm_relief_off')
+	  	}else{
+	  		el.innerText = 'Kapat';
+	  		el.setAttribute('data-tur','bm_relief_on')
+	  	}
+	})
+
+	document.getElementById('btn-bm-fill').addEventListener('click',(e)=>{
+		let el = e.target;
+	  	x = el.classList.toggle('btn-danger');
+	  	if(!x){
+	  		el.innerText = 'Aç';
+	  		el.setAttribute('data-tur','bm_fill_off')
+	  	}else{
+	  		el.innerText = 'Kapat';
+	  		el.setAttribute('data-tur','bm_fill_on')
+	  	}
+	})
+
+
+	document.getElementById('btn-bm-fill').addEventListener('click',(e)=>{
+	  	uri = e.target.dataset.tur;
+		$.ajax({
+			type: "GET",
+			url: 'http://localhost:5000/'+uri
+		});
+	})
+
+	document.getElementById('bosalt').addEventListener('click',(e)=>{
+	  	uri = e.target.dataset.tur;
+	  	console.log(uri)
+		$.ajax({
+			type: "GET",
+			url: 'http://localhost:5000/'+uri
+		});
+	})
+
+
+</script>
+<script>
+//******************** Bakır Membran Connect *****************
+let TimerConnectStatus;
+
+let connect_bm = function (e) {
+	let el = e.target;
+	el.disabled = true;
+	el.innerHTML = "Bağlanıyor...";
+
+	txt_BM_PatlamaBasincDegeri.value = null;
+
+   	$.ajax({
+        type: "GET",
+        url: 'http://localhost:5000/bm_connect',
+		timeout: 10000,
+		error: function(){
+			el.innerHTML = 'Bağlan';
+			el.disabled = false;
+			
+			toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+		},
+        success: function (x){
+			if(x["ConnencState"] == "Bağlandı"){
+				//EM_ButtonsSetState(false);
+				console.log(x);
+				el.innerHTML = 'Bağlandı';
+				toastr["success"]("Bağlandı!");
+				//TimerConnectStatus = setInterval(BM_ConnectStatusTimerHandler(), 1000);
+				
+				
+				btn_BM_TestStart.disabled = true;
+				btn_BM_Bitir.disabled = true;
+				btn_BM_ignite.disabled = true;
+				btn_BM_AcilBitir.disabled = false;
+
+				if(x["CalibrationState"] == "Calibrated"){
+					kalibreBtn.disabled = true;
+					kalibreBtn.innerHTML = 'Kalibre edildi'
+					btn_BM_TestStart.disabled = false;
+				}
+				else if(x["CalibrationState"] == "NotCalibrated"){
+					kalibreBtn.disabled = false;
+					kalibreBtn.innerHTML = "KALİBRE ET";
+				}
+			}
+			else if(x["ConnencState"]  == "Bağlanamadı"){
+				el.innerHTML = 'Bağlan';
+				el.disabled = false;
+				toastr["error"]("Bağlantı kurulamadı!");
+			}
+			else if(x["ConnencState"]  == "Busy"){
+				el.innerHTML = 'Bağlan';
+				el.disabled = false;
+				toastr["warning"]("Emniyet ventili testi devam ediyor!");
+			}
+
+			
+		},
+    });
+}
+
+function BM_ConnectStatusTimerHandler()
+{
+	$.ajax({
+		type: "POST",
+        url: 'http://localhost:5000/bm_ConnectStatus',
+		timeout: 5000,
+		error: function(){
+			//toastr["error"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+			clearInterval(TimerConnectStatus);
+		},
+		success: function(x){
+			if(x == 'false')
+			{
+				//toastr["error"]("Cihaz ile bağlantı koptu.");
+				clearInterval(TimerConnectStatus);
+			}
+			//toastr["success"]("Cihaz ile bağlantı koptu.");
+		}
+	});
+}
+
+//******************** Bakır Membran Calibration *****************
+kalibreBtn.addEventListener('click', (e)=>{
+	kalibreBtn.disabled = true;
+	kalibreBtn.innerText = 'Kalibre ediliyor...';
+	new Promise(function(resolve,reject){
+		$.ajax(
+		{
+			type: "GET",
+			url: 'http://localhost:5000/bm_calibre',
+			success: function(res){
+				console.log(res);
+				if(res == 'Calibrated'){
+					kalibreBtn.innerText = 'Kalibre edildi';
+					kalibreBtn.disabled = true;
+					btn_BM_TestStart.disabled = false;
+
+					toastr["success"]("Kalibre edildi!");
+					resolve(1);
+				}
+			}
+		}
+	);
+	}).
+	then(function(result){
+		/*
+		for(let i = 0; i < butonlar.length;i++){
+			butonlar[i].disabled=false;
+		}
+		kalibreBtn.disabled = true;
+		kalibreBtn.innerText = 'Kalibre edildi'; 
+		*/
+	}).
+	catch(function(err){
+		console.log(err);
+	});
+})
+
+
+//******************** Bakır Membran Start *****************
+
+//var TimerTestState;
+var Timer_BM_TestState;
+var state1 = true;
+var state2 = true;
+
+function BM_Start(){
+	let desired = document.getElementById("desired_pressure").value;
+	btn_BM_TestStart.disabled = true;
+	txt_BM_PatlamaBasincDegeri.value = null;
+
+	let veri = { "BMTestPressValue": desired };
+	$.ajax({
+        type: "POST",
+        url: 'http://localhost:5000/bm_start',
+		data: veri,
+		timeout: 10000,
+		error: function(){
+			btn_BM_TestStart.disabled = false;
+			toastr["error"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+		},
+        success: function (x){
+            if(x == 'done'){
+				btn_BM_TestStart.disabled = true;
+				toastr["success"]("Test başladı.");
+				TestStatus = true;
+
+				Timer_BM_TestState = setInterval(Timer_BM_TestStateEventHandler, 500);
+				state1 = true;
+				state2 = true;
+			}
+			else if(x == 'fail'){
+				btn_BM_TestStart.disabled = false;
+				toastr["warning"]("Test başlama işlemi başarısız!");
+			}
+			else if(x == 'disconnected'){
+				btn_BM_TestStart.disabled = false;
+				toastr["error"]("Test başlama işlemi başarısız!\nCihaz ile iletişim kurulamıyor!");
+			}
+        },
+    });
+}
+
+
+function Timer_BM_TestStateEventHandler(){
+	$.ajax({
+		type: "POST",
+		url: 'http://localhost:5000/bm_TestState',
+		success: function(x){
+			if((x["PunctureState"] == "Punctured") && (state1 == true))	//Tüp Patladı mı?
+			{
+				state1 = false;	//if'in içine bir kere girsin diye yapıldı.
+
+				if(x["IgiteState"] == false)	//Ateşleme gerçekleşti mi?
+				{
+					//O zaman Set değerine ulaşmadan tüp patladı.
+					document.getElementById('patlamaBasincDegeri').value = x["PuncturePressValue"];
+					toastr["info"]("Hazne patladı!");
+				}
+				else	//Ateşleme gerçekleşdiyse.
+				{
+					//O zaman tüp ateşleme sonucu patladı.
+					toastr["info"]("Hazne patladı!");
+				}
+			}
+			else if((x["PunctureState"] == "NotPunctured") && (state2 == true))	//Tüp patlamadıysa.
+			{
+				state2 = false;	//if'in içine bir kere girsin diye yapıldı.
+
+				if(x["testStatus"] == "start")
+				{
+					toastr["info"]("Hazne doldu!");
+					btn_BM_ignite.disabled = false;
+					btn_BM_Bitir.disabled = false;
+
+				}
+				else if(x["testStatus"] == "stop")
+				{
+					toastr["info"]("Boşaltma işlemi başladı.");
+				}
+			}
+
+			if(x["testStatus"] == "finished"){
+				toastr["success"]("Test işlemi bitti!");
+				clearInterval(Timer_BM_TestState);
+				btn_BM_TestStart.disabled = false;
+				btn_BM_Bitir.disabled = true;
+				btn_BM_ignite.disabled = true;
+
+				TestStatus = false;
+			}
+		}
+	});
+}
+
+
+//******************** Bakır Membran Bitir *****************
+function BM_BitirClickEvent()
+{
+	btn_BM_Bitir.disabled = true;
+
+	$.ajax({
+		type: 	"POST",
+		url:	'http://localhost:5000/bm_Bitir',
+		timeout: 2000,
+		error: function(){
+			toastr["error"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+		},
+		success: function(x){
+			if(x == 'OK'){
+				btn_BM_ignite.disabled = true;
+				toastr["info"]("Boşaltma işlemi başladı.");
+			}
+			else if(x == 'disconnected'){
+				btn_BM_Bitir.disabled = false;
+				toastr["error"]("Boşaltma işlemi başarısız!\nCihaz ile iletişim kurulamıyor!");
+			}
+			
+		}
+	});
+}
+
+
+//******************** Bakır Membran AcilBitir *****************
+function BM_AcilBitirClickEvent()
+{
+	btn_BM_TestStart.disabled = true;
+	btn_BM_Bitir.disabled = true;
+	btn_BM_ignite.disabled = true;
+
+	$.ajax({
+		type: 	"POST",
+		url:	'http://localhost:5000/bm_AcilBitir',
+		timeout: 2000,
+		error: function(){
+			toastr["error"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
+		},
+		success: function(x){	
+			if(x == 'OK'){
+				toastr["info"]("Boşaltma işlemi başladı.");
+			}
+			else if(x == 'disconnected'){
+				toastr["error"]("Boşaltma işlemi başarısız!\nCihaz ile iletişim kurulamıyor!");
+			}
+			//toastr["info"]("Boşaltma işlemi başladı.");
+		}
+	});
+}
+
+desireInput.addEventListener('input',function(){
+	if(this.value<0){
+		this.value = 0;
+	}else if(this.value>160){
+		this.value = 160;
+		$.ajax(
+				{
+				  type: "GET",
+				  url: 'http://localhost:5000/'+uri
+				}
+		   );
+	}
+})
+
+document.getElementById('btn-bm-ignite').addEventListener('click',function(e){
+	$.ajax({
+		type: "GET",
+		url: 'http://localhost:5000/bm_ignite',
+		success: function(res){
+			toastr["info"]("Patlatma işlemi yapıldı.");
+		}
+	});
+});
+
+</script>
+<script>
+  document.getElementById('btn-bm-connect').addEventListener('click',connect_bm);
+</script>
+{% endblock %}

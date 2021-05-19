@@ -1,0 +1,125 @@
+{% load static %}
+{% block manometre %}
+<form class="form-inline">
+  <button type="submit" class="btn btn-primary mb-2" id="uretimKontrolBaslangic">Bağlan</button>
+</form>
+<hr>
+<div class="row">
+  <form class="col-md-12" id="valfGovdeForm">
+    <div class="form-row">
+        <div class="form-group col-md-3">
+            <label for="baslangic">Tork değeri</label>
+            <input type="text" class="form-control" id="tork_1" value="240">
+        </div>
+        <div class="form-group col-md-2 text-center">
+            <label for="bitis">Uygun</label>
+            <input type="radio" class="form-control" id="uygunluk_1" name="tork-uygunluk" data-degillik="true" checked>
+        </div>
+        <div class="form-group col-md-3 text-center">
+            <label for="bitis">Uygun değil</label>
+            <input type="radio" class="form-control"   name="tork-uygunluk" data-degillik="false">
+        </div>
+        <div class="form-group col-md-4 text-center pt-4">
+          <select  id="sebep_1" class="form-control" disabled>
+            <option>Valf Gövde Arası Dişli Sıkışması</option>
+            <option>Manometre Kırılması</option>
+            <option>Sibop Kırılması</option>
+            <option>Basınç Anahtarı Kırılması</option>
+            <option>Emniyet Ventili Kırılması</option>
+          </select>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label for="baslangic">Valf Seri No:</label>
+                <input type="text" class="form-control col-md-10" id="vsn_1" value="">
+                </div>
+            <div class="form-group">
+                <label for="baslangic">Tüp Seri No:</label>
+                <input type="text" class="form-control col-md-10" id="tsn_1" value="">
+            </div>
+
+            <div class="form-group">
+              <label for="baslangic">Sodyum Miktarı:</label>
+              <input type="text" class="form-control col-md-10" id="sm_1" value="">
+            </div>
+
+        </div>
+
+
+            <div class="col-md-8">
+                    <div class="col-md-12">
+                      <div class="row" style="padding-left: 10px;">
+                        <h4  class="col-md-8" style="font-weight: 700;font-size: 15px;">Valf Seri No</h4>
+                        <h4 class="col-md-4" style="font-weight: 700;font-size: 15px;">Kalan Süre</h4>
+                      </div>
+                      <ul class="list-group">
+                         
+
+                        {% for kurlenme in govdekurlenmes %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">{{kurlenme.valf.id}}
+                          <span class="badge badge-primary badge-pill">{{kurlenme.kurlenme_bitis|timeuntil:now}}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+        </div>
+    </div>
+</form>
+</div>
+<hr>
+<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetValfGovde">KAYDET</button></div>
+<script type="text/javascript">
+    // $('input[type=radio]').change(function(){
+    //   this.parentElement.parentElement.lastElementChild.children[0].disabled = !this.parentElement.parentElement.lastElementChild.children[0].disabled;
+    // })
+</script>
+<script type="text/javascript">
+    document.getElementById('kaydetValfGovde').addEventListener('click',(e)=>{
+      Swal.showLoading();
+      e.preventDefault();
+ 
+      var veri = new Array(5);
+      let c = 1;
+       
+     
+      veri[0]=document.getElementById("vsn_"+c).value;
+      veri[1]=document.getElementById("tsn_"+c).value;
+      veri[2]=document.getElementById("sm_"+c).value;
+      veri[3]=document.getElementById("tork_"+c).value;
+      veri[4]=document.getElementById("uygunluk_"+c).checked;
+      var sel = document.getElementById("sebep_"+c );
+      var text= sel.options[sel.selectedIndex].text;
+      veri[5]=text;   
+      
+    
+    veri = JSON.stringify(veri);
+    console.log("veri",veri)
+     
+    let data = {
+      tur : 'valfgovde',
+      veri : veri
+    }
+    $.ajax({
+          type: "POST",
+          url: '/uretimkontrol',
+          data : data,
+          success: function (x){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Valf gövde başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  })
+</script>
+{% endblock %}

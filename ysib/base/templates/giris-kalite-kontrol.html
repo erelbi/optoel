@@ -1,0 +1,725 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<style>
+
+.tab-wrapper {
+  width : 100%;
+}
+.tab-menu{
+    padding-left: 0;
+    margin-bottom: 0;
+}
+.tab-menu li {
+  position:relative;
+  background-color: #fff;
+  color:#000;
+  display: inline-block;
+  padding:10px;
+  cursor:pointer;
+  z-index:0;
+}
+
+.tab-menu li:hover {
+  color:#000;
+}
+
+.tab-menu li.active {
+  color:#000;
+  opacity: 1;
+  border:1px solid rgba(0, 0, 0, .3);
+  border-bottom: 2px solid #1ab394;
+}
+
+.tab-menu li.active:hover {
+  color:#000;
+}
+
+.tab-content>div {
+  background-color: #fff;
+  box-sizing:border-box;
+  width: 100%;
+  padding: 50px;   
+  min-height:200px;
+  border-width: 0px 1px 1px;
+  border-color: rgba(0, 0, 0, .3);
+  border-style: solid;
+}
+/*
+.tabDisabled{
+    pointer-events:none;
+    opacity:0.6;
+}
+*/
+.tab-menu li{
+border-radius: 5px 5px 0 0;
+}
+.tab-menu li:not(.tabDisabled){
+  background:#1ab394 !important;
+  color: #fff;
+}
+.custom-file-label::after{
+  background-color: #1ab394;
+  color: #fff;
+  cursor: pointer;
+}
+</style>
+{% if mac == 'Linux' %}
+<style> 
+  .simple-keyboard {
+    /*max-width: 850px;*/
+    position:fixed;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    margin-bottom:0px;
+    width: 100%;
+    opacity: 0;
+    transition: margin-top 0s ease-in-out 0.3s, opacity 0.3s ease-in-out;
+    z-index:9999;
+    height: 230px;
+    display: none;
+}
+.show-keyboard {
+  display : block;
+  opacity: 1;
+  margin-top: 0;
+}
+.hg-button span {
+  pointer-events: none;
+}
+.custom-file-label:after{
+  color: #fff !important;
+  background-color: #4cb495 !important;
+}
+
+</style>
+<link href="{% static 'css/toastr.min.css' %}" rel="stylesheet">
+<link href="{% static 'css/skeyboard.css' %}" rel="stylesheet">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+<div class="tab-wrapper">
+  
+    <ul class="tab-menu">
+      <li class="active">Cihazlar</li>
+      <li id="manometreTab" class="tabDisabled">Manometre</li>
+      <li id="basincTab" class="tabDisabled">Basınç Anahtarı</li>
+      <li id="altNipelTab">Alt Nipel</li>
+      <li id="ustNipelTab">Üst Nipel</li>
+      <li id="bakirTab" class="tabDisabled" onclick="TabBakirMembranClickEvent()">Bakır Membran - Emniyet Ventili</li>
+      <!--<li id="emniyetTab" class="tabDisabled" onclick="TabEmniyetVentiliClickEvent()">Emniyet Ventili</li>-->
+    </ul>
+    
+    <div class="tab-content">
+      <!--giriş kalite kontrol-->
+      <div>
+        {% include 'external/cihazlar.html' %}
+      </div>
+      <div>
+        {% include 'external/manometre.html' %}
+      </div>
+      <div>
+       {% include 'external/basincAnahtari.html' %}
+      </div>
+      <div>
+        {% include 'external/altNipel.html' %}
+      </div>
+      <div>
+        {% include 'external/ustNipel.html' %}
+      </div>
+      <div>
+        {% include 'external/bakirMembran.html' %}
+      </div>
+
+      
+    </div>
+    
+  </div>
+  
+  
+{% endblock %}
+{% block script %}
+{% if mac == 'Linux' %}
+<script src="{% static 'js/skeyboard.js' %}"></script>
+<script>
+
+let Keyboard = window.SimpleKeyboard.default;
+let selectedInput;
+
+let keyboard = new Keyboard({
+  onChange: input => onChange(input),
+  onKeyPress: button => onKeyPress(button)
+});
+
+document.querySelectorAll(".textinput").forEach(input => {
+  input.addEventListener("focus", onInputFocus);
+  // Optional: Use if you want to track input changes
+  // made without simple-keyboard
+  input.addEventListener("input", onInputChange);
+});
+
+
+var els = document.querySelectorAll(".textinput");
+for (let i = 0; i < els.length; i++) {
+  const element = els[i];
+  element.addEventListener("focus", event => {
+    //keyboard.keyboardDOM.style.top = window.scrollY + screen.availHeight - 330 + "px";
+    keyboard.keyboardDOM.classList.add("show-keyboard");
+  });
+}
+
+document.addEventListener("click", event => {
+  if (
+    // Target is not keyboard element
+    event.target !== keyboard.keyboardDOM &&
+    // Target is not the input
+    !event.target.classList.contains('textinput') &&
+    // Target is not a keyboard button
+    !event.target.classList.contains("hg-button")
+  ) {
+    hideKeyboard();
+  }
+});
+
+function onInputFocus(event) {
+  selectedInput = `#${event.target.id}`;
+
+  keyboard.setOptions({
+    inputName: event.target.id
+  });
+}
+
+function onInputChange(event) {
+  keyboard.setInput(event.target.value, event.target.id);
+}
+
+function onChange(input) {
+  console.log("Input changed", input);
+  document.querySelector(selectedInput || ".textinput").value = input;
+}
+
+function onKeyPress(button) {
+  console.log("Button pressed", button);
+
+  /**
+   * Shift functionality
+   */
+  if (button === "{lock}" || button === "{shift}") handleShiftButton();
+}
+
+function handleShiftButton() {
+  let currentLayout = keyboard.options.layoutName;
+  let shiftToggle = currentLayout === "default" ? "shift" : "default";
+
+  keyboard.setOptions({
+    layoutName: shiftToggle
+  });
+}
+
+function showKeyboard() {
+  keyboard.keyboardDOM.classList.add("show-keyboard");
+}
+
+function hideKeyboard() {
+  keyboard.keyboardDOM.classList.remove("show-keyboard");
+}
+
+</script>
+{% endif %}
+<script src="{% static 'js/toastr.min.js' %}"></script>
+<script type="text/javascript">
+  toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+  }
+</script>
+<script>
+function getdevice_bm() {
+    Swal.showLoading();
+    document.getElementById('bakirTab').classList.add('tabDisabled');
+    document.getElementById('manometreTab').classList.add('tabDisabled');
+    document.getElementById('basincTab').classList.add('tabDisabled');
+    //document.getElementById('emniyetTab').classList.add('tabDisabled');
+   $.ajax(
+        {
+          type: "GET",
+          url: 'http://localhost:5000/check_devices',
+
+          success: function (x){
+                let el = document.getElementById('btn-bm-connect');
+                el.disabled = false;
+                el.innerHTML = 'Bağlan';
+                document.getElementById('cihaz').innerText = x;
+                if(x.indexOf('BakirMembranCihaz')>0){
+                  document.getElementById('bakirTab').classList.remove('tabDisabled');
+                }
+                if(x.indexOf('ManometreCihaz')>0){
+                  document.getElementById('manometreTab').classList.remove('tabDisabled');
+                }
+                if(x.indexOf('BasincSwitchCihaz')>0){
+                   document.getElementById('basincTab').classList.remove('tabDisabled');
+                }
+                /*
+                if(x.indexOf('EmniyetVentiliCihaz')>0){
+                   document.getElementById('emniyetTab').classList.remove('tabDisabled');
+                }*/
+                Swal.close();
+          },
+        }
+       );
+}
+document.getElementById('CihazlariGuncelle').addEventListener('click',getdevice_bm)
+</script>
+<script>
+$(document).ready(function() {
+  
+  var $wrapper = $('.tab-wrapper'),
+      $allTabs = $wrapper.find('.tab-content > div'),
+      $tabMenu = $wrapper.find('.tab-menu li')
+  
+  $allTabs.not(':first-of-type').hide();  
+  $tabMenu.filter(':first-of-type').find(':first').width('100%')
+  
+  $tabMenu.each(function(i) {
+    $(this).attr('data-tab', 'tab'+i);
+  });
+  
+  $allTabs.each(function(i) {
+    $(this).attr('data-tab', 'tab'+i);
+  });
+  
+  $tabMenu.on('click', function() {
+    
+    var dataTab = $(this).data('tab'),
+        $getWrapper = $(this).closest($wrapper);
+    
+    $getWrapper.find($tabMenu).removeClass('active');
+    $(this).addClass('active');
+    
+    $getWrapper.find($allTabs).hide();
+    $getWrapper.find($allTabs).filter('[data-tab='+dataTab+']').show();
+  });
+
+});//end ready
+</script>
+<script src="{% static 'js/gauge.min.js' %}"></script>
+<script>
+var gaugeMajorTicks = [
+        "0",
+        "10",
+        "20",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+         "90",
+        "100",
+        "110",
+        "120",
+        "130",
+        "140",
+        "150",
+        "160"
+    ]
+  let w = document.getElementById("basinc-gauge").offsetWidth;
+  var gauge = new RadialGauge({
+    renderTo: 'basinc-gauge',
+    units: "bar",
+    minValue: 0.0,
+    maxValue: 160.0,
+    height: 200,
+    majorTicks: gaugeMajorTicks,
+    minorTicks: 2,
+    highlights : [
+      { from: 0, to: 160, color: '#fff' },
+    ],
+    strokeTicks: true,
+    colorPlate: "#fff",
+    borderShadowWidth: 0,
+    valueInt : 1,
+    valueDec : 1,
+    borders: false,
+    needleType: "arrow",
+    needleWidth: 2,
+    needleCircleSize: 7,
+    needleCircleOuter: true,
+    needleCircleInner: false,
+    animationDuration: 100,
+    animationRule: "linear"
+}).draw();
+</script>
+<script>
+
+var gauge2 = new RadialGauge({
+    renderTo: 'mano-gauge',
+    units: "bar",
+    minValue: 0,
+    maxValue: 160,
+    height: 200,
+    majorTicks: gaugeMajorTicks,
+    highlights : [
+      { from: 0, to: 160, color: '#fff' },
+    ],
+    minorTicks: 2,
+    valueInt : 1,
+    valueDec : 1,
+    strokeTicks: true,
+    colorPlate: "#fff",
+    borderShadowWidth: 0,
+    borders: false,
+    needleType: "arrow",
+    needleWidth: 2,
+    needleCircleSize: 7,
+    needleCircleOuter: true,
+    needleCircleInner: false,
+    animationDuration: 100,
+    animationRule: "linear"
+}).draw();
+
+var gauge3 = new RadialGauge({
+    renderTo: 'bakir-gauge',
+    units: "bar",
+    minValue: 0,
+    maxValue: 160,
+    height: 200,
+    majorTicks: gaugeMajorTicks,
+    highlights : [
+      { from: 0, to: 160, color: '#fff' },
+    ],
+    minorTicks: 2,
+    valueInt : 1,
+    valueDec : 1,
+    strokeTicks: true,
+    colorPlate: "#fff",
+    borderShadowWidth: 0,
+    borders: false,
+    needleType: "arrow",
+    needleWidth: 2,
+    needleCircleSize: 7,
+    needleCircleOuter: true,
+    needleCircleInner: false,
+    animationDuration: 100,
+    animationRule: "linear"
+}).draw();
+
+var gauge4 = new RadialGauge({
+    renderTo: 'emniyet-gauge',
+    units: "bar",
+    minValue: 0,
+    maxValue: 160,
+    height: 200,
+    majorTicks: gaugeMajorTicks,
+    highlights : [
+      { from: 0, to: 160, color: '#fff' },
+    ],
+    minorTicks: 2,
+    valueInt : 1,
+    valueDec : 1,
+    strokeTicks: true,
+    colorPlate: "#fff",
+    borderShadowWidth: 0,
+    borders: false,
+    needleType: "arrow",
+    needleWidth: 2,
+    needleCircleSize: 7,
+    needleCircleOuter: true,
+    needleCircleInner: false,
+    animationDuration: 100,
+    animationRule: "linear"
+}).draw();
+</script>
+
+<script>
+  document.getElementById('kaydetManometre').addEventListener('click',(e)=>{
+    Swal.showLoading();
+    var veri = new Array(8); 
+    for (var i = 0; i < veri.length; i++) { 
+        veri[i] = new Array(3); 
+    } 
+    let c = 0;
+    let r = 1;
+    let inputs = document.querySelectorAll('#manometreFormu input[type="text"]');
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 3; j++){
+        if(j==2){
+          veri[i][j] = document.querySelector(`input[name="manometre${r}"]:checked`).value;
+          r++;
+        }else{
+          veri[i][j] = inputs[c].value;
+          c++;
+        }
+      }
+    }
+    veri = JSON.stringify(veri)
+    e.preventDefault();
+    let data = {
+      tur : 'manometre',
+      veri : veri
+    }
+    //console.log(veri)
+    $.ajax(
+        {
+          type: "POST",
+          url: '/giriskalite',
+          data : data,
+          success: function (x){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Test sonucu başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  })
+</script>
+
+<script>
+function fill_bm() {
+
+  document.getElementById("demo").innerHTML = "Hello World";
+   $.ajax(
+        {
+          type: "GET",
+          url: 'http://localhost:5000/fill_on',
+          success: function (x){
+          document.getElementById("demo").innerHTML = x;
+          },
+        }
+       );
+}
+</script>
+
+<script>
+function bm_auto_start() {
+  let desired = document.getElementById("desired_pressure").value;
+  //document.getElementById("demo").innerHTML = "bm_auto_start";
+  let veri = { "veri": desired };
+   $.ajax(
+        {
+          type: "POST",
+          url: 'http://localhost:5000/bm_auto_start',
+          data: veri ,
+          success: function (x){
+            x = +x;
+            if(x != 'done'){
+              document.getElementById('patlamaBasincDegeri').value = x;
+            }
+          },
+        }
+    );
+}
+</script>
+<script>
+function ev_auto_start() {
+  let desired = document.getElementById("desired_pressure_ev").value;
+  document.getElementById("demo").innerHTML = "ev_auto_start";
+  let veri = { "veri": desired };
+   $.ajax(
+        {
+          type: "POST",
+          url: 'http://localhost:5000/ev_auto_start',
+          data: veri ,
+          success: function (x){
+            x = +x;
+            if(x != 'done'){
+              document.getElementById('patlamaBasincDegeriEV').value = x;
+            }
+          },
+        }
+    );
+}
+</script>
+
+<script>
+  document.getElementById('kaydetBasinc').addEventListener('click',(e)=>{
+    Swal.showLoading();
+    var veri = new Array(8); 
+    for (var i = 0; i < veri.length; i++) { 
+        veri[i] = new Array(4); 
+    } 
+    let c = 0;
+    let r = 1;
+    let inputs = document.querySelectorAll('#basincAnahtariFormu input[type="text"]');
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 4; j++){
+        if(j==3){
+          veri[i][j] = document.querySelector(`input[name="basinc${r}"]:checked`).value;
+          r++;
+        }else{
+          veri[i][j] = inputs[c].value;
+          c++;
+        }
+      }
+    }
+    veri = JSON.stringify(veri)
+    e.preventDefault();
+    let data = {
+      tur : 'basinc',
+      veri : veri
+    }
+    //console.log(veri)
+    $.ajax(
+        {
+          type: "POST",
+          url: '/giriskalite',
+          data : data,
+          success: function (x){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Test sonucu başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  })
+</script>
+
+<script type="text/javascript">
+    // Aldığım yer : https://stackoverflow.com/questions/13538832/convert-pdf-to-a-base64-encoded-string-in-javascript
+    function convertToBase64(a) {
+        Swal.showLoading();
+        //Read File
+        var selectedFile = a.files;
+        //Check File is not Empty
+        if (selectedFile.length > 0) {
+            // Select the very first file from list
+            var fileToLoad = selectedFile[0];
+            // FileReader function for read the file.
+            var fileReader = new FileReader();
+            var base64;
+            // Onload of file read the file content
+            fileReader.onload = function(fileLoadedEvent) {
+                base64 = fileLoadedEvent.target.result;
+                // Print data in console
+                //document.getElementById('binaryEmn').value = base64;
+                Swal.fire({
+                  title: 'Başarılı!',
+                  text: 'Pdf başarıyla yüklendi.',
+                  icon: 'success',
+                  confirmButtonText: 'Tamam'
+                })
+            };
+            // Convert data to base64
+            fileReader.readAsDataURL(fileToLoad);
+        }
+        return base64;
+    }
+</script>
+
+<script>
+  $('#pdfAlt').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+     $('#pdfIsmiAlt').val(fileName);
+  });
+
+  $('#pdfUst').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+     $('#pdfIsmiUst').val(fileName);
+  }); 
+  $('#pdfBak').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+     $('#pdfIsmiBak').val(fileName);
+  }); 
+  $('#pdfEmn').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+     $('#pdfIsmiEmn').val(fileName);
+  }); 
+</script>
+<script>
+      // manometre gauge
+      manometreInterval = setInterval(()=>{
+      $.ajax(
+          {
+            type: "GET",
+            url: 'http://localhost:5000/mano_get_pressure',
+            success: function (x){
+              gauge2.value = x;
+            },
+          }
+         );
+      },1000)
+</script>
+<script>
+    // basınc gauge
+    basincInterval = setInterval(()=>{
+    $.ajax(
+        {
+          type: "GET",
+          url: 'http://localhost:5000/ba_get_pressure',
+          success: function (x){
+            gauge.value = x;
+          },
+        }
+       );
+    },1000)
+</script>
+<script>
+    //bakır membran gauge
+  bakirInterval = setInterval(()=>{
+    $.ajax(
+        {
+          type: "GET",
+          url: 'http://localhost:5000/bm_get_pressure',
+          success: function (x){
+            gauge3.value = x;
+          },
+        }
+       );
+    },1000)
+</script>
+<script>
+    // emniyet gauge
+    emniyetInterval = setInterval(()=>{
+    $.ajax(
+        {
+          type: "GET",
+          url: 'http://localhost:5000/ev_get_pressure',
+           crossDomain:true,
+          success: function (x){
+            gauge4.value = x;
+          },
+        }
+       );
+    },1000)
+</script>
+{% endblock %}

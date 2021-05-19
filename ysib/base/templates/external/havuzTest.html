@@ -1,0 +1,401 @@
+{% load static %}
+{% block manometre %}
+<style>
+  .gerisayim{
+    list-style: none;
+    display: block;
+  }
+  .gerisayim li{
+    display: inline-block;
+    padding: 10px;
+    background: lightgray;
+    font-size: 24px;
+  }
+  .glyphicon-ok{
+    float: right;
+    color: green;
+  }
+  .glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+    float: right;
+  }
+  #adimlar li span {
+    float: right;
+
+  }
+  @-webkit-keyframes spin2 {
+      from { -webkit-transform: rotate(0deg);}
+      to { -webkit-transform: rotate(360deg);}
+  }
+
+  @keyframes spin {
+      from { transform: scale(1) rotate(0deg);}
+      to { transform: scale(1) rotate(360deg);}
+  }
+  .indicator-cont{
+    width: 100%;
+    border-radius: 5px;
+    font-weight: 500;
+    border: 2px solid black;
+    background: ;
+    height: 40px;
+    line-height: 34px;
+    font-size: 18px;
+    color: #000;
+    padding: 0 6px;
+  }
+  .birim{
+    float: right;
+  }
+</style>
+<form class="form-inline">
+  <!--
+  <div class="col-md-2">
+      <button class="btn btn-primary" style="width: 80px;height: 80px;border-radius: 50%;padding:0;" id="hv_connect">BAĞLAN</button>
+  </div>
+  -->
+  <div class="col-md-2">
+      <button class="btn btn-primary" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 20px;padding: 0;" id="hv_start">BAŞLAT</button>
+  </div>
+  <!--
+  <div class="col-md-2">
+      <button class="btn btn-danger" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 40px;padding: 0;" id="hv_bitir">BİTİR</button>
+  </div>
+  -->
+  <div class="col-md-2">
+      <button class="btn btn-danger" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 60px;padding: 0;" id="hv_acil_bitir">ACİL BİTİR</button>
+  </div>
+</form>
+<div class="row mt-4">
+<form class="col-md-10" onsubmit = "event.preventDefault();" id="havuzTestForm">
+  <div id="addableField">
+      <div class="form-row">
+        <div class="col-md-2 text-center">Seri no</div> 
+        <div class="col-md-1 text-center">Uygun</div>
+        <div class="col-md-2 text-center">Uygun değil</div>
+        <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
+        <div class="col-md-2 text-center">Tüp Basıncı</div>
+        <div class="col-md-3 text-center">Sebep</div>
+          <div class="form-group col-md-2">
+              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_1"  name="vsn">
+          </div>
+         
+
+
+        <div class="form-group col-md-1 text-center">
+          <input name="havuz-uygunluk" id="uygunluk_1" data-degil="true" type="radio">
+      </div>
+      <div class="form-group col-md-2 text-center">
+          <input name="havuz-uygunluk" id="uygunlukdegil_1" data-degil="" type="radio" checked>
+      </div>
+
+
+          <div class="form-group col-md-2">
+              <input type="text" id="sicaklik_1" value=0  class="form-control acma">
+          </div>
+          <div class="form-group col-md-2">
+              <input type="text" id="basinc_1" value=0 class="form-control kapatma">
+          </div>
+          <div class="form-group col-md-3 text-center"   >
+              <select class="form-control"  id="sebep_1">
+                <option >Alt-Üst Nipel arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                <option >Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                <option >Baçınç Anahtarı Açma Değeri Hatalı</option>
+                <option > Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                <option >Manometre Alt Nipel Arası Kaçak</option>
+                <option > Sibop Alt Nipel Arası Kaçak</option>
+              </select>
+
+              
+
+
+          </div>
+      </div>
+    </div>
+
+</form>
+
+<div class="col-md-2" style="padding-left: 0;">
+  <!--
+  <div class="form-group">
+      <input type="text" class="col-md-12" id="temp" value="72" style="margin-bottom: 0px;" disabled>
+  </div>
+  -->
+  <div class="indicator-cont" style="margin-top:20px;"><span class="indicator" id="valfTestIndicator">00</span><span class="birim">°C</span></div>
+</div>
+
+</div>
+  <!--
+  <ul class="gerisayim p-0 mt-4 col-md-12">
+      <li class="minutestest">02</li>
+      <li class="secondstest">00</li>
+  </ul>
+  -->
+<hr>
+<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetHavuzTest">KAYDET</button></div>
+<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static 'js/sweetalert2.min.js' %}"></script>
+
+<!-- havuz test başlangıç -->
+<script type="text/javascript">
+    // $('input[type=radio]').change(function(){
+    //           this.parentElement.parentElement.lastElementChild.children[0].disabled = !this.parentElement.parentElement.lastElementChild.children[0].disabled;
+    //         })
+</script>
+
+<script type="text/javascript">
+
+  function addSubmit(e){
+    if (e.keyCode === 13 && e.target.value){
+
+    }
+     
+
+
+  }
+
+/*
+  document.getElementById('hv_connect').addEventListener('click',function(e){
+      e.preventDefault();
+      let tempIndicator = document.getElementById("tempIndicator");
+
+      let temp = setInterval(()=>{
+          $.ajax({
+              type: "GET",
+              url: 'http://localhost:5000/hv_get_temperature',
+              success: function (x){
+                  tempIndicator.value = (x);
+                  document.getElementById('temp_now').value = x;
+                  document.getElementById('tempNow').innerText = x;
+              },
+          });
+      },1000);
+  });
+*/
+</script>
+
+<script type="text/javascript">
+
+  let txt_HavuzTest_Temperature = document.getElementById('valfTestIndicator');
+  let btn_HavuzTest_Baslat = document.getElementById('hv_start');
+  let btn_HavuzTest_AcilBitir = document.getElementById('hv_acil_bitir');
+  btn_HavuzTest_AcilBitir.disabled = true;
+
+  let Timer_HavuzTest_TestStatus;
+
+  var basliyorState = false;
+  var basladiState = false;
+  var bitiriliyorState = false;
+  var bittiState = false;
+  var acilbitiriliyorState = false;
+  var acilbitirildiState = false;
+
+
+ 
+
+  document.getElementById('hv_start').addEventListener('click', function(e){
+      e.preventDefault();
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/hv_start',
+          timeout: 3000,
+          success: function(x){
+              if(x == 'success'){
+                  toastr["info"]("Başlat komutu alındı. Sıcaklık 65°C olduğunda kapaklar kilitlenecek");
+                  btn_HavuzTest_AcilBitir.disabled = false;
+
+                  basliyorState = false;
+                  basladiState = false;
+                  bitiriliyorState = false;
+                  bittiState = false;
+                  acilbitiriliyorState = false;
+                  acilbitirildiState = false;
+
+                  Timer_HavuzTest_TestStatus = setInterval(Timer_HavuzTest_TestStatusEventHandler, 2000);
+
+              }
+              else if(x == 'fail'){
+                  toastr["warning"]("Bir hata oluştu");
+                  el.disabled = false;
+              }
+          },
+          error(jqXHR, textStatus){
+              el.disabled = false;
+              toastr["error"]("Bağlantı hatası! Uygulmananın çalışır durumda olduğundan emin olunuz!");
+              console.log(jqXHR);
+          }
+      });
+  });
+
+
+  document.getElementById('hv_acil_bitir').addEventListener('click', function(e){
+      e.preventDefault();
+      var el = e.target;
+      el.disabled = true;
+      toastr["info"]("Acil Bitirme işlemi başladı. Manyetik kilitler açılıyor.");
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/hv_acil_bitir',
+          timeout: 3000,
+          success: function(x){
+              if(x == 'success'){
+                  toastr["info"]("Manyetik kilitler açıldı");
+                  btn_HavuzTest_Baslat.disabled = false;
+              }
+              else if(x == 'fail'){
+                  toastr["warning"]("Bir hata oluştu");
+                  el.disabled = false;
+              }
+          },
+          error(jqXHR, textStatus){
+              el.disabled = false;
+              toastr["error"]("Bağlantı hatası! Uygulmananın çalışır durumda olduğundan emin olunuz!");
+              console.log(jqXHR);
+          }
+      });
+  });
+
+  
+
+  function Timer_HavuzTest_TestStatusEventHandler(){
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/hv_TestStatus',
+          timeout: 3000,
+          success: function(x){
+              if(x['testState'] == 'basliyor' && basliyorState == false){
+                  toastr["info"]("Kapaklar kilitleniyor...");
+                  btn_HavuzTest_AcilBitir.disabled = true;
+                  basliyorState = true;
+              }
+              else if(x['testState'] == 'basladi' && basladiState == false){
+                  toastr["success"]("Kapaklar kilitlendi. Test Başladı.");
+                  btn_HavuzTest_AcilBitir.disabled = false;
+                  basladiState = true;
+              }
+              else if(x['testState'] == 'bitiriliyor' && bitiriliyorState == false){
+                  toastr["info"]("Manyetik kilitler açılıyor...");
+                  btn_HavuzTest_AcilBitir.disabled = true;
+                  bitiriliyorState = true;
+              }
+              else if(x['testState'] == 'bitti' && bittiState == false){
+                  toastr["success"]("Manyetik kilitler açıldı. Test işlemi bitti.");
+                  btn_HavuzTest_Baslat.disabled = false;
+                  btn_HavuzTest_AcilBitir.disabled = true;
+                  bittiState = true;
+                  clearInterval(Timer_HavuzTest_TestStatus);
+              }
+              else if(x['testState'] == 'acilbitiriliyor' && acilbitiriliyorState == false){
+                  toastr["info"]("Acil bitirme işlemi başladı. Manyetik kilitler açılıyor...");
+                  btn_HavuzTest_AcilBitir.disabled = true;
+                  acilbitiriliyorState = true;
+              }
+              else if(x['testState'] == 'acilbitirildi' && acilbitirildiState == false){
+                  toastr["info"]("Acil bitirildi. Manyetik kilitler açıldı.");
+                  btn_HavuzTest_Baslat.disabled = false;
+                  btn_HavuzTest_AcilBitir.disabled = true;
+                  acilbitirildiState = true;
+                  clearInterval(Timer_HavuzTest_TestStatus);
+              }
+          }
+      });
+  }
+
+
+/*
+  document.getElementById('hv_start').addEventListener('click',function(e){
+      e.preventDefault();
+      console.log('!!!!');
+      $.ajax({
+          type: "GET",
+          url: 'http://localhost:5000/hv_start',
+          success: function (x){
+          },
+      });
+  });
+*/
+</script>
+
+<script type="text/javascript">
+/*
+  document.getElementById('hv_bitir').addEventListener('click',function(e){
+      e.preventDefault();
+      $.ajax({
+          type: "GET",
+          url: 'http://localhost:5000/hv_bitir',
+          success: function (x){
+          },
+      });
+  });
+  */
+</script>
+
+<script type="text/javascript">
+/*
+  document.getElementById('hv_acil_bitir').addEventListener('click',function(e){
+      e.preventDefault();
+      $.ajax({
+          type: "GET",
+          url: 'http://localhost:5000/hv_bitir',
+          success: function (x){
+          },
+      });
+      
+  });
+  */
+</script>
+
+<script type="text/javascript">
+    document.getElementById('kaydetHavuzTest').addEventListener('click',(e)=>{
+      Swal.showLoading();
+      e.preventDefault();
+      console.log('kaydetHavuzTest')
+
+      var veri = new Array(5);
+      let c = 1;
+       
+     
+      veri[0]=document.getElementById("seri_no_"+c).value;
+      veri[1]=document.getElementById("uygunluk_"+c).checked;
+      veri[2]=document.getElementById("sicaklik_"+c).value;
+      veri[3]=document.getElementById("basinc_"+c).value;
+      
+      var sel = document.getElementById("sebep_"+c );
+      var text= sel.options[sel.selectedIndex].text;
+      veri[4]=text;   
+    
+    veri = JSON.stringify(veri);
+    console.log("veri",veri)
+
+    let data = {
+      tur : 'havuztest',
+      veri : veri
+    }
+    $.ajax({
+          type: "POST",
+          url: '/uretimkontrol',
+          data : data,
+          success: function (x){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: 'Havuz test başarılı bir şekilde eklendi!',
+              icon: 'success',
+              confirmButtonText: 'Tamam'
+            })
+          },
+          error(err){
+            console.log;(err);
+          }
+        }
+      );
+  })
+</script>
+
+{% endblock %}

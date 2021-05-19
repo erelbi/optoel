@@ -1,0 +1,172 @@
+{% load static %}
+{% load qr_code %}
+<html>
+<head>
+  <title>MasterDefence</title>
+  <style>
+  	body{
+   		margin: 0;
+  		padding: 0;
+  		height: 24cm;
+  		font-family: Arial;
+  	}
+  	*{
+  		font-family: Ubuntu;
+  	}
+  	@page {
+    size: a4 portrait;
+    margin: 15mm 10mm 5mm 10mm;
+    counter-increment: page;
+	    @bottom-center {
+	        content: 'MasterDefence - Sayfa ' counter(page);
+	        white-space: pre;
+	        color: black;
+	    }
+	}
+	.logo{
+		width: 200px;
+		height: 40px;
+		background-size: contain;
+		background-position: center;
+		background-repeat: no-repeat;
+	}
+	.baslik{
+		font-weight: 700;
+		text-align: center;
+		text-decoration: underline;	
+	}
+	.bold{
+		font-weight: 700;
+	}
+	.govde1{
+		display:flex;
+		flex-direction: row;
+	}
+	.sol{
+		width: 50%;
+	}
+	.sag{
+		width: 50%;
+	}
+	h4{
+		font-weight: 400;
+	}
+	ul{
+		padding:10px;
+	}
+	li{
+		margin-left: 0;
+		line-height: 1.2;
+	}
+	th, td {
+	  padding: 6px;
+	  border:1px solid lightgray;
+	  text-align: left;
+	}
+	td img{
+		width: 20px;
+		margin-left: 10px;
+	}
+	#qr{
+		position: absolute;
+		top:-10px;
+		right: 50px;
+	}
+  </style>
+</head>
+<body>
+	<div>
+		<img class="logo" src="{% static 'img/logo.png' %}">
+		<h3 class="baslik">YSIB Tüp Üretim Bilgisi</h3>
+		<div id="qr">{% qr_from_text qr size=3 image_format="png" error_correction="L" %}</div>
+	</div>
+	<div class="govde1">
+		<div class="sol">
+			<h4 class="bold">Tüp Bilgileri</h4>
+			<h4>İş Emri No :{{ is_emri }}</h4>
+			<h4>Tüp SN/ Sevk SN : </h4>
+			<h4>Switch Seri No :{{ switchno }}</h4>
+			<h4>Manometre Seri No : {{ manometreno }}</h4>
+			<h4>Üst Nipel No : {{ ustnipelno }}</h4>
+			<h4>Alt Nipel No : {{ altnipelno }}</h4>
+			<h4>Membran Tipi : {{ membranTipi }}</h4>
+			<h4>Emniyet Ventili Tipi : {{ ventilTipi }}</h4>
+		</div>
+		<div class="sag">
+			<h4 class="bold">Dolum Bilgileri</h4>
+			<h4>Boş Gram : {{ bosAgirlik }}</h4>
+			<h4>Dolu Gram : {{ doluAgirlik }}</h4>
+			<h4>Azotlandırma Basıncı : {{ azot }}</h4>
+			<h4>Azotlu Ağırlık : </h4>
+		</div>
+	</div>
+	<div>
+		<h3 class="baslik">71 °C Test Sonrası</h3>
+	</div>
+	<div class="govde1">
+		<div class="sol">
+			<h4>Basınç : 57</h4>
+			<h4>Fünye Direnci : 57</h4>
+		</div>
+		<div class="sag">
+			<h4>Basınç Direnci : 57</h4>
+			<h4>Tüp Cidar Sıcaklığı : 57</h4>
+		</div>
+	</div>
+	<div>
+		<h3 class="baslik">Üretim Bilgisi</h3>
+	</div>
+	<table>
+		<thead>
+			<th>İşlem Adımı</th>
+			<th>İşlem Tarihi</th>
+			<th>İşlemi Gerçekleştiren</th>
+			<th>Durum</th>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Valf Montaj</td>
+				<td>{{ valfmontajTarih }}</td>
+				<td>{{ valfmontajPersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>Valf Kürlenme</td>
+				<td>{{ valfmontajTarih }}</td>
+				<td>{{ valfmontajPersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>Valf Sızdırmazlık</td>
+				<td>{{ valftestTarih }}</td>
+				<td>{{ valftestPersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>Valf Tüp Montaj</td>
+				<td>{{ valfgovdeTarih }}</td>
+				<td>{{ valfgovdePersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>Tüp Dolum </td>
+				<td>{{ fm200Tarih }}</td>
+				<td>{{ fm200Personel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>42 Bar Azot Gazı Dolumu</td>
+				<td>{{ havuztestTarih }}</td>
+				<td>{{ havuztestPersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+			<tr>
+				<td>71 Derece Test Sonrası Veri Girişleri</td>
+				<td>{{ finalmontajTarih }}</td>
+				<td>{{ finalmontajPersonel }}</td>
+				<td><img src="{% static 'img/close.svg' %}"></td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+</html>

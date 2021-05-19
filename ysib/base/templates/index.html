@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+<link href="{% static 'css/bootstrap-tables.css' %}" rel="stylesheet">
+<link href="{% static 'css/selectize.min.css' %}" rel="stylesheet">
+<style>
+  .zaman li{
+    float: left;
+    margin-right: 12px;
+  }
+  .btn-outline-primary{
+    border-color: #1ab394;
+    color: #1ab394;
+  }
+  .btn-outline-primary:hover{
+    border-color: #1ab394;
+    background-color: #1ab394;
+    color: #fff;
+  }
+  .zaman input[type="radio"]{
+    display: none;
+  }
+  .zaman input[type="radio"]:checked + label{
+    background-color: #1ab394;
+    color: #fff;
+  }
+  .zaman li label{
+
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="card mb-4">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    Kalite Kontrol Genel Bakış
+  </div>
+
+  <ul class="zaman" style="list-style: none;margin-top: 20px;">
+    <li>
+      <input id="son1gun" type="radio" name="zaman" value="1">
+      <label for="son1gun" class="btn btn-outline-primary">Son 1 Gün</label>
+    </li>
+    <li>
+      <input id="son1hafta" type="radio" name="zaman" value="7">
+      <label for="son1hafta" class="btn btn-outline-primary">Son 1 Hafta</label>
+    </li>
+    <li>
+      <input id="son2hafta" type="radio" name="zaman" value="14">
+      <label for="son2hafta" class="btn btn-outline-primary">Son 2 Hafta</label>
+    </li>
+    <li>
+      <input id="son1ay" type="radio" name="zaman" value="30">
+      <label for="son1ay" class="btn btn-outline-primary">Son 1 Ay</label>
+    </li>
+    <li>
+      <input id="son2ay" type="radio" name="zaman" value="60">
+      <label for="son2ay" class="btn btn-outline-primary">Son 2 Ay</label>
+    </li>
+    <li>
+      <input id="son3ay" type="radio" name="zaman" value="90">
+      <label for="son3ay" class="btn btn-outline-primary">Son 3 Ay</label>
+    </li>
+    <li>
+      <input id="son6ay" type="radio" name="zaman" value="180">
+      <label for="son6ay" class="btn btn-outline-primary">Son 6 Ay</label>
+    </li>
+    <li>
+      <input id="son12ay" type="radio" name="zaman" value="360">
+      <label for="son12ay" class="btn btn-outline-primary">Son 1 Yıl</label>
+    </li>
+  </ul>
+
+  <div class="card-body row">
+    <div class="col-lg-12">
+      <div id="kaliteBar"></div>
+    </div>
+  </div>
+</div>
+
+  <form class="form-row">
+      
+      <div class="form-group col-md-3">
+        <label for="uretimdurum">İş Emrini Seçin</label>
+          <select id="uretimdurum" required>
+            <option value="0" disabled selected>Seçin</option>
+            {% for emir in emirler %}
+              <option value="{{ emir.is_emri }}">{{ emir.is_emri }}  {{ emir.date }}</option>
+            {% endfor %}
+          </select>
+        </div>
+  </form>
+
+<div class="card mb-4">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    Üretim Kontrol Genel Bakış
+  </div>
+  <div class="card-body row">
+    <div class="col-lg-12">
+      <div id="uretimBar"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card mb-4">
+  <div class="card-header"  style="color: #c7ae3c;background-color: #2f4050; font-size: 20px;">
+    Üretim Kontrol Tablosu
+  </div>
+  <div class="card-body row">
+    <div class="col-lg-12">
+
+    <div id="toolbar">
+    </div>
+    
+    <table id="table" 
+         data-toggle="table"
+         data-filter-control="true" 
+         data-click-to-select="true"
+         data-show-columns="true"
+         data-search="true"
+         data-toolbar="#toolbar">
+    <thead>
+      <tr>
+        <th data-field="isemri" data-sortable="true">İş Emri</th>
+        <th data-field="tup_sayisi" data-sortable="true">Valf Montaj</th>
+        <th data-field="baslangic" data-sortable="true">Valf Test</th>
+        <th data-field="bitis" data-sortable="true">Valf Gövde Montaj</th>
+        <th data-field="amir" data-sortable="true">FM200 Azot Dolumu</th>
+        <th data-field="zaman" data-sortable="true">Havuz Test</th>
+        <th data-field="durum" data-sortable="true">Final Montaj</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for uretim in uretims %}
+        <tr>
+          <td>{{ uretim.is_emri }}</td>
+          <td>{{ uretim.valfmontaj }}</td>
+          <td>{{ uretim.valftest }}</td>
+          <td>{{ uretim.valfgovde }}</td>
+          <td>{{ uretim.fm200 }}</td>
+          <td>{{ uretim.havuztest }}</td>
+          <td>{{ uretim.finalmontaj }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block script %}
+
+<script src="{% static 'js/apexchart.js' %}"></script>
+
+<script>
+  
+   var optionskalite = {
+        series : [{
+            name: "Kabul",
+            data: [0,0,0,0,0,0]
+          }, {
+            name: "Red",
+            data: [0,0,0,0,0,0]
+        }],
+        chart: {
+          type: 'bar',
+          height: 400,
+          toolbar:{
+            show: false
+          },
+        },
+        plotOptions: {
+          bar: {
+            dataLabels: {
+              position: 'top',
+            },
+          }
+        },
+        yaxis: {
+          labels: {
+            formatter: (val) => {
+              if(parseInt(val) !== parseFloat(val)){
+                return "";
+              } 
+              return parseInt(val) + " adet" 
+            }
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          offsetX: 0,
+          style: {
+            fontSize: '14px',
+            colors: ['#fff']
+          },
+          formatter: function (val) {
+              return val + "";
+            }
+        },
+        stroke: {
+          show: true,
+          width: 1,
+          colors: ['#fff']
+        },
+        xaxis: {
+          categories: ["Manometre", "Basınç Anahtarı", "Alt Nipel", "Üst Nipel", "Bakır Membran", "Emniyet Ventili"],
+        },
+      };
+
+      var chart = new ApexCharts(document.querySelector("#kaliteBar"), optionskalite);
+      chart.render();
+        
+</script>
+<script>
+
+
+
+  function loadTestSayilari() {
+    var kabuller = [0,0,0,0,0,0];
+    var redler = [0,0,0,0,0,0];
+    let gun_sayisi = $("input[name='zaman']:checked").val();
+    veri = {
+      "gun_sayisi":gun_sayisi,
+    }
+    $.ajax({
+        type: "POST",
+        url: 'dashboard',
+        data : veri,
+        success : function(x){
+          console.log(x);
+          x.forEach(function(v,i){
+            switch(v.tur){
+              case "manometre":
+                if(v.kabul_durumu == "Red"){
+                  redler[0]++;
+                }else{
+                  kabuller[0]++;
+                }
+              break;
+              case "basinc":
+                if(v.kabul_durumu == "Red"){
+                  redler[1]++;
+                }else{
+                  kabuller[1]++;
+                }
+              break;
+              case "altnipel":
+                if(v.kabul_durumu == "Red"){
+                  redler[2]++;
+                }else{
+                  kabuller[2]++;
+                }
+              break;
+              case "ustnipel":
+                if(v.kabul_durumu == "Red"){
+                  redler[3]++;
+                }else{
+                  kabuller[3]++;
+                }
+              break;
+              case "bakirmembran":
+                if(v.kabul_durumu == "Red"){
+                  redler[4]++;
+                }else{
+                  kabuller[4]++;
+                }
+              break;
+              case "emniyet":
+                if(v.kabul_durumu == "Red"){
+                  redler[5]++;
+                }else{
+                  kabuller[5]++;
+                }
+              break;
+            }
+          })
+
+
+          chart.updateSeries([{
+            name: "Kabul",
+            data: kabuller
+          }, {
+            name: "Red",
+            data: redler
+          }])
+
+        }
+      })
+}
+
+  $( document ).ready(function() {
+     loadTestSayilari()
+
+
+  });
+
+  $( "input[name='zaman']" ).change(function() {
+    loadTestSayilari()
+  });
+
+</script>
+<script>
+var options = {
+      series: [{
+        name: "Aşama",
+         data: [0, 0, 0, 0, 0,0]
+       }],
+         chart: {
+          toolbar:{
+            show: false
+          },
+         type: 'bar',
+         height: 350
+       },
+       plotOptions: {
+         bar: {
+           horizontal: true,
+           distributed: true,
+         }
+       },
+       colors : ['#018ffa','#55bc7c','#fbb033','#f0425e','#7760d0','#018ffa'],
+       dataLabels: {
+         enabled: false
+       },
+         xaxis: {
+           categories: ['Valf Montaj', 'Valf Test', 'Valf Gövde Montaj', 'FM200 Azot Dolumu', 'Havuz Test', 'Final Montaj' ],
+         },
+         yaxis:{
+          max:100
+         },
+         y: {
+            title: {
+              formatter: function () {
+                return '';
+              }
+          }
+        }
+       }
+
+       var uretimBar = new ApexCharts(document.querySelector("#uretimBar"), options);
+       uretimBar.render();
+
+</script>
+<script src="{% static 'js/bootstrap-tables.js' %}"></script>
+<script src="{% static 'js/selectize.min.js' %}"></script>
+<script>
+  $(function() {
+    $('select').selectize({
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#uretimdurum").change(function(e){
+    console.log(e.target.value);
+    let is_emri = e.target.value
+    veri = {
+      "is_emri":is_emri,
+    }
+    $.ajax({
+        type: "POST",
+        url: 'uretimdurum',
+        data : veri,
+        success : function(x){
+          console.log(x[6]);
+          uretimBar.updateSeries([{
+            name: "Aşama",
+            data: x.slice(0,5)
+          }]);
+          uretimBar.updateOptions({
+            yaxis: {
+              max: +x[6]
+            }
+          })
+        }
+      })
+  });
+</script>
+<script>
+  document.getElementById("son1gun").click();
+</script>
+{% endblock %}
