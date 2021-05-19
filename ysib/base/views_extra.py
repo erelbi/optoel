@@ -108,47 +108,58 @@ def is_emri_valfleri(request):
     print("veriiiiiii",list(temp)) 
     return JsonResponse(list(temp),safe=False)
 
-data_list = []
+
 @csrf_exempt
 def valf_test_kayıt(request):
+    data_list = []
     print("içerde-----< kayıt")
+    user_id = request.user.id
     try:
-        
         counter = 0
+        print(request.POST.dict())
+        
         for key,value in  dict(request.POST.dict()).items():
+            #print(value)
             data_list.append(value)
             counter += 1
+           
             if counter % 5 == 0:
-                value_list=list_function(counter-5,counter)
-                cleandata = control_save_function(value_list)
-                control_duplicate = control_duplicate_test(cleandata)
-                if isinstance(control_duplicate,list):
-                    save_function(control_duplicate,request.user.id) 
-                    return JsonResponse({'status':200})   
+         
+                value_list=list_function(data_list,counter-5,counter)
+       
+                if value_list[0]:
+                    
+                    control_duplicate = control_duplicate_test(value_list,user_id)
+                  
+                    if isinstance(control_duplicate,list):
+                        save_function(control_duplicate,request.user.id) 
+                        return JsonResponse({'status':200}) 
+                else:
+                    print("boş")  
     except Exception as err:
-        print("err")
+        print(err)
         return JsonResponse({'status':500})
         #return True
 
 
 
-def list_function(first,second):
+def list_function(data_list,first,second):
 
     #print(list(itertools.islice(data_list, first,second)))
     return list(itertools.islice(data_list, first,second))
 
-def control_save_function(list):
-    if list[0]:
-        return list
 
-def control_duplicate_test(clean_list):
+def control_duplicate_test(clean_list,uid):
+    print(clean_list)
     valf_test_id = Valf.objects.filter(id=clean_list[0]).first().valf_test_id
+    print("print_valf_test_id",valf_test_id)
     if valf_test_id:
         ''' Mevcut Ama Durum Kontrolü '''
         status = Valf_test.objects.filter(id=valf_test_id).first().uygun
         if status == False:
-            ''' Düzeltme İçin Gönderim '''
-            return clean_list
+            valf_id = Valf.objects.filter(id=clean_list[0]).first().valf_test_id
+            Valf_test.objects.filter(id=valf_id).update(test_tarihi=timezone.now(),test_personel_id=uid,acma=clean_list[2],kapama=clean_list[3],uygun=is_not_blank(clean_list[1]))
+            return False
         else:
             return False
     elif  valf_test_id is None:
