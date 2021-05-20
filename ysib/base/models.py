@@ -142,6 +142,8 @@ class Valf_test(models.Model):
     sebep=models.CharField(max_length=30,null=True,blank=True)
     test_personel=models.ForeignKey(User,related_name='test_personel', on_delete=models.DO_NOTHING) 
     test_tarihi = models.DateTimeField( blank=True, null=True)
+    pdf_ismi = models.CharField(max_length=100,null=True,blank=True)
+    aciklama = models.CharField(max_length=1000000000,null=True,blank=True)
 
 
 class Valf_montaj(models.Model):
