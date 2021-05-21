@@ -65,7 +65,7 @@
           <div class="col-md-1 text-center">Açma</div>
           <div class="col-md-1 text-center">Kapatma</div>
           <div class="col-md-2 text-center">PDF Kayıt</div>
-          <div class="col-md-3 text-center">Remark</div>
+          <div class="col-md-3 text-center">Açıklama</div>
           <div class="col-md-2 text-center">Sebep</div>
           
             
@@ -104,11 +104,11 @@
                 <input  name="Kapama" type="text" class="form-control">
             </div>
             <div class="custom-file form-group col-md-2">
-              <input id="pdftestrapor" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+              <input id="pdftestrapor1" type="file" class="custom-file-input"  value="" name="file" onchange="convertToBase64(this);">
               <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
           </div> 
           <div class="form-group col-md-3">
-            <input  name="Kapama" type="text" class="form-control">
+            <input  name="Açıklama" type="text" class="form-control">
         </div>
             <div class="form-group col-md-2 text-center">
                 <select name="sebep" class="form-control">
@@ -151,11 +151,12 @@
         <div class="form-group col-md-1">
             <input  name="Kapama" type="text" class="form-control">
         </div>
-        <div class="form-group col-md-2 text-center">
-          <input  name="Kapama"  class="btn btn-primary btn "  value="PDF" type="button" class="form-control">
-      </div>
+        <div class="custom-file form-group col-md-2">
+          <input id="pdftestrapor2" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+          <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
+      </div> 
         <div class="form-group col-md-3">
-          <input  name="Kapama" type="text" class="form-control">
+          <input  name="Açıklama" type="text" class="form-control">
       </div>
           <div   class="form-group col-md-2 text-center">
               <select  name="sebep" class="form-control">
@@ -196,11 +197,12 @@
        
       </div>
       <div class="form-group col-md-1">
-          <input  name="Kapama" type="text" class="form-control">
+          <input  name="Açıklama" type="text" class="form-control">
       </div>
-      <div class="form-group col-md-2 text-center">
-        <input  name="Kapama"  class="btn btn-primary btn "  value="PDF" type="button" class="form-control">
-    </div>
+      <div class="custom-file form-group col-md-2">
+        <input id="pdftestrapor3" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+        <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
+    </div> 
       <div class="form-group col-md-3">
         <input  name="Kapama" type="text" class="form-control">
     </div>
@@ -244,11 +246,12 @@
             <div class="form-group col-md-1">
                 <input  name="Kapama" type="text" class="form-control">
             </div>
-            <div class="form-group col-md-2 text-center">
-              <input  name="Kapama"  class="btn btn-primary btn "  value="PDF" type="button" class="form-control">
-          </div>
+            <div class="custom-file form-group col-md-2">
+              <input id="pdftestrapor4" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+              <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
+          </div> 
             <div class="form-group col-md-3">
-              <input  name="Kapama" type="text" class="form-control">
+              <input  name="Açıklama" type="text" class="form-control">
           </div>
         <div name="sebep" class="form-group col-md-2 text-center">
             <select  name="sebep" class="form-control">
@@ -291,9 +294,10 @@
       <div class="form-group col-md-1">
           <input  name="Kapama" type="text" class="form-control">
       </div>
-      <div class="form-group col-md-2 text-center">
-              <input  name="Kapama"  class="btn btn-primary btn "  value="PDF" type="button" class="form-control">
-          </div>
+      <div class="custom-file form-group col-md-2">
+        <input id="pdftestrapor5" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
+        <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
+    </div> 
       <div class="form-group col-md-3">
         <input  name="Kapama" type="text" class="form-control">
     </div>
@@ -1044,7 +1048,29 @@ function sil(ev){
       }
       return base64;
   }
-  $('#pdftestrapor').on('change', function() {
+  $('#pdftestrapor1').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+     console.log($(this))
+     console.log($(this).value)
+  });
+  $('#pdftestrapor2').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+  });
+  $('#pdftestrapor3').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+  });
+  $('#pdftestrapor4').on('change', function() {
+     let fileName = $(this).val().split('\\').pop();
+     console.log(fileName)
+     $(this).next('.custom-file-label').addClass("selected").html(fileName);
+  });
+  $('#pdftestrapor5').on('change', function() {
      let fileName = $(this).val().split('\\').pop();
      console.log(fileName)
      $(this).next('.custom-file-label').addClass("selected").html(fileName);
