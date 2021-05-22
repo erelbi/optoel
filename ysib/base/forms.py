@@ -6,6 +6,7 @@ from .models import Emir, User ,Test
 import datetime
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
+from .models import PDF_Rapor
 
 #select optionlar
 tup_govde_turleri = [
@@ -134,3 +135,8 @@ class TestForm(forms.ModelForm):
     class Meta:
         model = Emir
         fields = ('tur', 'seri_no', 'acma', 'kapatma','text_tarihi')
+
+class PDFForm(forms.ModelForm):
+    class Meta:
+        model = PDF_Rapor
+        fields = ('istasyon', 'valf_seri_no','pdf_ismi','aciklama', 'pdf', )

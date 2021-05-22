@@ -106,6 +106,7 @@
       {% if ip == '192.168.2.15' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
       <li><a href="#final-montaj">Final Montaj</a></li>
       {% endif %}
+      <li><a href="#pdf-rapor">Rapor Yükleme</a></li>
     </ul>
 
     <div class="tab-content">
@@ -143,6 +144,10 @@
         {% include 'external/finalMontaj.html' %}
       </div>
       {% endif %}
+      <div>
+        {% include 'external/pdf_rapor.html' %}
+      </div>
+
     </div><!-- //tab-content -->
 
   </div><!-- //tab-wrapper -->

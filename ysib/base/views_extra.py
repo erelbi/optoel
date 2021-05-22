@@ -24,6 +24,7 @@ from base64 import b64decode
 from base.signals import ping_signal
 from django.utils import six 
 import itertools
+from .forms import PDFForm
 # Create your views here.
 
 
@@ -111,22 +112,25 @@ def is_emri_valfleri(request):
 
 @csrf_exempt
 def valf_test_kayıt(request):
+    print("----------------valf-test-kayıt")
+    print(request.FILES.getlist('file'))
+    print("-----------------------")
     data_list = []
     print("içerde-----< kayıt")
     user_id = request.user.id
     try:
         counter = 0
-        print(request.POST.dict())
+        #print(request.POST.dict())
         
         for key,value in  dict(request.POST.dict()).items():
             #print(value)
             data_list.append(value)
             counter += 1
            
-            if counter % 5 == 0:
+            if counter % 7 == 0:
          
-                value_list=list_function(data_list,counter-5,counter)
-       
+                value_list=list_function(data_list,counter-7,counter)
+                
                 if value_list[0]:
                     
                     control_duplicate = control_duplicate_test(value_list,user_id)
@@ -175,10 +179,11 @@ def is_not_blank(s):
         return False
 
 def save_function(cleanlist,user_id):
+    filename =  cleanlist[4]
+   
     print(cleanlist)
-    print("save function")
-    print("---------------------->",is_not_blank(cleanlist[1]))
-    valf_test =Valf_test(acma=cleanlist[2],kapama=cleanlist[3],sebep=cleanlist[4],uygun=is_not_blank(cleanlist[1]),test_tarihi=timezone.now(),test_personel_id=user_id)
+   
+    valf_test =Valf_test(acma=cleanlist[2],kapama=cleanlist[3],sebep=cleanlist[6],uygun=is_not_blank(cleanlist[1]),test_tarihi=timezone.now(),test_personel_id=user_id,pdf_ismi=filename[12:],aciklama=cleanlist[5])
     valf_test.save()
     print("----------------")
     print(valf_test)
@@ -189,3 +194,24 @@ def save_function(cleanlist,user_id):
     #print(cleanlist)
     #personel_id= Valf_montaj.objects.filter(id=cleanlist[0]).first().montaj_personel_id
     #obj = list(Valf_test.objects.filter(personel_id=personel_id))
+
+
+
+@csrf_exempt
+def upload_pdf_rapor(request):
+    print("içerde upload")
+    if request.method == 'POST':
+        if request.FILES['file'] and request.POST.dict():
+            print("içerde")
+            print(request.POST.dict())
+            upload_file = request.FILES['file']
+            fs = FileSystemStorage()
+            fs.save(upload_file.name,upload_file)
+
+    #return HttpResponseRedirect('/uretimkontrol#pdf-rapor')
+
+# def control_vsn(vsn):
+#     try:
+#         Valf_test.objects.filter(id)
+
+

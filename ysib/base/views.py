@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .forms import UserRegisterForm, IsEmri ,TestForm
+from .forms import UserRegisterForm, IsEmri ,TestForm,PDF_Rapor
 from django.contrib import messages
 from django.contrib.auth import authenticate, login ,logout
 from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
@@ -463,7 +463,7 @@ def uretimkontrol(request):
         # govdekurlenmesi=Valf_govde.objects.filter(kurlenme_bitis__gte=now)
         fm200kurlenmesi=Valf_fm200.objects.filter(kurlenme_bitis__gte=now)
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
-
+       
         print("--------------------------> Kalite Kontrol")
         #return render(request,'uretim-kontrol.html',{ 'acikemirleri':acikemirleri,  'grup': grup, 'birim': birim, 'ip': ip,'now':now, 'kurlenmes':montajkurlenmesi,'fm200kurlenmes':fm200kurlenmesi, 'govdekurlenmes': govdekurlenmesi ,'server' : server})
         return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi})
@@ -1019,6 +1019,18 @@ def kurlenmeKontrol(request):
             
                 print('r',err)
                 r='NO'
+        elif (tur=='pdfkontrol'):
+            print(vsn)
+            try:
+                if Valf.objects.filter(id=vsn).count():
+                    r='OK'
+                else:
+                    print("yok ki")
+                    r='NO'
+            except Exception as err:
+            
+                r='NO'
+                print(err)
 
         return HttpResponse(r)
 

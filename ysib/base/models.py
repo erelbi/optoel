@@ -1,3 +1,4 @@
+from django.conf import Settings
 from django.db import models
 import datetime
 # Create your models here.
@@ -133,7 +134,20 @@ class Valf_govde(models.Model):
     
 
 
+# class PDF(models.Model):
+# 	title = models.CharField(max_length=256, blank=True, null=True)
+# 	file = models.FileField(upload_to=)
+# 	timestamp = models.DateTimeField(auto_now=True)
+# 	updated = models.DateTimeField(auto_now_add=True)
   
+
+class PDF_Rapor(models.Model):
+    istasyon = models.PositiveIntegerField()
+    valf_seri_no = models.PositiveIntegerField(null=True)
+    pdf_ismi = models.CharField(max_length=100)
+    aciklama = models.TextField(max_length=10000000000,null=True,blank=True)
+    pdf = models.FileField(upload_to='media/')
+
 
 class Valf_test(models.Model):
     acma=models.PositiveIntegerField(null=True)
@@ -142,8 +156,6 @@ class Valf_test(models.Model):
     sebep=models.CharField(max_length=30,null=True,blank=True)
     test_personel=models.ForeignKey(User,related_name='test_personel', on_delete=models.DO_NOTHING) 
     test_tarihi = models.DateTimeField( blank=True, null=True)
-    pdf_ismi = models.CharField(max_length=100,null=True,blank=True)
-    aciklama = models.CharField(max_length=1000000000,null=True,blank=True)
 
 
 class Valf_montaj(models.Model):

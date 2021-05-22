@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^newVSN',views.newVSN),
     url(r'^getEmirNo',views.getEmirNo),
     url(r'^hardreset',views.hardreset),
-     url(r'^valf_test_kayıt',views_extra.valf_test_kayıt),
+    url(r'^valf_test_kayıt',views_extra.valf_test_kayıt),
+    url(r'^pdf_yukle', views_extra.upload_pdf_rapor),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -59,13 +59,11 @@
   <form class="col-md-12" >
     <div id="addableField">
         <div class="form-row">
-          <div class="col-md-1 text-center" >Seri no</div>
-          <div class="col-md-1 text-center">Uygun</div>
-          <div class="col-md-1 text-center">Uygun değil</div>
-          <div class="col-md-1 text-center">Açma</div>
-          <div class="col-md-1 text-center">Kapatma</div>
-          <div class="col-md-2 text-center">PDF Kayıt</div>
-          <div class="col-md-3 text-center">Açıklama</div>
+          <div class="col-md-2 text-center" >Seri no</div>
+          <div class="col-md-2 text-center">Uygun</div>
+          <div class="col-md-2 text-center">Uygun değil</div>
+          <div class="col-md-2 text-center">Açma</div>
+          <div class="col-md-2 text-center">Kapatma</div>
           <div class="col-md-2 text-center">Sebep</div>
           
             
@@ -77,39 +75,32 @@
   
   
   </form>
-  <form class="col-md-12" onsubmit = "event.preventDefault();" id="TestForm" class="valfTestForm">
+  <form class="col-md-12" onsubmit = "event.preventDefault();" id="TestForm" class="valfTestForm" enctype="multipart/form-data">
   
     
     <div id="addableField">
         <div class="form-row">
         
           
-            <div class="form-group col-md-1">
+            <div class="form-group col-md-2">
                 <input type="text" class="form-control addInput" id="valf_seri_no" onkeyup="addSubmitTest(event,this)" name="vsn">
                 <p class="invalid-feedback">
                   <strong>Bu seri nolu valfin montaj kürlenmesi tamamlanmadı!</strong>
                 </p>
             </div>
-            <div class="form-group col-md-1 text-center">
+            <div class="form-group col-md-2 text-center">
                 <input  name="durum1" id="testuygun1" value="True" type="radio" checked>
             </div>
-            <div class="form-group col-md-1 text-center">
+            <div class="form-group col-md-2 text-center">
                 <input   id="testuygundegil1"  type="radio">
             </div>
-            <div class="form-group col-md-1">
+            <div class="form-group col-md-2">
                 <input  name="Açma" type="text" class="form-control">
              
             </div>
-            <div class="form-group col-md-1">
+            <div class="form-group col-md-2">
                 <input  name="Kapama" type="text" class="form-control">
             </div>
-            <div class="custom-file form-group col-md-2">
-              <input id="pdftestrapor1" type="file" class="custom-file-input"  value="" name="file" onchange="convertToBase64(this);">
-              <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
-          </div> 
-          <div class="form-group col-md-3">
-            <input  name="Açıklama" type="text" class="form-control">
-        </div>
             <div class="form-group col-md-2 text-center">
                 <select name="sebep" class="form-control">
                   <option>Alt-Üst Nipel arası Kaçak</option>
@@ -132,32 +123,25 @@
       <div class="form-row">
       
         
-          <div class="form-group col-md-1">
+          <div class="form-group col-md-2">
               <input type="text" class="form-control addInput" id="valf_seri_no" onkeyup="addSubmitTest(event,this)" name="vsn">
               <p class="invalid-feedback">
                 <strong>Bu seri nolu valfin montaj kürlenmesi tamamlanmadı!</strong>
               </p>
           </div>
-          <div class="form-group col-md-1 text-center">
+          <div class="form-group col-md-2 text-center">
               <input name="durum2" id="testuygun2" value="True"  data-degil="true" type="radio" checked>
           </div>
-          <div class="form-group col-md-1 text-center">
+          <div class="form-group col-md-2 text-center">
               <input   id="testuygundegil2"  type="radio">
           </div>
-          <div class="form-group col-md-1">
+          <div class="form-group col-md-2">
             <input  name="Açma" type="text" class="form-control">
          
         </div>
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
             <input  name="Kapama" type="text" class="form-control">
         </div>
-        <div class="custom-file form-group col-md-2">
-          <input id="pdftestrapor2" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
-          <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
-      </div> 
-        <div class="form-group col-md-3">
-          <input  name="Açıklama" type="text" class="form-control">
-      </div>
           <div   class="form-group col-md-2 text-center">
               <select  name="sebep" class="form-control">
                 <option>Alt-Üst Nipel arası Kaçak</option>
@@ -180,32 +164,25 @@
     <div class="form-row">
     
       
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
             <input type="text" class="form-control addInput" id="valf_seri_no" onkeyup="addSubmitTest(event,this)" name="vsn">
             <p class="invalid-feedback">
               <strong>Bu seri nolu valfin montaj kürlenmesi tamamlanmadı!</strong>
             </p>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input name="durum3" id="testuygun3" value="True"  data-degil="true" type="radio" checked>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input  id="testuygundegil3"  type="radio">
         </div>
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
           <input  name="Açma" type="text" class="form-control">
        
       </div>
-      <div class="form-group col-md-1">
+      <div class="form-group col-md-2">
           <input  name="Açıklama" type="text" class="form-control">
       </div>
-      <div class="custom-file form-group col-md-2">
-        <input id="pdftestrapor3" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
-        <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
-    </div> 
-      <div class="form-group col-md-3">
-        <input  name="Kapama" type="text" class="form-control">
-    </div>
         <div  class="form-group col-md-2 text-center">
             <select   name="sebep" class="form-control">
               <option>Alt-Üst Nipel arası Kaçak</option>
@@ -228,31 +205,24 @@
     <div class="form-row">
     
       
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
             <input type="text" class="form-control addInput" id="valf_seri_no" onkeyup="addSubmitTest(event,this)" name="vsn">
             <p class="invalid-feedback">
               <strong>Bu seri nolu valfin montaj kürlenmesi tamamlanmadı!</strong>
             </p>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input name="durum4" id="testuygun4" value="True"  data-degil="true" type="radio" checked>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input  id="testuygundegil4"  type="radio">
         </div>
-           <div class="form-group col-md-1">
+           <div class="form-group col-md-2">
                 <input  name="Açma" type="text" class="form-control"> 
             </div>
-            <div class="form-group col-md-1">
+            <div class="form-group col-md-2">
                 <input  name="Kapama" type="text" class="form-control">
             </div>
-            <div class="custom-file form-group col-md-2">
-              <input id="pdftestrapor4" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
-              <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
-          </div> 
-            <div class="form-group col-md-3">
-              <input  name="Açıklama" type="text" class="form-control">
-          </div>
         <div name="sebep" class="form-group col-md-2 text-center">
             <select  name="sebep" class="form-control">
               <option>Alt-Üst Nipel arası Kaçak</option>
@@ -275,32 +245,25 @@
     <div class="form-row">
     
       
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
             <input type="text" class="form-control addInput" id="valf_seri_no" onkeyup="addSubmitTest(event,this)" name="vsn">
             <p class="invalid-feedback">
               <strong>Bu seri nolu valfin montaj kürlenmesi tamamlanmadı!</strong>
             </p>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input  name="durum5" id="testuygun5" value="True"  data-degil="true" type="radio" checked>
         </div>
-        <div class="form-group col-md-1 text-center">
+        <div class="form-group col-md-2 text-center">
             <input   id="testuygundegil5"  type="radio">
         </div>
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
           <input  name="Açma" type="text" class="form-control">
        
       </div>
-      <div class="form-group col-md-1">
+      <div class="form-group col-md-2">
           <input  name="Kapama" type="text" class="form-control">
       </div>
-      <div class="custom-file form-group col-md-2">
-        <input id="pdftestrapor5" type="file" class="custom-file-input" name="file" onchange="convertToBase64(this);">
-        <label for="pdftestrapor" class="custom-file-label">Pdf yükle...</label>
-    </div> 
-      <div class="form-group col-md-3">
-        <input  name="Kapama" type="text" class="form-control">
-    </div>
         <div  name="sebep" class="form-group col-md-2 text-center">
             <select   name="sebep" class="form-control">
               <option>Alt-Üst Nipel arası Kaçak</option>
@@ -1018,64 +981,7 @@ function sil(ev){
   // });
 
   </script>
-<script type="text/javascript">
-  // Aldığım yer : https://stackoverflow.com/questions/13538832/convert-pdf-to-a-base64-encoded-string-in-javascript
-  function convertToBase64(a) {
-      Swal.showLoading();
-      //Read File
-      var selectedFile = a.files;
-      //Check File is not Empty
-      if (selectedFile.length > 0) {
-          // Select the very first file from list
-          var fileToLoad = selectedFile[0];
-          // FileReader function for read the file.
-          var fileReader = new FileReader();
-          var base64;
-          // Onload of file read the file content
-          fileReader.onload = function(fileLoadedEvent) {
-              base64 = fileLoadedEvent.target.result;
-              // Print data in console
-              //document.getElementById('binaryEmn').value = base64;
-              Swal.fire({
-                title: 'Başarılı!',
-                text: 'Pdf başarıyla yüklendi.',
-                icon: 'success',
-                confirmButtonText: 'Tamam'
-              })
-          };
-          // Convert data to base64
-          fileReader.readAsDataURL(fileToLoad);
-      }
-      return base64;
-  }
-  $('#pdftestrapor1').on('change', function() {
-     let fileName = $(this).val().split('\\').pop();
-     console.log(fileName)
-     $(this).next('.custom-file-label').addClass("selected").html(fileName);
-     console.log($(this))
-     console.log($(this).value)
-  });
-  $('#pdftestrapor2').on('change', function() {
-     let fileName = $(this).val().split('\\').pop();
-     console.log(fileName)
-     $(this).next('.custom-file-label').addClass("selected").html(fileName);
-  });
-  $('#pdftestrapor3').on('change', function() {
-     let fileName = $(this).val().split('\\').pop();
-     console.log(fileName)
-     $(this).next('.custom-file-label').addClass("selected").html(fileName);
-  });
-  $('#pdftestrapor4').on('change', function() {
-     let fileName = $(this).val().split('\\').pop();
-     console.log(fileName)
-     $(this).next('.custom-file-label').addClass("selected").html(fileName);
-  });
-  $('#pdftestrapor5').on('change', function() {
-     let fileName = $(this).val().split('\\').pop();
-     console.log(fileName)
-     $(this).next('.custom-file-label').addClass("selected").html(fileName);
-  });
-</script>  
+
 
 
  
