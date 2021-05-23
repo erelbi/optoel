@@ -139,4 +139,4 @@ class TestForm(forms.ModelForm):
 class PDFForm(forms.ModelForm):
     class Meta:
         model = PDF_Rapor
-        fields = ('istasyon', 'valf_seri_no','pdf_ismi','aciklama', 'pdf', )
+        fields = ('istasyon', 'valf_seri_no','pdf_ismi','aciklama', )

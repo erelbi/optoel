@@ -142,11 +142,10 @@ class Valf_govde(models.Model):
   
 
 class PDF_Rapor(models.Model):
-    istasyon = models.PositiveIntegerField()
-    valf_seri_no = models.PositiveIntegerField(null=True)
+    istasyon = models.CharField(max_length=100,blank=True)
+    valf_seri_no = models.PositiveIntegerField(blank=True)
     pdf_ismi = models.CharField(max_length=100)
     aciklama = models.TextField(max_length=10000000000,null=True,blank=True)
-    pdf = models.FileField(upload_to='media/')
 
 
 class Valf_test(models.Model):

@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse ,JsonResponse
 from django.urls import reverse
 from django.db.models import Max, query
 from django.contrib.auth.models import User
-from .models import Emir , Test, Bildirim, Uretim, Valf
+from .models import Emir , Test, Bildirim, Uretim, Valf,PDF_Rapor
 from .models import Valf_montaj,Valf_test,Valf_govde,Valf_fm200,Valf_havuz,Valf_final_montaj
 from django.contrib.auth.decorators import login_required
 import json, platform, base64, datetime, os
@@ -21,7 +21,7 @@ from weasyprint import HTML
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from base64 import b64decode
-from base.signals import ping_signal
+import time
 from django.utils import six 
 import itertools
 from .forms import PDFForm
@@ -199,16 +199,40 @@ def save_function(cleanlist,user_id):
 
 @csrf_exempt
 def upload_pdf_rapor(request):
-    print("içerde upload")
-    if request.method == 'POST':
-        if request.FILES['file'] and request.POST.dict():
-            print("içerde")
-            print(request.POST.dict())
-            upload_file = request.FILES['file']
-            fs = FileSystemStorage()
-            fs.save(upload_file.name,upload_file)
+    try:
+        if request.method == 'POST':
+            if request.FILES and request.POST.dict():
+                pdf_response = pdf_save_function(file=request.FILES['file'],filename=request.POST.dict()['pdf_ismi'])
+                pdf_remark   = pdf_remark_save(data_pdf=request.POST.dict())
+                if pdf_response and pdf_remark:
+                    return JsonResponse({'status':200,'message': 'Kayıt Başarılı!'})
+                else:
+                    return JsonResponse({'status':500,'message': 'Kayıt işlemi baraşız!'})
+            else:
+                return JsonResponse({'status':400,'message': 'Dosya veya Data Hatası!'})  
+    except Exception as err:
+        return JsonResponse({'status':400,'message':err }) 
 
-    #return HttpResponseRedirect('/uretimkontrol#pdf-rapor')
+
+def pdf_save_function(file,filename):
+    try:
+        fs = FileSystemStorage()
+        fs.save(filename,file)
+        return True
+    except Exception as err:
+        print(err)
+        return False
+
+def pdf_remark_save(data_pdf):
+    try:
+        rapor =  PDF_Rapor(istasyon=data_pdf['istasyon'],valf_seri_no=data_pdf['vsn'],pdf_ismi=data_pdf['pdf_ismi'],aciklama=data_pdf['aciklama'])
+        rapor.save()
+        return True           
+    except:
+        return False
+
+
+    
 
 # def control_vsn(vsn):
 #     try:

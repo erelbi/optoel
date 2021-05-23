@@ -999,12 +999,9 @@ def kurlenmeKontrol(request):
         elif (tur=='valf_test'):
             print("içerdeyim-----> Valf Test")
             try:
-                print("kjshdkshdkhk")
                 print(vsn,"----------------------------")
                 valf_montaj_id = Valf.objects.filter(id=vsn).first().valf_montaj_id
-                print("kjshdkshdkhk")
                 print(valf_montaj_id)
-                print("jskhdjkshdjk")
                 tarih =  Valf_montaj.objects.filter(id=valf_montaj_id).first().kurlenme_bitis_tarihi
                 print(tarih)
                 print(type(timezone.now()),timezone.now())
@@ -1022,10 +1019,9 @@ def kurlenmeKontrol(request):
         elif (tur=='pdfkontrol'):
             print(vsn)
             try:
-                if Valf.objects.filter(id=vsn).count():
+                if Valf.objects.filter(valf_montaj_id=vsn).count():
                     r='OK'
                 else:
-                    print("yok ki")
                     r='NO'
             except Exception as err:
             
