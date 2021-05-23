@@ -89,16 +89,18 @@
     <ul class="tab-menu">
       {% if ip == '192.168.2.10' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
       <li class="active"><a href="#valf-montaj">Valf Montaj</a></li>
-      <li><a href="#kurlenme">Kürlenme</a></li>
+      <li><a href="#kurlenme">Kürlenme Montaj</a></li>
       {% endif %}
       {% if ip == '192.168.2.11' or ip == '192.168.2.39'  or ip == '127.0.0.1' %}
       <li><a href="#valf-test">Valf Test</a></li>
       {% endif %}
       {% if ip == '192.168.2.12' or ip == '192.168.2.39' or ip == '127.0.0.1'  %}
       <li><a href="#valf-test">Valf Gövde</a></li>
+      <li><a href="#kurlenme-gövde">Kürlenme Gövde</a></li>
       {% endif %}
       {% if ip == '192.168.2.13' or ip == '192.168.2.39' or ip == '127.0.0.1'  %}
       <li><a href="#fm200">FM200 & Azot Dolum</a></li>
+      <li><a href="#kurlenme-fm200">Kürlenme FM200&Azot</a></li>
       {% endif %}
       {% if ip == '192.168.2.14' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
       <li><a href="#havuz-test">Havuz Test</a></li>
@@ -128,10 +130,16 @@
       <div>
         {% include 'external/valf-govde.html' %}
       </div>
+      <div>
+        {% include 'external/kurlenme-govde.html' %}
+      </div>
       {% endif %}
       {% if ip == '192.168.2.13' or ip == '192.168.2.39'  or ip == '127.0.0.1' %}
       <div>
-        {% include 'external/fm200AzotDolumu.html' %}
+        {% include 'external/fm200AzotDolumu.html' %}    
+      </div>
+      <div>
+        {% include 'external/kurlenme-fm200.html' %}
       </div>
       {% endif %}
       {% if ip == '192.168.2.14' or ip == '192.168.2.39' or ip == '127.0.0.1' %}
