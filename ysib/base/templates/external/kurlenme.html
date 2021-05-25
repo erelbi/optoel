@@ -4,13 +4,15 @@
 
 
 <div class="row">
-  <form class="col-md-6" id="kurlenmeForm">
+  <div class="col-md-4">
+  <form id="kurlenmeForm">
 
     <div class="form-group col-md-3">
       <label for="durum">İş Emri Şeçin</label>
         <select id="acikemirlerselect_vmk"  onchange="acikemirlerselect_change_func()"  required >
           <option value="" disabled selected>Seçin</option>
-          {% for emir in acikemirleri %}
+          {% for emir in aktifemirler %}
+             
             <option value="{{ emir.is_emri }}">{{ emir.is_emri }} </option>
           {% endfor %}
         </select>
@@ -48,16 +50,32 @@
         </div>
 </form>
 
+</div>
 
-
-<div class="card mt-8">
+<div class="col-md-8">
         
   <div class="card-header" style="color: #c7ae3c;background-color: #d7e9fa; font-size: 20px;">
     Valf Kürlenme Tablosu
   </div>
 
-  <div class="card-body">
-    <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
+  <div class="card-body ">
+    <table class="table table-hover" id="KurlemeTableId" data-sort-name="bitisoncelik">
+      <thead>
+        <tr>
+          <th scope="col">Parti No</th>
+          <th scope="col">Valf No</th>
+          <th scope="col">Kalan Süre</th>
+        </tr>
+      </thead>
+      <tbody id="oncelikForm">
+        <!--
+          bu tablonun satırları aşağıdaki ajax call ile dolar.table id  ile bulunur bu tablo.
+        -->
+        
+      </tbody>
+    </table>
+
+    <!-- <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
       <thead>
         <tr>
           <th scope="col">Parti No</th>
@@ -65,16 +83,18 @@
           <th scope="col">Kalan Süre</th>
         </tr>
       </thead>
+      
       <tbody id="oncelikForm">
+      <tr>
         {% for kurlenme in kurlenmes %}
-        <tr >{{kurlenme.valf.parti_no}}        </tr>
-        <tr >{{kurlenme.valf.id}}        </tr>
-        <tr ><span class="badge badge-primary badge-pill">{{kurlenme.kurlenme_bitis|timeuntil:now}}</span></tr>
+        <td >{{kurlenme.kurlenme_parti_no}}</td>
+        <td >{{kurlenme.id}}        </td>
+        <td ><span class="badge badge-primary badge-pill">{{kurlenme.kurlenme_bitis|timeuntil:now}}</span></td>
  
         {% endfor %}
-        
-      </tbody>
-    </table>
+      </tr>
+      </tbody> -->
+    <!-- </table> -->
   </div>
   </div> 
 
@@ -116,8 +136,7 @@ function eraseCookie(name) {
 <script>
 
   function acikemirlerselect_change_func() {
-    console.log("acikemirlerselect_change_func")
-
+    
 
     var acikemirlerselectedValue = document.getElementById("acikemirlerselect_vmk").value;
      
@@ -128,6 +147,7 @@ function eraseCookie(name) {
      let data = {
              "is_emri_id" : acikemirlerselectedValue 
            }
+           
       $.ajax(
           {
             type: "POST",
@@ -141,19 +161,87 @@ function eraseCookie(name) {
             
             },
             error(err){
-            console.log;(err);
+            // console.log;(err);
             }
             }
         );
-        console.log("vvvvv2",valfler)
+        // console.log("vvvvv2",valfler)
 
   
 
   })
-  console.log("vvvvv3",valfler)
+  // console.log("vvvvv3",valfler)
 
-
+  function badEmptyCheck(value) {
+  return Object.keys(value).length === 0;
+}
   is_emir_valfleri_geldi_mi.then(function(res){
+    let parti_no = []
+    // console.log("------------<",.isEmpty({res}));
+    if ( badEmptyCheck(res) == false ){
+   
+    for (var i = 0; i < res.length; i++ ){
+         console.log("-----------",res[i].parti_no)
+         if (parti_no.includes(res[i].parti_no) == false &&  res[i].parti_no != null) { 
+          parti_no.push(res[i].parti_no)
+         }
+         else{
+           console.log("hata")
+           
+         }
+        }
+      }
+      else{
+        $('#KurlemeTableId').append(added_row)
+        Swal.fire({
+              title: 'Başarısız',
+              text: ' Kayıtlar Boş Dönmektedir!',
+              icon: 'error',
+              confirmButtonText: 'Tamam'
+            })
+      }
+    $.ajax(
+          {
+            type: "POST",
+            url: '/valf_montaj_kurlenme_tablo',
+            data : {'parti_no':parti_no},
+            success: function (valfler){
+            
+            $("#KurlemeTableId tbody tr").remove();
+            
+        
+            console.log(valfler)
+
+            for (var i = 0; i < valfler.length; i++){        
+                parti_no=valfler[i]['partino']
+                valf_no=valfler[i]['valfno']
+                tarih=valfler[i]['tarih']
+                console.log(Date.parse(tarih))
+                
+
+                //We then append them to a string in html fashion
+
+                added_row =  
+                '<tr>'
+                  + '<td>' + parti_no+  '</td>'
+                  + '<td>' + valf_no+  '</td>'
+                + '<td>' + tarih+  '</td>'
+                 + '</tr>'
+                //To finally append this long string to your table through it's ID:
+                $('#KurlemeTableId').append(added_row)
+                };
+
+           
+            
+
+                // setInterval(acikemirlerselect_change_func, 60000);
+            },
+            error(err){
+            // console.log;(err);
+            }
+            }
+        );
+  
 
 
     console.log("is_emir_valfleri_geldi_mi")
@@ -315,9 +403,7 @@ function eraseCookie(name) {
 </script>
  
 <script src="{% static 'js/qr.js' %}"></script>
-<script>
 
-</script>
 
 
  

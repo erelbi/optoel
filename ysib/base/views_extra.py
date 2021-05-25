@@ -25,6 +25,7 @@ import time
 from django.utils import six 
 import itertools
 from .forms import PDFForm
+from datetime import datetime
 # Create your views here.
 
 
@@ -73,7 +74,7 @@ def valf_parti_no_ata(request):
     valfler_id=request.POST.dict()['valfler_id'] 
     print("valfler_id",valfler_id)
     valfler_id_array = json.loads(valfler_id)
-
+    print(valfler_id_array)
     for id in valfler_id_array:
         valf  =  Valf_montaj.objects.get(id=id)
         if valf.kurlenme_parti_no is None:
@@ -93,7 +94,8 @@ def is_emri_valfleri(request):
     temp = []
     emir = Emir.objects.get(is_emri=request.POST.dict()['is_emri_id'])
     try:
-        is_emir_valfleri =  Valf_montaj.objects.filter(is_emri=emir)
+        is_emir_valfleri =  Valf.objects.filter(is_emri=emir).values_list('valf_montaj',flat=True)
+        # //is_emir_valfleri =  Valf_montaj.objects.filter(is_emri=emir)
     except Exception as err:
         is_emir_valfleri =  Valf.objects.filter(is_emri=emir).values_list('valf_montaj',flat=True)
     for is_id in is_emir_valfleri:
@@ -101,13 +103,48 @@ def is_emri_valfleri(request):
         veri['id'] = is_id
         veri['parti_no'] = Valf_montaj.objects.filter(id=is_id).first().kurlenme_parti_no
         temp.append(veri)
-        print(temp)
+        
     # temp = []
     # for valf in is_emir_valfleri.values():
     #     temp.append(valf)
     # veri = list(temp)
     print("veriiiiiii",list(temp)) 
     return JsonResponse(list(temp),safe=False)
+
+@csrf_exempt
+def montajKurlenme(request):
+    print(request.POST.getlist('parti_no[]'))
+    
+    montaj_list=[]
+    try:
+        if  len(request.POST.getlist('parti_no[]')[0]) > 0:
+            for parti_no in request.POST.getlist('parti_no[]'):
+                clock = Valf_montaj.objects.filter(kurlenme_parti_no=parti_no).first().kurlenme_bitis_tarihi - timezone.now()
+                
+                montaj={}
+                montaj['tarih'] = time_calc(clock)
+                montaj['partino'] = parti_no
+                valf_no_list=[]
+                for valf_no in  Valf_montaj.objects.filter(kurlenme_parti_no=parti_no).values_list('id',flat=True):  
+                    valf_no_list.append(valf_no)
+                montaj['valfno'] = valf_no_list
+                montaj_list.append(montaj)
+            return JsonResponse(list(montaj_list),safe=False)
+        else:
+            return JsonResponse(list(montaj_list),safe=False)
+    except Exception as err:
+        print(err)
+        return JsonResponse(list(montaj_list),safe=False)
+
+
+def time_calc(data):
+    print(data.days)
+    if data.days == 0:
+        
+       return  "{}:{}".format(data.seconds//3600,(data.seconds//60)%60,data.seconds%60)
+    else:
+        return "Kürleme Bitmiştir"
+
 
 
 @csrf_exempt
@@ -224,11 +261,17 @@ def pdf_save_function(file,filename):
         return False
 
 def pdf_remark_save(data_pdf):
+    print(data_pdf['uygun'])
     try:
+        if data_pdf['uygun'] == "true":
+            
+            valf_id=Valf.objects.filter(valf_montaj_id=data_pdf['vsn']).first().valf_test_id
+            Valf_test.objects.filter(id=valf_id).update(uygun=True)
         rapor =  PDF_Rapor(istasyon=data_pdf['istasyon'],valf_seri_no=data_pdf['vsn'],pdf_ismi=data_pdf['pdf_ismi'],aciklama=data_pdf['aciklama'])
         rapor.save()
         return True           
-    except:
+    except Exception as err:
+        print(err)
         return False
 
 

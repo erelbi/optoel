@@ -246,7 +246,9 @@ def uretimkontrol(request):
                         '''
                         print("deneme")
 
-
+                        e = Emir.objects.get(is_emri=veris[0])
+                        e.durum = 'Aktif'
+                        e.save()
                         is_emri_adi=veris[0] 
                         emir=Emir.objects.get(is_emri= is_emri_adi)
                         personel_id=request.user.id
@@ -459,14 +461,16 @@ def uretimkontrol(request):
         now = timezone.now()
 
 
-        montajkurlenmesi=Valf_montaj.objects.filter(kurlenme_bitis_tarihi__gte=now)
+        #montajkurlenmesi=Valf_montaj.objects.filter(kurlenme_bitis_tarihi__gte=now)
+        montajkurlenmesi=Valf_montaj.objects.all()
         # govdekurlenmesi=Valf_govde.objects.filter(kurlenme_bitis__gte=now)
         fm200kurlenmesi=Valf_fm200.objects.filter(kurlenme_bitis__gte=now)
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
+        aktifemirler= Emir.objects.filter(durum="Aktif")
        
         print("--------------------------> Kalite Kontrol")
         #return render(request,'uretim-kontrol.html',{ 'acikemirleri':acikemirleri,  'grup': grup, 'birim': birim, 'ip': ip,'now':now, 'kurlenmes':montajkurlenmesi,'fm200kurlenmes':fm200kurlenmesi, 'govdekurlenmes': govdekurlenmesi ,'server' : server})
-        return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi})
+        return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi,'aktifemirler':aktifemirler,})
 @csrf_exempt
 def acikisemirleri(request):
     emirler = Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
