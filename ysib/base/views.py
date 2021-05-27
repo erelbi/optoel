@@ -464,7 +464,7 @@ def uretimkontrol(request):
         #montajkurlenmesi=Valf_montaj.objects.filter(kurlenme_bitis_tarihi__gte=now)
         montajkurlenmesi=Valf_montaj.objects.all()
         # govdekurlenmesi=Valf_govde.objects.filter(kurlenme_bitis__gte=now)
-        fm200kurlenmesi=Valf_fm200.objects.filter(kurlenme_bitis__gte=now)
+        fm200kurlenmesi=Valf_fm200.objects.filter(fm200_kurlenme_bitis_tarihi__gte=now)
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
         aktifemirler= Emir.objects.filter(durum="Aktif")
        
@@ -963,6 +963,17 @@ def kontrolEt(request):
         if(tur == 'emniyet'):
             t = Test.objects.filter(tur=tur)
             try:
+                if(veri in t.values_list('lot_no',flat=True)):
+                    r = ('OK')
+                else:
+                    r = ('NO')
+            except:
+                r = "NO"
+        if(tur == 'valf_govde'):
+            try:
+                print(veri)
+                ax = Valf.objects.filter(valf_montaj_id=veri).exclude(valf_test_id__isnull=True)
+                print(ax)
                 if(veri in t.values_list('lot_no',flat=True)):
                     r = ('OK')
                 else:

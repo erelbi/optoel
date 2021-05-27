@@ -169,10 +169,11 @@ def valf_test_kayıt(request):
                 value_list=list_function(data_list,counter-7,counter)
                 
                 if value_list[0]:
-                    
+                    print("----------------------->", value_list[0])
                     control_duplicate = control_duplicate_test(value_list,user_id)
-                  
+                    print("----------------------------<",control_duplicate)
                     if isinstance(control_duplicate,list):
+                        
                         save_function(control_duplicate,request.user.id) 
                         return JsonResponse({'status':200}) 
                 else:
@@ -219,8 +220,8 @@ def save_function(cleanlist,user_id):
     filename =  cleanlist[4]
    
     print(cleanlist)
-   
-    valf_test =Valf_test(acma=cleanlist[2],kapama=cleanlist[3],sebep=cleanlist[6],uygun=is_not_blank(cleanlist[1]),test_tarihi=timezone.now(),test_personel_id=user_id,pdf_ismi=filename[12:],aciklama=cleanlist[5])
+    print("---------------------------->")
+    valf_test =Valf_test(acma=cleanlist[2],kapama=cleanlist[3],sebep=cleanlist[6],uygun=is_not_blank(cleanlist[1]),test_tarihi=timezone.now(),test_personel_id=user_id)
     valf_test.save()
     print("----------------")
     print(valf_test)

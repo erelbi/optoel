@@ -36,7 +36,7 @@
 </style>
 <div class="row">
   <div class="row pl-4 col-md-10">
-    <button type="button" class="btn btn-primary mb-2" style="height: 34px" id="FinalMontaj_Baglan">Baglan</button>
+    <button type="submit" class="btn btn-primary mb-2" style="height: 34px" id="">Başlat</button>
   </div>
 </div>
 <hr>
@@ -92,7 +92,7 @@
     </div>
     <div class="col-md-5">
         <h3 class="text-center" style="text-indent: -106px;">Ağırlık</h3>
-        <div class="indicator-cont" style="padding:0 10px;width:50%;margin:0 26px 0;"><span class="indicator" id="FinalMontaj_weight">00</span><span class="birim" id="FinalMontaj_WeightUnit">kg</span></div>
+        <div class="indicator-cont" style="padding:0 10px;width:50%;margin:0 26px 0;"><span class="indicator" id="azotIndicator">00</span><span class="birim">kg</span></div>
     </div>
 </div>
 <hr>
@@ -102,108 +102,8 @@
 
 
 
-
-
 <script>
-
-  let btn_FinalMontaj_Baglan = document.getElementById('FinalMontaj_Baglan');
-  let txt_FinalMontaj_weight = document.getElementById('FinalMontaj_weight');
-  let txt_FinalMontaj_WeightUnit = document.getElementById('FinalMontaj_WeightUnit');
-
-  var Timer_FinalMontaj_getWeight;
-
-
-
-  //******************** Final Montaj Bağlan *********************
-  document.getElementById('FinalMontaj_Baglan').addEventListener('click', function(e){
-      let el = e.target;
-      el.disabled = true;
-      el.innerHTML = "Bağlanıyor...";
-      console.log("Final Montaj tartıya bağlanıyor...");
-      
-      $.ajax({
-          type: "POST",
-          url: 'http://localhost:5000/FinalMontaj_baglan',
-          timeout: 3000,
-          success: function(x){
-              if(x == 'success'){
-                  console.log("Final Montaj tartıya bağlandı.");
-                  toastr["success"]("Tartı'ya bağlandı");
-                  el.innerHTML = "Bağlandı";
-                  btn_FinalMontaj_Baglan.disabled = true;
-
-                  Timer_FinalMontaj_getWeight = setInterval(Timer_FinalMontaj_getWeight_EventHandler, 500);
-              }
-              else if(x == 'fail'){
-                  console.log("Final montaj tartıya bağlanamadı!");
-                  toastr["error"]("Tartı'ya bağlanamadı!");
-                  el.disabled = false;
-                  el.innerHTML = "Bağlan";
-              }
-          },
-          error: function(jqXHR, textStatus){
-              if(textStatus === 'timeout'){
-                  toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
-              }
-              else if(textStatus === 'error'){
-                  toastr["warning"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
-              }
-              el.disabled = false;
-              el.innerHTML = 'Bağlan';
-              
-              console.log(jqXHR);
-          }
-      });
-  });
-
-
-  function Timer_FinalMontaj_getWeight_EventHandler(){
-    $.ajax({
-        type: "POST",
-        url: 'http://localhost:5000/FinalMontaj_getWeight',
-        timeout: 5000,
-        success: function (x){
-            console.log(x);
-            if(typeof x['Weight'] == "undefined"){
-                toastr["error"]("Bağlantı hatası!\nTartı'nın bağlı olduğundan emin olunuz!");
-                btn_FinalMontaj_Baglan.disabled = false;
-                btn_FinalMontaj_Baglan.innerHTML = 'Bağlan'
-                clearInterval(Timer_FinalMontaj_getWeight); 
-            }
-            else{
-                txt_FinalMontaj_weight.innerText = x['Weight'];
-                txt_FinalMontaj_WeightUnit.innerHTML = x['weightUnit'];
-            }
-
-
-            if(x['Connected'] == false){
-              toastr["error"]("Bağlantı hatası!\nTartı'nın bağlı olduğundan emin olunuz!");
-              btn_FinalMontaj_Baglan.disabled = false;
-              btn_FinalMontaj_Baglan.innerHTML = 'Bağlan'
-              clearInterval(Timer_FinalMontaj_getWeight);
-            }
-        },
-        error: function(jqXHR, textStatus){
-            if(textStatus === 'timeout'){
-                toastr["warning"]("Bağlantı, zaman aşımına uğradı!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
-            }
-            else if(textStatus === 'error'){
-                toastr["error"]("Bağlantı hatası!\nUygulamanın çalışır durumda olduğunundan emin olunuz.");
-            }
-            
-            btn_FinalMontaj_Baglan.disabled = false;
-            btn_FinalMontaj_Baglan.innerHTML = 'Bağlan'
-            clearInterval(Timer_FinalMontaj_getWeight);
-
-            console.log(jqXHR);
-        }
-    });
-  }
-
-
-
-
-  document.getElementById('kaydetFinalMontaj').addEventListener('click',function(e){
+    document.getElementById('kaydetFinalMontaj').addEventListener('click',function(e){
     e.preventDefault();
     Swal.showLoading();
     let veri = Array(5);

@@ -55,20 +55,26 @@
       <button class="btn btn-primary" style="width: 80px;height: 80px;border-radius: 50%;padding:0;" id="hv_connect">BAĞLAN</button>
   </div>
   -->
+  <!--
   <div class="col-md-2">
       <button class="btn btn-primary" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 20px;padding: 0;" id="hv_start">BAŞLAT</button>
   </div>
+  -->
+
   <!--
   <div class="col-md-2">
       <button class="btn btn-danger" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 40px;padding: 0;" id="hv_bitir">BİTİR</button>
   </div>
   -->
-  <div class="col-md-2">
-      <button class="btn btn-danger" style="width: 80px;height: 80px;border-radius: 50%;margin-left: 60px;padding: 0;" id="hv_acil_bitir">ACİL BİTİR</button>
-  </div>
+  <!--
+
+  -->
+
 </form>
 <div class="row mt-4">
 <form class="col-md-10" onsubmit = "event.preventDefault();" id="havuzTestForm">
+  
+  <!-- 1. Satır -->
   <div id="addableField">
       <div class="form-row">
         <div class="col-md-2 text-center">Seri no</div> 
@@ -77,28 +83,80 @@
         <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
         <div class="col-md-2 text-center">Tüp Basıncı</div>
         <div class="col-md-3 text-center">Sebep</div>
+
+        <div class="form-group col-md-2">
+            <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_1"  name="vsn">
+        </div>
+         
+        <div class="form-group col-md-1 text-center">
+            <input name="havuz-uygunluk_1" id="uygunluk_1" data-degil="true" type="radio">
+        </div>
+
+
+        <div class="form-group col-md-2 text-center">
+            <input name="havuz-uygunluk_1" id="uygunlukdegil_1" data-degil="" type="radio" checked>
+        </div>
+
+
+        <div class="form-group col-md-2">
+            <input type="text" id="sicaklik_1"  value=0  class="form-control havuz_acma">
+        </div>
+
+        <div class="form-group col-md-2">
+            <input type="text" id="basinc_1" value=0 class="form-control havuz_kapatma">
+        </div>
+
+        <div class="form-group col-md-3 text-center"   >
+            <select class="form-control"  id="sebep_1">
+                <option >Alt-Üst Nipel arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                <option >Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                <option >Baçınç Anahtarı Açma Değeri Hatalı</option>
+                <option > Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                <option >Manometre Alt Nipel Arası Kaçak</option>
+                <option > Sibop Alt Nipel Arası Kaçak</option>
+            </select>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- 2. Satır -->
+    <div id="addableField">
+      <div class="form-row">
+        <div class="col-md-2 text-center">Seri no</div> 
+        <div class="col-md-1 text-center">Uygun</div>
+        <div class="col-md-2 text-center">Uygun değil</div>
+        <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
+        <div class="col-md-2 text-center">Tüp Basıncı</div>
+        <div class="col-md-3 text-center">Sebep</div>
+
           <div class="form-group col-md-2">
-              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_1"  name="vsn">
+              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_2"  name="vsn">
           </div>
          
-
-
-        <div class="form-group col-md-1 text-center">
-          <input name="havuz-uygunluk" id="uygunluk_1" data-degil="true" type="radio">
+      <div class="form-group col-md-1 text-center">
+          <input name="havuz-uygunluk_2" id="uygunluk_2" data-degil="true" type="radio">
       </div>
+
+
       <div class="form-group col-md-2 text-center">
-          <input name="havuz-uygunluk" id="uygunlukdegil_1" data-degil="" type="radio" checked>
+          <input name="havuz-uygunluk_2" id="uygunlukdegil_2" data-degil="" type="radio" checked>
       </div>
 
 
           <div class="form-group col-md-2">
-              <input type="text" id="sicaklik_1" value=0  class="form-control acma">
+              <input type="text" id="sicaklik_2"  value=0  class="form-control havuz_acma">
           </div>
+
           <div class="form-group col-md-2">
-              <input type="text" id="basinc_1" value=0 class="form-control kapatma">
+              <input type="text" id="basinc_2" value=0 class="form-control havuz_kapatma">
           </div>
+
           <div class="form-group col-md-3 text-center"   >
-              <select class="form-control"  id="sebep_1">
+              <select class="form-control"  id="sebep_2">
                 <option >Alt-Üst Nipel arası Kaçak</option>
                 <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
                 <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
@@ -108,25 +166,166 @@
                 <option >Manometre Alt Nipel Arası Kaçak</option>
                 <option > Sibop Alt Nipel Arası Kaçak</option>
               </select>
-
-              
-
-
           </div>
       </div>
     </div>
 
-</form>
 
+    <!-- 3. Satır -->
+    <div id="addableField">
+      <div class="form-row">
+        <div class="col-md-2 text-center">Seri no</div> 
+        <div class="col-md-1 text-center">Uygun</div>
+        <div class="col-md-2 text-center">Uygun değil</div>
+        <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
+        <div class="col-md-2 text-center">Tüp Basıncı</div>
+        <div class="col-md-3 text-center">Sebep</div>
+
+          <div class="form-group col-md-2">
+              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_3"  name="vsn">
+          </div>
+         
+      <div class="form-group col-md-1 text-center">
+          <input name="havuz-uygunluk_3" id="uygunluk_3" data-degil="true" type="radio">
+      </div>
+
+
+      <div class="form-group col-md-2 text-center">
+          <input name="havuz-uygunluk_3" id="uygunlukdegil_3" data-degil="" type="radio" checked>
+      </div>
+
+
+          <div class="form-group col-md-2">
+              <input type="text" id="sicaklik_3"  value=0  class="form-control havuz_acma">
+          </div>
+
+          <div class="form-group col-md-2">
+              <input type="text" id="basinc_3" value=0 class="form-control havuz_kapatma">
+          </div>
+
+          <div class="form-group col-md-3 text-center"   >
+              <select class="form-control"  id="sebep_3">
+                <option >Alt-Üst Nipel arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                <option >Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                <option >Baçınç Anahtarı Açma Değeri Hatalı</option>
+                <option > Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                <option >Manometre Alt Nipel Arası Kaçak</option>
+                <option > Sibop Alt Nipel Arası Kaçak</option>
+              </select>
+          </div>
+      </div>
+    </div>
+
+
+    <!-- 4. Satır -->
+    <div id="addableField">
+      <div class="form-row">
+        <div class="col-md-2 text-center">Seri no</div> 
+        <div class="col-md-1 text-center">Uygun</div>
+        <div class="col-md-2 text-center">Uygun değil</div>
+        <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
+        <div class="col-md-2 text-center">Tüp Basıncı</div>
+        <div class="col-md-3 text-center">Sebep</div>
+
+          <div class="form-group col-md-2">
+              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_4"  name="vsn">
+          </div>
+         
+      <div class="form-group col-md-1 text-center">
+          <input name="havuz-uygunluk_4" id="uygunluk_4" data-degil="true" type="radio">
+      </div>
+
+
+      <div class="form-group col-md-2 text-center">
+          <input name="havuz-uygunluk_4" id="uygunlukdegil_4" data-degil="" type="radio" checked>
+      </div>
+
+
+          <div class="form-group col-md-2">
+              <input type="text" id="sicaklik_4"  value=0  class="form-control havuz_acma">
+          </div>
+
+          <div class="form-group col-md-2">
+              <input type="text" id="basinc_4" value=0 class="form-control havuz_kapatma">
+          </div>
+
+          <div class="form-group col-md-3 text-center"   >
+              <select class="form-control"  id="sebep_4">
+                <option >Alt-Üst Nipel arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                <option >Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                <option >Baçınç Anahtarı Açma Değeri Hatalı</option>
+                <option > Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                <option >Manometre Alt Nipel Arası Kaçak</option>
+                <option > Sibop Alt Nipel Arası Kaçak</option>
+              </select>
+          </div>
+      </div>
+    </div>
+
+
+    <!-- 5. Satır -->
+    <div id="addableField">
+      <div class="form-row">
+        <div class="col-md-2 text-center">Seri no</div> 
+        <div class="col-md-1 text-center">Uygun</div>
+        <div class="col-md-2 text-center">Uygun değil</div>
+        <div class="col-md-2 text-center">Tüp Cidar Sıcaklığı</div>
+        <div class="col-md-2 text-center">Tüp Basıncı</div>
+        <div class="col-md-3 text-center">Sebep</div>
+
+          <div class="form-group col-md-2">
+              <input type="text" class="form-control addInput" onkeyup="addSubmit(event)"  id="seri_no_5"  name="vsn">
+          </div>
+         
+      <div class="form-group col-md-1 text-center">
+          <input name="havuz-uygunluk_5" id="uygunluk_5" data-degil="true" type="radio">
+      </div>
+
+
+      <div class="form-group col-md-2 text-center">
+          <input name="havuz-uygunluk_5" id="uygunlukdegil_5" data-degil="" type="radio" checked>
+      </div>
+
+
+          <div class="form-group col-md-2">
+              <input type="text" id="sicaklik_5"  value=0  class="form-control havuz_acma">
+          </div>
+
+          <div class="form-group col-md-2">
+              <input type="text" id="basinc_5" value=0 class="form-control havuz_kapatma">
+          </div>
+
+          <div class="form-group col-md-3 text-center"   >
+              <select class="form-control"  id="sebep_5">
+                <option >Alt-Üst Nipel arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                <option >Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                <option >Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                <option >Baçınç Anahtarı Açma Değeri Hatalı</option>
+                <option > Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                <option >Manometre Alt Nipel Arası Kaçak</option>
+                <option > Sibop Alt Nipel Arası Kaçak</option>
+              </select>
+          </div>
+      </div>
+    </div>
+
+    
+</form>
+<!--
 <div class="col-md-2" style="padding-left: 0;">
-  <!--
+  
   <div class="form-group">
       <input type="text" class="col-md-12" id="temp" value="72" style="margin-bottom: 0px;" disabled>
   </div>
-  -->
+  
   <div class="indicator-cont" style="margin-top:20px;"><span class="indicator" id="valfTestIndicator">00</span><span class="birim">°C</span></div>
 </div>
-
+-->
 </div>
   <!--
   <ul class="gerisayim p-0 mt-4 col-md-12">
@@ -135,7 +334,12 @@
   </ul>
   -->
 <hr>
-<div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetHavuzTest">KAYDET</button></div>
+<div class="col-md-4 mx-auto">
+     <button type="button" class="btn btn-primary btn-lg" style="height: 34px" id="HavuzTest_SayaciBaslat">Sayacı Başlat</button>
+    <button type="button" class="btn btn-success btn-lg "  style="height: 34px" id="kaydetHavuzTest">KAYDET</button>
+    <!-- <button type="button" class="btn btn-primary " style="height: 34px" id="HavuzTest_SayaciBaslat">Sayacı Başlat</button> -->
+
+</div>
 <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
 <script src="{% static 'js/sweetalert2.min.js' %}"></script>
 
@@ -157,200 +361,75 @@
 
   }
 
-/*
-  document.getElementById('hv_connect').addEventListener('click',function(e){
-      e.preventDefault();
-      let tempIndicator = document.getElementById("tempIndicator");
 
-      let temp = setInterval(()=>{
-          $.ajax({
-              type: "GET",
-              url: 'http://localhost:5000/hv_get_temperature',
-              success: function (x){
-                  tempIndicator.value = (x);
-                  document.getElementById('temp_now').value = x;
-                  document.getElementById('tempNow').innerText = x;
-              },
-          });
-      },1000);
-  });
-*/
 </script>
 
 <script type="text/javascript">
 
-  let txt_HavuzTest_Temperature = document.getElementById('valfTestIndicator');
-  let btn_HavuzTest_Baslat = document.getElementById('hv_start');
-  let btn_HavuzTest_AcilBitir = document.getElementById('hv_acil_bitir');
-  btn_HavuzTest_AcilBitir.disabled = true;
-
-  let Timer_HavuzTest_TestStatus;
-
-  var basliyorState = false;
-  var basladiState = false;
-  var bitiriliyorState = false;
-  var bittiState = false;
-  var acilbitiriliyorState = false;
-  var acilbitirildiState = false;
-
-
- 
-
-  document.getElementById('hv_start').addEventListener('click', function(e){
-      e.preventDefault();
-      var el = e.target;
-      el.disabled = true;
-
-      $.ajax({
-          type: "POST",
-          url: 'http://localhost:5000/hv_start',
-          timeout: 3000,
-          success: function(x){
-              if(x == 'success'){
-                  toastr["info"]("Başlat komutu alındı. Sıcaklık 65°C olduğunda kapaklar kilitlenecek");
-                  btn_HavuzTest_AcilBitir.disabled = false;
-
-                  basliyorState = false;
-                  basladiState = false;
-                  bitiriliyorState = false;
-                  bittiState = false;
-                  acilbitiriliyorState = false;
-                  acilbitirildiState = false;
-
-                  Timer_HavuzTest_TestStatus = setInterval(Timer_HavuzTest_TestStatusEventHandler, 2000);
-
-              }
-              else if(x == 'fail'){
-                  toastr["warning"]("Bir hata oluştu");
-                  el.disabled = false;
-              }
-          },
-          error(jqXHR, textStatus){
-              el.disabled = false;
-              toastr["error"]("Bağlantı hatası! Uygulmananın çalışır durumda olduğundan emin olunuz!");
-              console.log(jqXHR);
-          }
-      });
-  });
-
-
-  document.getElementById('hv_acil_bitir').addEventListener('click', function(e){
-      e.preventDefault();
-      var el = e.target;
-      el.disabled = true;
-      toastr["info"]("Acil Bitirme işlemi başladı. Manyetik kilitler açılıyor.");
-
-      $.ajax({
-          type: "POST",
-          url: 'http://localhost:5000/hv_acil_bitir',
-          timeout: 3000,
-          success: function(x){
-              if(x == 'success'){
-                  toastr["info"]("Manyetik kilitler açıldı");
-                  btn_HavuzTest_Baslat.disabled = false;
-              }
-              else if(x == 'fail'){
-                  toastr["warning"]("Bir hata oluştu");
-                  el.disabled = false;
-              }
-          },
-          error(jqXHR, textStatus){
-              el.disabled = false;
-              toastr["error"]("Bağlantı hatası! Uygulmananın çalışır durumda olduğundan emin olunuz!");
-              console.log(jqXHR);
-          }
-      });
-  });
+  
+  let btn_HavuzTest_SayaciBaslat = document.getElementById('HavuzTest_SayaciBaslat');
 
   
+
+  document.getElementById('HavuzTest_SayaciBaslat').addEventListener('click', function(e){
+      e.preventDefault();
+      var el = e.target;
+      el.disabled = true;
+
+      $.ajax({
+          type: "POST",
+          url: 'http://localhost:5000/HavuzTest_start',
+          timeout: 3000,
+          success: function(x){
+              if(x == 'success'){
+                  toastr['success']("Test Başladı.");
+                  testStatus = "basladi";
+
+                  Timer_HavuzTest_TestStatus = setInterval(Timer_HavuzTest_TestStatusEventHandler, 2000);
+              }
+              else if(x == 'fail'){
+                  toastr["warning"]("Bir hata oluştu");
+                  el.disabled = false;
+              }
+          },
+          error(jqXHR, textStatus){
+              el.disabled = false;
+              toastr["warning"]("Bağlantı hatası! Uygulmananın çalışır durumda olduğundan emin olunuz!");
+              console.log(jqXHR);
+          }
+      });
+  });
+  
+
+  var testStatus = "None";
 
   function Timer_HavuzTest_TestStatusEventHandler(){
       $.ajax({
           type: "POST",
-          url: 'http://localhost:5000/hv_TestStatus',
+          url: 'http://localhost:5000/HavuzTest_TestStatus',
           timeout: 3000,
           success: function(x){
-              if(x['testState'] == 'basliyor' && basliyorState == false){
-                  toastr["info"]("Kapaklar kilitleniyor...");
-                  btn_HavuzTest_AcilBitir.disabled = true;
-                  basliyorState = true;
+              if(x == 'bitti' && testStatus == 'basladi'){
+                  toastr["success"]("Test işlemi bitti.");
+                  testStatus = "bitti";
+                  
               }
-              else if(x['testState'] == 'basladi' && basladiState == false){
-                  toastr["success"]("Kapaklar kilitlendi. Test Başladı.");
-                  btn_HavuzTest_AcilBitir.disabled = false;
-                  basladiState = true;
-              }
-              else if(x['testState'] == 'bitiriliyor' && bitiriliyorState == false){
-                  toastr["info"]("Manyetik kilitler açılıyor...");
-                  btn_HavuzTest_AcilBitir.disabled = true;
-                  bitiriliyorState = true;
-              }
-              else if(x['testState'] == 'bitti' && bittiState == false){
-                  toastr["success"]("Manyetik kilitler açıldı. Test işlemi bitti.");
-                  btn_HavuzTest_Baslat.disabled = false;
-                  btn_HavuzTest_AcilBitir.disabled = true;
-                  bittiState = true;
+              else if(x == 'None'){
+                  testStatus == "None";
                   clearInterval(Timer_HavuzTest_TestStatus);
-              }
-              else if(x['testState'] == 'acilbitiriliyor' && acilbitiriliyorState == false){
-                  toastr["info"]("Acil bitirme işlemi başladı. Manyetik kilitler açılıyor...");
-                  btn_HavuzTest_AcilBitir.disabled = true;
-                  acilbitiriliyorState = true;
-              }
-              else if(x['testState'] == 'acilbitirildi' && acilbitirildiState == false){
-                  toastr["info"]("Acil bitirildi. Manyetik kilitler açıldı.");
-                  btn_HavuzTest_Baslat.disabled = false;
-                  btn_HavuzTest_AcilBitir.disabled = true;
-                  acilbitirildiState = true;
-                  clearInterval(Timer_HavuzTest_TestStatus);
+                  btn_HavuzTest_SayaciBaslat.disabled = false;
               }
           }
       });
-  }
+  };
+  
 
 
-/*
-  document.getElementById('hv_start').addEventListener('click',function(e){
-      e.preventDefault();
-      console.log('!!!!');
-      $.ajax({
-          type: "GET",
-          url: 'http://localhost:5000/hv_start',
-          success: function (x){
-          },
-      });
-  });
-*/
 </script>
 
-<script type="text/javascript">
-/*
-  document.getElementById('hv_bitir').addEventListener('click',function(e){
-      e.preventDefault();
-      $.ajax({
-          type: "GET",
-          url: 'http://localhost:5000/hv_bitir',
-          success: function (x){
-          },
-      });
-  });
-  */
-</script>
 
-<script type="text/javascript">
-/*
-  document.getElementById('hv_acil_bitir').addEventListener('click',function(e){
-      e.preventDefault();
-      $.ajax({
-          type: "GET",
-          url: 'http://localhost:5000/hv_bitir',
-          success: function (x){
-          },
-      });
-      
-  });
-  */
-</script>
+
+
 
 <script type="text/javascript">
     document.getElementById('kaydetHavuzTest').addEventListener('click',(e)=>{

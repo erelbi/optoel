@@ -1,15 +1,12 @@
 {% load static %}
 {% block manometre %}
-<form class="form-inline">
-  <button type="submit" class="btn btn-primary mb-2" id="uretimKontrolBaslangic">Bağlan</button>
-</form>
-<hr>
+
 <div class="row">
   <form class="col-md-12" id="valfGovdeForm">
     <div class="form-row">
-        <div class="form-group col-md-3">
-            <label for="baslangic">Tork değeri</label>
-            <input type="text" class="form-control" id="tork_1" value="240">
+      <div class="form-group col-md-3">
+        <label for="baslangic">Valf Seri No:</label>
+        <input type="text" class="form-control col-md-10" id="vsn_1"  onkeyup="GovdeTest(event,this)" value="">
         </div>
         <div class="form-group col-md-2 text-center">
             <label for="bitis">Uygun</label>
@@ -32,11 +29,11 @@
     <div class="row">
 
         <div class="col-md-4">
-
-            <div class="form-group">
-                <label for="baslangic">Valf Seri No:</label>
-                <input type="text" class="form-control col-md-10" id="vsn_1" value="">
-                </div>
+          <div class="form-group">
+            <label for="baslangic">Tork değeri</label>
+            <input type="text" class="form-control col-md-10" id="tork_1" value="">
+            </div>
+ 
             <div class="form-group">
                 <label for="baslangic">Tüp Seri No:</label>
                 <input type="text" class="form-control col-md-10" id="tsn_1" value="">
@@ -51,7 +48,7 @@
 
 
             <div class="col-md-8">
-                    <div class="col-md-12">
+                    <!-- <div class="col-md-12">
                       <div class="row" style="padding-left: 10px;">
                         <h4  class="col-md-8" style="font-weight: 700;font-size: 15px;">Valf Seri No</h4>
                         <h4 class="col-md-4" style="font-weight: 700;font-size: 15px;">Kalan Süre</h4>
@@ -65,7 +62,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-                </div>
+                </div> -->
         </div>
     </div>
 </form>
@@ -121,5 +118,86 @@
         }
       );
   })
+</script>
+<script>
+   function GovdeTest(e,el){
+    console.log('tuşa basıldı ',e.keyCode)
+
+		if ( e.target.value) {
+            new Promise(function(resolve,reject){
+              let data = {
+              "tur" : 'valf_govde',
+              "veri" : e.target.value
+              }
+              
+            $.ajax({
+                  type: "POST",
+                  url: '/kurlenmeKontrol',
+                  data : data,
+                  success: function (x){
+                    if(x == 'NO'){
+                      el.parentElement.lastElementChild.style.display = "block";
+                      kontrol = "";
+                      document.getElementById('TestFormBtn').disabled = true;
+                      console.log(x)
+                    }else{
+
+                      kontrol = "OK";
+                      el.parentElement.lastElementChild.style.display = "none";
+                      document.getElementById('TestFormBtn').disabled = false;
+                     
+                    }
+                  },
+                    error(err){
+                      console.log(err);
+                      return;
+                    }
+              });
+          }).then(function(r){
+            a++;
+             if(a<6){
+                addableField.insertAdjacentHTML('beforeend',
+                `<div class="form-row">
+                    <div class="form-group col-md-2">
+                        <input type="text" class="form-control" class="addInput" onkeyup="addSubmit(event)" >
+                    </div>
+                    <div class="form-group col-md-2 text-center">
+                        <input name="uygunluk${a}" id="uygunluk${a}" data-degil="true" type="radio" checked>
+                    </div>
+                    <div class="form-group col-md-2 text-center">
+                        <input name="uygunluk${a}" id="uygunlukdegil${a}" data-degil="" type="radio" >
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="text" class="form-control acma">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="text" class="form-control kapatma">
+                    </div>
+                    <div class="form-group col-md-2 text-center">
+                        <select class="form-control" disabled>
+                          <option>Alt-Üst Nipel arası Kaçak</option>
+                          <option>Emniyet Ventili Gövde-Kapak Arası Kaçak</option>
+                          <option>Emniyet Ventili Gövde-Alt Nipel Arası Kaçak</option>
+                          <option>Basınç Anahtarı-Alt Nipel Arası Kaçak</option>
+                          <option>Baçınç Anahtarı Açma Değeri Hatalı</option>
+                          <option>Baçınç Anahtarı Kapama Değeri Hatalı</option>
+                          <option>Manometre Alt Nipel Arası Kaçak</option>
+                          <option>Sibop Alt Nipel Arası Kaçak</option>
+                        </select>
+                    </div>
+                </div>`);
+            // $('input[type=radio][name^="uygunluk"').change(function(e){
+            //   this.parentElement.parentElement.lastElementChild.children[0].disabled = Boolean(e.target.dataset.degil);
+            // })
+            addableField.lastElementChild.children[0].children[0].focus();
+            $(".sil").remove();
+            /*addableField.lastElementChild.insertAdjacentHTML('beforeend',`<div class="col-md-1"><button class="sil btn btn-danger text-center ml-2 btn-sm" onclick="sil(event)" title="Sil"><i class="fa fa-trash"></i></button></div>`);*/
+            }
+          }).catch(function(err){
+            console.log(err)
+          })
+	    }
+	}
+
 </script>
 {% endblock %}

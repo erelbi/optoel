@@ -115,21 +115,7 @@ class Uretim(models.Model):
         return str(self.vsn)
 
 
-class Valf_govde(models.Model):
- 
 
-    tork=models.PositiveIntegerField(null=True)
-    tup_seri_no=models.PositiveIntegerField(null=True)
-    sodyum_miktari=models.PositiveIntegerField(null=True)
-    uygunluk=models.CharField(max_length=30,null=True,blank=True)
-    sebep=models.CharField(max_length=30,null=True,blank=True)
-    govde_personel=models.ForeignKey(User,related_name='govde_personel', on_delete=models.DO_NOTHING) 
-    govde_tarihi = models.DateTimeField( blank=True, null=True)
-    
-    govde_kurlenme_personel=models.ForeignKey(User,related_name='govde_kurlenme_personel',null=True,on_delete=models.DO_NOTHING) 
-    govde_kurlenme_parti_no = models.PositiveIntegerField(null=True)
-    govde_kurlenme_baslangic_tarihi = models.DateTimeField( blank=True, null=True)
-    govde_kurlenme_bitis_tarihi = models.DateTimeField( blank=True, null=True)
 
     
 
@@ -148,13 +134,8 @@ class PDF_Rapor(models.Model):
     aciklama = models.TextField(max_length=10000000000,null=True,blank=True)
 
 
-class Valf_test(models.Model):
-    acma=models.PositiveIntegerField(null=True)
-    kapama=models.PositiveIntegerField(null=True)
-    uygun=models.BooleanField(default=False)
-    sebep=models.CharField(max_length=30,null=True,blank=True)
-    test_personel=models.ForeignKey(User,related_name='test_personel', on_delete=models.DO_NOTHING) 
-    test_tarihi = models.DateTimeField( blank=True, null=True)
+
+
 
 
 class Valf_montaj(models.Model):
@@ -172,60 +153,101 @@ class Valf_montaj(models.Model):
     kurlenme_bitis_tarihi = models.DateTimeField( blank=True, null=True)
 
 
-class Valf(models.Model):
-    is_emri = models.ForeignKey(Emir,on_delete=models.DO_NOTHING) 
-    valf_montaj = models.ForeignKey(Valf_montaj,on_delete=models.DO_NOTHING)
-    valf_test = models.ForeignKey(Valf_test,on_delete=models.DO_NOTHING,null=True)
-    valf_govde = models.ForeignKey(Valf_govde,on_delete=models.DO_NOTHING,null=True)
+class Valf_test(models.Model):
+    acma=models.PositiveIntegerField(null=True)
+    kapama=models.PositiveIntegerField(null=True)
+    uygun=models.BooleanField(default=False)
+    sebep=models.CharField(max_length=30,null=True,blank=True)
+    test_personel=models.ForeignKey(User,related_name='test_personel', on_delete=models.DO_NOTHING) 
+    test_tarihi = models.DateTimeField( blank=True, null=True)
 
- 
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
+class Valf_govde(models.Model):
+    tork=models.PositiveIntegerField(null=True)
+    tup_seri_no=models.PositiveIntegerField(null=True)
+    sodyum_miktari=models.PositiveIntegerField(null=True)
+    uygunluk=models.CharField(max_length=30,null=True,blank=True)
+    sebep=models.CharField(max_length=30,null=True,blank=True)
+    govde_personel=models.ForeignKey(User,related_name='govde_personel', on_delete=models.DO_NOTHING) 
+    govde_tarihi = models.DateTimeField( blank=True, null=True)   
+    govde_kurlenme_personel=models.ForeignKey(User,related_name='govde_kurlenme_personel',null=True,on_delete=models.DO_NOTHING) 
+    govde_kurlenme_parti_no = models.PositiveIntegerField(null=True)
+    govde_kurlenme_baslangic_tarihi = models.DateTimeField( blank=True, null=True)
+    govde_kurlenme_bitis_tarihi = models.DateTimeField( blank=True, null=True)
 
 class Valf_fm200(models.Model):
-    valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
-    personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
-    kayit_tarihi=models.DateTimeField( blank=True, null=True)
-    
-    kurlenme_bitis=models.DateTimeField( blank=True, null=True)
+    #valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
+    #personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    kayit_tarihi=models.DateTimeField( blank=True, null=True) 
     bos_agirlik =models.PositiveIntegerField(null=True)
-    rekorlu_agirlik = models.PositiveIntegerField(null=True)
+    dolu_agirlik = models.PositiveIntegerField(null=True)
     fm200 = models.PositiveIntegerField(null=True)
     azot = models.PositiveIntegerField(null=True)
-
+    uygunluk=models.CharField(max_length=30,null=True,blank=True)
+    fm200_parti_no = models.PositiveIntegerField(null=True)
+    fm200_kurlenme_baslangic_tarihi = models.DateTimeField( blank=True, null=True)
+    fm200_kurlenme_bitis_tarihi = models.DateTimeField( blank=True, null=True)
+    fm200_personel=models.ForeignKey(User,related_name='fm200_personel', on_delete=models.DO_NOTHING)
+    fm200_kurlenme_personel =models.ForeignKey(User,related_name='fm200_kurlenme_personel',null=True,on_delete=models.DO_NOTHING) 
 
 class Valf_havuz(models.Model):
-    valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
-    personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
-    kayit_tarihi=models.DateTimeField( blank=True, null=True)
-    
+    #valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
+    #personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    kayit_tarihi=models.DateTimeField( blank=True, null=True) 
     tup_cidar_sicaklik =models.PositiveIntegerField(null=True)
     tup_basinc = models.PositiveIntegerField(null=True)
     uygunluk=models.CharField(max_length=30,null=True,blank=True)
     sebep=models.CharField(max_length=30,null=True,blank=True)
- 
-
+    havuz_parti_no = models.PositiveIntegerField(null=True)
+    havuz_kurlenme_baslangic_tarihi = models.DateTimeField( blank=True, null=True)
+    havuz_kurlenme_bitis_tarihi = models.DateTimeField( blank=True, null=True)
+    havuz_personel=models.ForeignKey(User,related_name='havuz_personel', on_delete=models.DO_NOTHING)
+    havuz_kurlenme_personel=models.ForeignKey(User,related_name='kurlenmehavuz_personel', on_delete=models.DO_NOTHING)
+    
+    
 
 class Valf_final_montaj(models.Model):
-    valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
-    personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    #valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
+    #personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
     kayit_tarihi=models.DateTimeField( blank=True, null=True)
     
     etiket_seri_no =models.PositiveIntegerField(null=True)
     funye_seri_no = models.PositiveIntegerField(null=True)
     funye_seri_omaj = models.PositiveIntegerField(null=True)
     basinc_anahtari_omaj = models.PositiveIntegerField(null=True)
+
+
+class Valf(models.Model):
+    is_emri = models.ForeignKey(Emir,on_delete=models.DO_NOTHING) 
+    valf_montaj = models.ForeignKey(Valf_montaj,on_delete=models.DO_NOTHING)
+    valf_test = models.ForeignKey(Valf_test,on_delete=models.DO_NOTHING,null=True)
+    valf_govde = models.ForeignKey(Valf_govde,on_delete=models.DO_NOTHING,null=True)
+    fm200_azot= models.ForeignKey(Valf_fm200,on_delete=models.DO_NOTHING,null=True)
+    havuz = models.ForeignKey(Valf_havuz,on_delete=models.DO_NOTHING,null=True)
+    valf_final_montaj = models.ForeignKey(Valf_final_montaj,on_delete=models.DO_NOTHING,null=True)
+ 
+
+
+
+
+# class Valf_havuz(models.Model):
+#     valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
+#     personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
+#     kayit_tarihi=models.DateTimeField( blank=True, null=True)
+    
+#     tup_cidar_sicaklik =models.PositiveIntegerField(null=True)
+#     tup_basinc = models.PositiveIntegerField(null=True)
+#     uygunluk=models.CharField(max_length=30,null=True,blank=True)
+#     sebep=models.CharField(max_length=30,null=True,blank=True)
+ 
+
+
+# class Valf_final_montaj(models.Model):
+#     valf=models.ForeignKey(Valf,on_delete=models.DO_NOTHING)
+#     personel=models.ForeignKey(User,on_delete=models.DO_NOTHING)
+#     kayit_tarihi=models.DateTimeField( blank=True, null=True)
+    
+#     etiket_seri_no =models.PositiveIntegerField(null=True)
+#     funye_seri_no = models.PositiveIntegerField(null=True)
+#     funye_seri_omaj = models.PositiveIntegerField(null=True)
+#     basinc_anahtari_omaj = models.PositiveIntegerField(null=True)
  
