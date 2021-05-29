@@ -223,8 +223,6 @@ def save_function(cleanlist,user_id):
     print("---------------------------->")
     valf_test =Valf_test(acma=cleanlist[2],kapama=cleanlist[3],sebep=cleanlist[6],uygun=is_not_blank(cleanlist[1]),test_tarihi=timezone.now(),test_personel_id=user_id)
     valf_test.save()
-    print("----------------")
-    print(valf_test)
     valf = Valf.objects.get(id=cleanlist[0])
     valf.valf_test_id = valf_test.id
     valf.save()
@@ -283,3 +281,54 @@ def pdf_remark_save(data_pdf):
 #         Valf_test.objects.filter(id)
 
 
+
+###############Valf Govde################################
+
+def duplicate_control_govde(id):
+    return Valf.objects.filter(valf_montaj_id=id).values_list('valf_govde_id',flat = True).first()
+
+@csrf_exempt
+def valf_govde_save(request):
+    print("valf_gocde_içerde")
+    try:
+        valf_govde_veri_list = json.loads(request.POST.dict()['veri'])
+        valf_main = Valf.objects.get(id=valf_govde_veri_list[0])
+        if  duplicate_control_govde(valf_govde_veri_list[0]) is  None:
+            if valf_govde_veri_list[4] == "True":
+                govde = Valf_govde(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],govde_personel_id=request.user.id,uygunluk=True)
+            else:
+                govde = Valf_govde(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],uygunluk=False,sebep=valf_govde_veri_list[5],govde_personel_id=request.user.id)
+            govde.save()
+            valf_main.valf_govde_id = govde.id
+            valf_main.save()
+        else:
+            Valf_govde.objects.filter(id=valf_main.valf_govde_id).update(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],uygunluk=valf_govde_veri_list[4],sebep=valf_govde_veri_list[5],govde_personel_id=request.user.id)
+           
+            return JsonResponse({'status':201,'remark':"Güncelleme İşlemi Başarılı!"})
+            
+      
+        return JsonResponse({'status':200,'remark':"Save"})
+    except Exception as err:
+        print("valf_govde_hata----->",err)
+    
+
+
+
+##############Valf Govde Kontrol###############################
+@csrf_exempt
+def GovdekontrolEt(request):
+    if request.method == 'POST':
+        try:
+            valf_id=Valf.objects.filter(valf_montaj_id=request.POST['veri']).values_list('valf_test_id',flat = True).first()       
+            if isinstance(valf_id,int):
+                Valf_test.objects.filter(id=valf_id).values_list('uygun',flat = True).first()
+                if (Valf_test.objects.filter(id=valf_id).values_list('uygun',flat = True).first()):
+                    response = {'status':"OK"}
+                else:
+                    response = {'status':"NO",'remark':"Bu valfin; valf test adımı başarısız!"}
+            else:
+                response = {'status':"NO",'remark':"Valf Mevcut Değil!"}
+        except:
+            response = {'status':"NO",'remark':"Sunucu Fonksiyon Hatası!"}
+
+    return JsonResponse(response)

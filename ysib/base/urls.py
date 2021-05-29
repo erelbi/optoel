@@ -40,5 +40,7 @@ urlpatterns = [
     url(r'^valf_test_kayıt',views_extra.valf_test_kayıt),
     url(r'^pdf_yukle', views_extra.upload_pdf_rapor),
     url(r'valf_montaj_kurlenme_tablo',views_extra.montajKurlenme),
+    url(r'valf_govde_save',views_extra.valf_govde_save),
+    url(r'GovdekontrolEt',views_extra.GovdekontrolEt),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -165,7 +165,7 @@ class Valf_govde(models.Model):
     tork=models.PositiveIntegerField(null=True)
     tup_seri_no=models.PositiveIntegerField(null=True)
     sodyum_miktari=models.PositiveIntegerField(null=True)
-    uygunluk=models.CharField(max_length=30,null=True,blank=True)
+    uygunluk=models.BooleanField(default=False)
     sebep=models.CharField(max_length=30,null=True,blank=True)
     govde_personel=models.ForeignKey(User,related_name='govde_personel', on_delete=models.DO_NOTHING) 
     govde_tarihi = models.DateTimeField( blank=True, null=True)   

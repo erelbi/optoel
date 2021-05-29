@@ -3,6 +3,9 @@
 
 <div class="row">
   <form class="col-md-12" id="valfGovdeForm">
+    <div  id="Hata-Billdirim-Valf-govde" class="alert alert-danger gizle">
+      
+    </div>
     <div class="form-row">
       <div class="form-group col-md-3">
         <label for="baslangic">Valf Seri No:</label>
@@ -70,9 +73,9 @@
 <hr>
 <div class="col-md-4 mx-auto"><button type="button" class="btn btn-success btn-lg btn-block" id="kaydetValfGovde">KAYDET</button></div>
 <script type="text/javascript">
-    // $('input[type=radio]').change(function(){
-    //   this.parentElement.parentElement.lastElementChild.children[0].disabled = !this.parentElement.parentElement.lastElementChild.children[0].disabled;
-    // })
+    $('input[type=radio]').change(function(){
+      this.parentElement.parentElement.lastElementChild.children[0].disabled = !this.parentElement.parentElement.lastElementChild.children[0].disabled;
+    })
 </script>
 <script type="text/javascript">
     document.getElementById('kaydetValfGovde').addEventListener('click',(e)=>{
@@ -102,15 +105,26 @@
     }
     $.ajax({
           type: "POST",
-          url: '/uretimkontrol',
+          url: '/valf_govde_save',
           data : data,
-          success: function (x){
+          success: function (resp){
+            if(resp['status']==200){
             Swal.fire({
               title: 'Başarılı!',
               text: 'Valf gövde başarılı bir şekilde eklendi!',
               icon: 'success',
               confirmButtonText: 'Tamam'
             })
+          }
+          else if(resp['status']==201){
+            Swal.fire({
+              title: 'Başarılı!',
+              text: resp.remark,
+              icon: 'info',
+              confirmButtonText: 'Tamam'
+            })
+          
+          }
           },
           error(err){
             console.log;(err);
@@ -132,19 +146,21 @@
               
             $.ajax({
                   type: "POST",
-                  url: '/kurlenmeKontrol',
+                  url: '/GovdekontrolEt',
                   data : data,
-                  success: function (x){
-                    if(x == 'NO'){
-                      el.parentElement.lastElementChild.style.display = "block";
-                      kontrol = "";
-                      document.getElementById('TestFormBtn').disabled = true;
-                      console.log(x)
+                  success: function (resp){
+                    
+                    if(resp['status'] == 'NO'){
+                        console.log(resp.remark)
+                        var div = document.getElementById('Hata-Billdirim-Valf-govde');
+                        div.innerHTML = "<strong>Hata! </strong>"+resp.remark
+                        div.style.display = "block";
+                        document.getElementById('kaydetValfGovde').disabled = true;
                     }else{
 
                       kontrol = "OK";
-                      el.parentElement.lastElementChild.style.display = "none";
-                      document.getElementById('TestFormBtn').disabled = false;
+                      document.getElementById('Hata-Billdirim-Valf-govde').style.display = "none"
+                        document.getElementById('kaydetValfGovde').disabled = false;
                      
                     }
                   },

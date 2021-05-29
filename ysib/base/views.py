@@ -307,7 +307,9 @@ def uretimkontrol(request):
                                  
                                 
                 elif request.POST.dict()['tur'] == 'valfgovde':
+                        
                         veri = json.loads(request.POST.dict()['veri'])
+                        
                         '''neval
                         v = Valf.objects.get(vsn=veri[3])
                         is_emri = v.is_emri
@@ -467,10 +469,9 @@ def uretimkontrol(request):
         fm200kurlenmesi=Valf_fm200.objects.filter(fm200_kurlenme_bitis_tarihi__gte=now)
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
         aktifemirler= Emir.objects.filter(durum="Aktif")
-       
-        print("--------------------------> Kalite Kontrol")
+        govde_emir = Valf.objects.filter(valf_govde_id__isnull=False).values_list('is_emri_id',flat=True)
         #return render(request,'uretim-kontrol.html',{ 'acikemirleri':acikemirleri,  'grup': grup, 'birim': birim, 'ip': ip,'now':now, 'kurlenmes':montajkurlenmesi,'fm200kurlenmes':fm200kurlenmesi, 'govdekurlenmes': govdekurlenmesi ,'server' : server})
-        return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi,'aktifemirler':aktifemirler,})
+        return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi,'aktifemirler':aktifemirler,'govde_emir':govde_emir})
 @csrf_exempt
 def acikisemirleri(request):
     emirler = Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
@@ -971,11 +972,15 @@ def kontrolEt(request):
                 r = "NO"
         if(tur == 'valf_govde'):
             try:
-                print(veri)
-                ax = Valf.objects.filter(valf_montaj_id=veri).exclude(valf_test_id__isnull=True)
-                print(ax)
-                if(veri in t.values_list('lot_no',flat=True)):
-                    r = ('OK')
+                #Valf.objects.filter(valf_montaj_id=veri).values_list('valf_test_id',flat = True).first()
+                #a = isinstance(Valf.objects.filter(valf_montaj_id=veri).values_list('valf_test_id',flat = True).first(),int)
+                valf_id=Valf.objects.filter(valf_montaj_id=veri).values_list('valf_test_id',flat = True).first()       
+                if isinstance(valf_id,int):
+                    Valf_test.objects.filter(id=valf_id).values_list('uygun',flat = True).first()
+                    if (Valf_test.objects.filter(id=valf_id).values_list('uygun',flat = True).first()):
+                        r = ('OK')
+                    else:
+                        r = ('NO')
                 else:
                     r = ('NO')
             except:

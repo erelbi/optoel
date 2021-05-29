@@ -10,7 +10,7 @@
       <label for="durum">İş Emri Şeçin</label>
         <select id="acikemirlerselect_vmk"  onchange="acikemirlerselect_change_func()"  required >
           <option value="" disabled selected>Seçin</option>
-          {% for emir in acikemirleri %}
+          {% for emir in govde_emir %}
             <option value="{{ emir.is_emri }}">{{ emir.is_emri }} </option>
           {% endfor %}
         </select>

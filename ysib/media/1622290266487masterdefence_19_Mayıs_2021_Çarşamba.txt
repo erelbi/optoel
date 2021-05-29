@@ -1,0 +1,6 @@
+"Başlangıç Seri No","Bitiş Seri No",Adet,"Lot No","Lot No Verilme","Kabul Durumu",Personel,PDF,Tarih
+66,67,,1,,Kabul,"kalite Titiz",,"09 Mayıs 2021 15:26"
+66,67,,3,,Kabul,"admin yonetici",,"30 Aralık 2020 18:26"
+1010,1011,,4,,Kabul,"admin yonetici",,"30 Aralık 2020 18:35"
+1000,1001,,5,,Kabul,"admin yonetici",,"05 Ocak 2021 19:17"
+8,8,,6,,Kabul,"ozgur ozgur",cv_1_ornek.pdf,"19 Mayıs 2021 23:19"
