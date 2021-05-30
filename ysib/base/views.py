@@ -470,6 +470,7 @@ def uretimkontrol(request):
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
         aktifemirler= Emir.objects.filter(durum="Aktif")
         govde_emir = Valf.objects.filter(valf_govde_id__isnull=False).values_list('is_emri_id',flat=True)
+        
         #return render(request,'uretim-kontrol.html',{ 'acikemirleri':acikemirleri,  'grup': grup, 'birim': birim, 'ip': ip,'now':now, 'kurlenmes':montajkurlenmesi,'fm200kurlenmes':fm200kurlenmesi, 'govdekurlenmes': govdekurlenmesi ,'server' : server})
         return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi,'aktifemirler':aktifemirler,'govde_emir':govde_emir})
 @csrf_exempt

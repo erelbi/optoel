@@ -61,6 +61,7 @@ def valf_parti_no_ata(request):
 
 
 
+
     #valfler= Valf_montaj.objects.filter(is_emri= emir)
     #parti_no__max= valfler.aggregate(Max('kurlenme_parti_no'))['kurlenme_parti_no__max']  
     #if parti_no__max is None: 
@@ -289,19 +290,22 @@ def duplicate_control_govde(id):
 
 @csrf_exempt
 def valf_govde_save(request):
-    print("valf_gocde_içerde")
+    print("valf_govde_içerde")
     try:
         valf_govde_veri_list = json.loads(request.POST.dict()['veri'])
         valf_main = Valf.objects.get(id=valf_govde_veri_list[0])
         if  duplicate_control_govde(valf_govde_veri_list[0]) is  None:
-            if valf_govde_veri_list[4] == "True":
+            if valf_govde_veri_list[4] == True:
                 govde = Valf_govde(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],govde_personel_id=request.user.id,uygunluk=True)
+                print("govde-----True")
             else:
+                print("uygundegil")
                 govde = Valf_govde(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],uygunluk=False,sebep=valf_govde_veri_list[5],govde_personel_id=request.user.id)
             govde.save()
             valf_main.valf_govde_id = govde.id
             valf_main.save()
         else:
+            print("duplike var")
             Valf_govde.objects.filter(id=valf_main.valf_govde_id).update(tork=valf_govde_veri_list[3],tup_seri_no=valf_govde_veri_list[1] ,sodyum_miktari=valf_govde_veri_list[2],uygunluk=valf_govde_veri_list[4],sebep=valf_govde_veri_list[5],govde_personel_id=request.user.id)
            
             return JsonResponse({'status':201,'remark':"Güncelleme İşlemi Başarılı!"})
@@ -332,3 +336,92 @@ def GovdekontrolEt(request):
             response = {'status':"NO",'remark':"Sunucu Fonksiyon Hatası!"}
 
     return JsonResponse(response)
+
+
+####################Govde Kurlenme Kontrol##############################
+
+@csrf_exempt
+def kurlenme_govde(request):
+    list_govde=[]
+    is_emri_id = request.POST.dict()['is_emri_id']
+    for govde in Valf.objects.filter(is_emri_id=is_emri_id).filter(valf_govde_id__isnull=False).values_list('valf_govde_id',flat=True):
+        if uygunluk_kontrol(govde):
+            dict_govde = {}
+            dict_govde['id'] = govde
+            dict_govde['parti'] = Valf_govde.objects.filter(id=govde).values_list('govde_kurlenme_parti_no',flat=True).first()
+            list_govde.append(dict_govde)
+        else:
+            print("uygun değil")
+            pass
+    print(list_govde)
+    return JsonResponse(list(list_govde),safe=False)
+    
+
+
+    
+    #uygunluk = Valf_govde.objects.filter(id=govde_id).values_list('uygunluk',flat=True)
+    #print(uygunluk)
+
+
+def uygunluk_kontrol(govde):
+    try:
+       print(type(Valf_govde.objects.filter(id=govde).values_list('uygunluk',flat=True).first()))
+       return  Valf_govde.objects.filter(id=govde).values_list('uygunluk',flat=True).first()
+    except Exception as err:
+        print(err)
+        return False
+
+
+################Govde kurlenme Ata############################
+@csrf_exempt
+def valf_govde_parti_no_ata(request):
+    print(request.POST.dict()['is_emri'])
+    print(request.POST.dict()['valfler_id'])
+    #valf_govde_idleri = Valf.objects.filter(is_emri_id=request.POST.dict()['is_emri']).values_list('valf_govde_id', flat=True)
+    emir_valuelist = Emir.objects.filter(id=request.POST.dict()['is_emri']).values_list('id', flat=True)
+    #print(Valf.objects.filter(is_emri_id=emir_valuelist[0]).values_list('valf_govde_id',flat=True))
+   
+    valf_govde_idleri= Valf.objects.filter(is_emri_id=emir_valuelist[0]).filter(valf_govde_id__isnull=False).values_list('valf_govde_id',flat=True)
+    print(valf_govde_idleri)
+
+   
+    
+    kurlenme_parti_noları = []
+    try:
+        for valf_id in valf_govde_idleri :
+            print("değer",valf_id)
+            if  Valf_govde.objects.filter(id=valf_id).first().govde_kurlenme_parti_no is None:
+                kurlenme_parti_noları.append(0)
+            else:   
+               kurlenme_parti_noları.append(Valf_govde.objects.filter(id=valf_id).first().govde_kurlenme_parti_no)
+        next_parti_no= max(kurlenme_parti_noları) + 1
+    except Exception as err:
+        print("error",err)
+    print("next_parti_no",next_parti_no)
+
+
+
+
+    valfler_id=request.POST.dict()['valfler_id'] 
+    print("valfler_id",valfler_id)
+    valfler_id_array = json.loads(valfler_id)
+    print(valfler_id_array)
+    for id in valfler_id_array:
+        valf  =  Valf_govde.objects.get(id=id)
+        if valf.govde_kurlenme_parti_no is None:
+            valf.govde_kurlenme_parti_no=next_parti_no
+            valf.govde_kurlenme_baslangic_tarihi = timezone.now()
+            valf.govde_kurlenme_bitis_tarihi =  timezone.now()+timezone.timedelta(hours=12)
+            valf.govde_kurlenme_personel = User.objects.get(id=request.user.id)
+            valf.save()
+ 
+    
+    return HttpResponse('OK')
+
+
+
+################Govde kurlenme tarih getir##########
+@csrf_exempt
+def kurlenmegovdetarih(request):
+    id = Valf.objects.filter(valf_govde_id=request.POST.dict()['id']).values_list('id',flat=True).first()
+    

@@ -1,4 +1,5 @@
 {% load static %}
+{% load govdekurlenme  %}
 {% block manometre %}
 <hr>
 
@@ -8,10 +9,10 @@
 
     <div class="form-group col-md-3">
       <label for="durum">İş Emri Şeçin</label>
-        <select id="acikemirlerselect_vmk"  onchange="acikemirlerselect_change_func()"  required >
+        <select id="govdekurlenmefind"  onchange="govdekurlenme_change_func()"  required >
           <option value="" disabled selected>Seçin</option>
-          {% for emir in govde_emir %}
-            <option value="{{ emir.is_emri }}">{{ emir.is_emri }} </option>
+          {% for id in govde_emir %}
+            <option value="{{id}}"> {% find_user_name  id %} </option>
           {% endfor %}
         </select>
       </div>
@@ -25,7 +26,7 @@
         </div>
 
         <div class="card-body">
-          <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
+          <table class="table table-hover" id="valflerGovdeTableId" data-sort-name="oncelik">
             <thead>
               <tr>
                 <th scope="col"></th>
@@ -43,7 +44,7 @@
         </div>
         </div>
         <div>
-          <button type="button" id="btn-bm-bitir" class="btn btn-success" style="height: 34px;margin-top: 20px;width: 100px;" onclick="baslat()">BAŞLAT</button>
+          <button type="button" id="btn-bm-bitir" class="btn btn-success" style="height: 34px;margin-top: 20px;width: 100px;" onclick="baslatgovdekurlenme()">BAŞLAT</button>
         
         </div>
 </form>
@@ -55,9 +56,25 @@
   <div class="card-header" style="color: #c7ae3c;background-color: #d7e9fa; font-size: 20px;">
     Valf Kürlenme Tablosu
   </div>
-
+  <div class="card-body ">
+    <table class="table table-hover" id="GovdeKurlemeTableId" data-sort-name="bitisoncelik">
+      <thead>
+        <tr>
+          <th scope="col">Parti No</th>
+          <th scope="col">Valf No</th>
+          <th scope="col">Kalan Süre</th>
+        </tr>
+      </thead>
+      <tbody id="oncelikForm">
+        <!--
+          bu tablonun satırları aşağıdaki ajax call ile dolar.table id  ile bulunur bu tablo.
+        -->
+        
+      </tbody>
+    </table>
+<!-- 
   <div class="card-body">
-    <table class="table table-hover" id="valflerTableId" data-sort-name="oncelik">
+    <table class="table table-hover" id="valflerGovdeTableId" data-sort-name="oncelik">
       <thead>
         <tr>
           <th scope="col">Parti No</th>
@@ -74,16 +91,16 @@
         {% endfor %}
         
       </tbody>
-    </table>
+    </table> -->
   </div>
-  </div> 
+  </div>  
 
  
  
 </div>
 <hr>
  
-<!-- <script id="cookie">
+<script id="cookie">
   //https://stackoverflow.com/questions/14573223/set-cookie-and-get-cookie-with-javascript
   function setCookie(name,value,days) {
     var expires = "";
@@ -115,29 +132,29 @@ function eraseCookie(name) {
 
 <script>
 
-  function acikemirlerselect_change_func() {
-    console.log("acikemirlerselect_change_func")
+  function govdekurlenme_change_func() {
+    
 
 
-    var acikemirlerselectedValue = document.getElementById("acikemirlerselect_vmk").value;
-     
+    let value_gk = document.getElementById("govdekurlenmefind").value;
+    console.log(value_gk)
     let valfler="-";
     var is_emir_valfleri_geldi_mi = new Promise(function(resolve,reject){
      
-    console.log("acikemirlerselectedValue",acikemirlerselectedValue)
      let data = {
-             "is_emri_id" : acikemirlerselectedValue 
+             "is_emri_id" : value_gk
            }
       $.ajax(
           {
             type: "POST",
-            url: '/is_emri_valfleri',
+            url: '/kurlenmegovde',
             data : data,
             success: function (x){
+            console.log(x)
 
             valfler = x;
             resolve(valfler);
-            console.log("vlferl",valfler)
+            // console.log("vlferl",valfler)
             
             },
             error(err){
@@ -145,21 +162,21 @@ function eraseCookie(name) {
             }
             }
         );
-        console.log("vvvvv2",valfler)
+        // console.log("vvvvv2",valfler)
 
   
 
   })
-  console.log("vvvvv3",valfler)
+  // console.log("vvvvv3",valfler)
 
 
-  is_emir_valfleri_geldi_mi.then(function(res){
+   is_emir_valfleri_geldi_mi.then(function(res){
 
 
-    console.log("is_emir_valfleri_geldi_mi")
+    console.log(res)
 
     //önceki iş emrinin valf rowlarını temizle
-    $("#valflerTableId tbody tr").remove();
+    $("#valflerGovdeTableId tbody tr").remove();
     
     console.log("vvvvv4",valfler)
     //yeni seçilen  iş emrinin valf rowlarını olutşur
@@ -168,12 +185,12 @@ function eraseCookie(name) {
         //We first declare the variables for each <td> we need          
         var valf = valfler[i]
         valf_id=valf['id']
-        parti_no=valf['parti_no']
-        check_box=' <input type="checkbox" checked disabled id="' + valf_id +' "  ">'
+        parti_no=valf['parti']
+        check_box=' <input type="checkbox" checked disabled id="'+ valf_id +'"">'
 
         if (parti_no == null) { 
           parti_no = "-";
-          check_box=' <input type="checkbox" id="' + valf_id +' "  ">'
+          check_box=' <input type="checkbox" id="'+ valf_id +'"">'
 
         }
         
@@ -187,11 +204,37 @@ function eraseCookie(name) {
         + '<td>' + parti_no+  '</td>'
          + '</tr>'
         //To finally append this long string to your table through it's ID:
-        $('#valflerTableId').append(added_row)
+        $('#valflerGovdeTableId').append(added_row)
         };
  
     })
+    
+   
+   is_emir_valfleri_geldi_mi.then(function(res){
+      let data = {
+        id: res[0].id
+      }
+      console.log(data)
+      $.ajax(
+          {
+            type: "POST",
+            url: '/govdektarih',
+            data : data,
+            success: function (x){
+            console.log(x)
 
+            
+            
+            
+            },
+            error(err){
+            console.log;(err);
+            }
+            }
+        );
+
+     
+    })
 
 }
 </script>
@@ -199,10 +242,10 @@ function eraseCookie(name) {
 
 <script>
 
-  function baslat()
+  function baslatgovdekurlenme()
   {
   
-    valflere_parti_no_ata()
+    valflere_govde_kurlenme_parti_no_ata()
 
   
 
@@ -211,10 +254,10 @@ function eraseCookie(name) {
   }
 
 
-  function valflere_parti_no_ata()
+  function valflere_govde_kurlenme_parti_no_ata()
   {
-    
-   var valfler=  $("#valflerTableId tbody tr input:checked") 
+  
+   var valfler=  $("#valflerGovdeTableId tbody tr input:checked") 
    console.log("valfler",valfler)
    let veri = Array(valfler.length);
 
@@ -223,6 +266,7 @@ function eraseCookie(name) {
 
     veri[i]=valfler[i].id
    }
+   console.log(veri)
 
    console.log("veri",veri)
    veri = JSON.stringify(veri);
@@ -230,21 +274,22 @@ function eraseCookie(name) {
 
         
   
-   var acikemirlerselectedValue = document.getElementById("acikemirlerselect_vmk").value;
+   var acikemirlerselectedValueGovde = document.getElementById("govdekurlenmefind").value;
 
    let data = {
              "valfler_id" : veri ,
-             "is_emri" : acikemirlerselectedValue 
+             "is_emri" : acikemirlerselectedValueGovde 
 
            }
-           console.log("acikemirlerselectedValue",acikemirlerselectedValue)
+           console.log("test",data)
+           debugger;
       $.ajax(
           {
             type: "POST",
-            url: '/valf_parti_no_ata',
+            url: '/valf_govde_parti_no_ata',
             data : data,
             success: function (x){
-            acikemirlerselect_change_func() 
+              govdekurlenme_change_func()
 
             Swal.fire({
               title: 'Başarılı!',
@@ -318,7 +363,7 @@ function eraseCookie(name) {
 <script>
 
 </script>
- -->
+
 
  
 {% endblock %}
