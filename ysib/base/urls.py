@@ -44,6 +44,6 @@ urlpatterns = [
     url(r'GovdekontrolEt',views_extra.GovdekontrolEt),
     url(r'kurlenmegovde',views_extra.kurlenme_govde),
     url(r'valf_govde_parti_no_ata',views_extra.valf_govde_parti_no_ata),
-    url(r'govdektarih',views_extra.kurlenmegovdetarih),
+    url(r'govdektarih',views_extra.govdemontajKurlenme),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

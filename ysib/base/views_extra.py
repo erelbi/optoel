@@ -347,7 +347,7 @@ def kurlenme_govde(request):
     for govde in Valf.objects.filter(is_emri_id=is_emri_id).filter(valf_govde_id__isnull=False).values_list('valf_govde_id',flat=True):
         if uygunluk_kontrol(govde):
             dict_govde = {}
-            dict_govde['id'] = govde
+            dict_govde['id'] = Valf.objects.filter(valf_govde_id=govde).values_list('id',flat=True).first()
             dict_govde['parti'] = Valf_govde.objects.filter(id=govde).values_list('govde_kurlenme_parti_no',flat=True).first()
             list_govde.append(dict_govde)
         else:
@@ -422,6 +422,36 @@ def valf_govde_parti_no_ata(request):
 
 ################Govde kurlenme tarih getir##########
 @csrf_exempt
-def kurlenmegovdetarih(request):
-    id = Valf.objects.filter(valf_govde_id=request.POST.dict()['id']).values_list('id',flat=True).first()
+def govdemontajKurlenme(request):
+    print(request.POST.getlist('parti_no[]'))
+    
+    montaj_list=[]
+    try:
+        if  len(request.POST.getlist('parti_no[]')[0]) > 0:
+            for parti_no in request.POST.getlist('parti_no[]'):
+                clock = Valf_govde.objects.filter(govde_kurlenme_parti_no=parti_no).first().govde_kurlenme_bitis_tarihi - timezone.now()
+                montaj={}
+                montaj['tarih'] = time_calc(clock)
+                montaj['partino'] = parti_no
+                valf_no_list=[]
+                for valf_no in  Valf_govde.objects.filter(govde_kurlenme_parti_no=parti_no).values_list('id',flat=True):  
+                    valf_no_list.append(valf_no)
+                montaj['valfno'] = Valf.objects.filter(valf_govde_id=valf_no).values_list('id',flat=True).first()
+                print("------------------>",valf_no_list)
+                montaj_list.append(montaj)
+            return JsonResponse(list(montaj_list),safe=False)
+        else:
+            return JsonResponse(list(montaj_list),safe=False)
+    except Exception as err:
+        print(err)
+        return JsonResponse(list(montaj_list),safe=False)
+
+
+def time_calc(data):
+    print(data.days)
+    if data.days == 0:
+        
+       return  "{}:{}".format(data.seconds//3600,(data.seconds//60)%60,data.seconds%60)
+    else:
+        return "Kürleme Bitmiştir"
     

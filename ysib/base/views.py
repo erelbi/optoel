@@ -469,7 +469,9 @@ def uretimkontrol(request):
         fm200kurlenmesi=Valf_fm200.objects.filter(fm200_kurlenme_bitis_tarihi__gte=now)
         acikemirleri= Emir.objects.filter(durum__in=("Aktif","Başlanmamış"))
         aktifemirler= Emir.objects.filter(durum="Aktif")
-        govde_emir = Valf.objects.filter(valf_govde_id__isnull=False).values_list('is_emri_id',flat=True)
+        ####Duplikasyonu önlemek için yaptık ###############
+        govde_emir = list(dict.fromkeys(Valf.objects.filter(valf_govde_id__isnull=False).values_list('is_emri_id',flat=True)))
+        ###################################################
         
         #return render(request,'uretim-kontrol.html',{ 'acikemirleri':acikemirleri,  'grup': grup, 'birim': birim, 'ip': ip,'now':now, 'kurlenmes':montajkurlenmesi,'fm200kurlenmes':fm200kurlenmesi, 'govdekurlenmes': govdekurlenmesi ,'server' : server})
         return render(request,'uretim-kontrol.html',{'grup': grup, 'birim': birim, 'ip': ip,'now':now,'server':server, 'acikemirleri':acikemirleri,'fm200kurlenmes':fm200kurlenmesi,'kurlenmes':montajkurlenmesi,'aktifemirler':aktifemirler,'govde_emir':govde_emir})

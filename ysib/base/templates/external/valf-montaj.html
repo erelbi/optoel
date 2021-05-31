@@ -108,7 +108,7 @@ function eraseCookie(name) {
 
  
 
-
+<!-- 
 <script>
   window.addEventListener('hashchange',function(){
     if(location.hash == '#kurlenme'){
@@ -154,10 +154,10 @@ function eraseCookie(name) {
 
     }
   })
-</script>
+</script> -->
 <script type="text/javascript">
   let kontrol = "";
-  document.getElementById('kurlenmeSubmit2').disabled = true;
+  // document.getElementById('kurlenmeSubmit2').disabled = true;
 
   function isFull(){
      let ins = document.querySelectorAll('#ValfMontajForm input[type="text"]');
@@ -186,6 +186,7 @@ function eraseCookie(name) {
                     }else{
 
                       kontrol = "OK";
+                      document.getElementById('kurlenmeSubmit2').disabled = false;
                       el.parentElement.lastElementChild.style.display = "none";
                       if(isFull() && kontrol=="OK"){
                         document.getElementById('kurlenmeSubmit2').disabled = false;

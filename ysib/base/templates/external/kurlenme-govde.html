@@ -12,7 +12,8 @@
         <select id="govdekurlenmefind"  onchange="govdekurlenme_change_func()"  required >
           <option value="" disabled selected>Seçin</option>
           {% for id in govde_emir %}
-            <option value="{{id}}"> {% find_user_name  id %} </option>
+           
+            <option value="{{id}}"> {% find_user_name  id %}</option>
           {% endfor %}
         </select>
       </div>
@@ -208,20 +209,58 @@ function eraseCookie(name) {
         };
  
     })
-    
+    function badEmptyCheck(value) {
+  return Object.keys(value).length === 0;
+}
    
    is_emir_valfleri_geldi_mi.then(function(res){
-      let data = {
-        id: res[0].id
+    let parti = []
+    // console.log("------------<",.isEmpty({res}));
+    if ( badEmptyCheck(res) == false ){
+   
+    for (var i = 0; i < res.length; i++ ){
+         console.log("-----------",res[i].parti)
+         if (parti.includes(res[i].parti) == false &&  res[i].parti != null) { 
+          parti.push(res[i].parti)
+         }
+         else{
+           console.log("hata")
+           
+         }
+        }
       }
-      console.log(data)
+     
+      console.log("tarihleri_getir",parti)
       $.ajax(
           {
             type: "POST",
             url: '/govdektarih',
-            data : data,
-            success: function (x){
-            console.log(x)
+            data : {'parti_no':parti},
+            success: function (valfler){
+                  
+              $("#GovdeKurlemeTableId tbody tr").remove();
+            
+        
+            console.log(valfler)
+
+            for (var i = 0; i < valfler.length; i++){        
+                parti_no=valfler[i]['partino']
+                valf_no=valfler[i]['valfno']
+                tarih=valfler[i]['tarih']
+                console.log(Date.parse(tarih))
+                
+
+                //We then append them to a string in html fashion
+
+                added_row =  
+                '<tr>'
+                  + '<td>' + parti_no+  '</td>'
+                  + '<td>' + valf_no+  '</td>'
+                + '<td>' + tarih+  '</td>'
+                 + '</tr>'
+                //To finally append this long string to your table through it's ID:
+                $('#GovdeKurlemeTableId').append(added_row)
+                };
 
             
             
@@ -311,7 +350,7 @@ function eraseCookie(name) {
   </script>
 
 
-
+<!-- 
 <script>
   window.addEventListener('hashchange',function(){
     if(location.hash == '#kurlenme'){
@@ -357,12 +396,10 @@ function eraseCookie(name) {
 
     }
   })
-</script>
+</script> -->
  
 <script src="{% static 'js/qr.js' %}"></script>
-<script>
 
-</script>
 
 
  
